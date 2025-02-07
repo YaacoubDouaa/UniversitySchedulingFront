@@ -36,5 +36,9 @@ export class SidenavComponent {
   navigateToSchedule() {
     this.router.navigate(['/schedule']);
   }
+
+  navigateToView() {
+    this.router.navigate(['/view']);
+  }
 }
 

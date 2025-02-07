@@ -32,7 +32,7 @@ body {
   width: 100px;  /* Slightly smaller width for time column */
 }
 .header{color:#014F86 !important;
-background: transparent;}
+  background: transparent;}
 .header-container {
   background-color: #014F86;
   color: #e0fbfc;
@@ -93,7 +93,7 @@ background: transparent;}
 }
 
 .activity-container.has-activity {
-  background-color: transparent !important;
+  /*background-color: transparent !important;*/
   color: #014F86;
 
 }
@@ -138,5 +138,10 @@ background: transparent;}
   align-items: center;
   justify-content: center;
 }
+.activity-name{color: #014F86 !important;}
+.activity-room{color: #014F86 !important;}
+.activity-professor{color: #014F86 !important;}
 
+
+.activity-biweekly{color:#3626A7}
 

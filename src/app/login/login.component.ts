@@ -28,7 +28,7 @@ constructor( private router: Router) {
     );
   }
   navigate() {
-    this.router.navigate(['/schedule']);
+    this.router.navigate(['/view']);
   }
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();

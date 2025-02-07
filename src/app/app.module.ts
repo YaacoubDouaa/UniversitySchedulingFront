@@ -29,16 +29,20 @@ import {
 import { ConflictPageComponent } from './conflict-page/conflict-page.component';
 import {ConflictDetectionService} from './conflict.service';
 import { RoomsComponent } from './rooms/rooms.component';
+import {ViewScheduleComponent} from './view-schedule/view-schedule.component';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatSelect} from '@angular/material/select';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    ScheduleComponent,
     SidenavComponent,
     ConflictListComponent,
     ConflictPageComponent,
     RoomsComponent,
+    ViewScheduleComponent,
+    ScheduleComponent
 
   ],
   imports: [
@@ -80,6 +84,9 @@ import { RoomsComponent } from './rooms/rooms.component';
     MatExpansionPanelHeader,
     MatExpansionPanel,
     MatAccordion,
+    MatCheckbox,
+    MatSelect,
+
 
   ],
   providers: [
