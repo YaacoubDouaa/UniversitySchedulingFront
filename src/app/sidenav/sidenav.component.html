@@ -6,32 +6,29 @@
     <button (click)="navigateToConflicts()" mat-raised-button>
       Conflicts
     </button>
-    <div><button (click)="toggleFiller()" mat-raised-button>
-      Toggle extra text
+    <div><button (click)="navigateToRooms()" mat-raised-button>
+      Rooms
     </button></div>
    <div>
+     <div><button (click)="navigateToSchedule()" mat-raised-button>
+       Schedule
+     </button></div>
+     <div>
     <button (click)="toggleFiller()" mat-raised-button>
       Toggle extra text
     </button></div>
    <div> <button (click)="toggleFiller()" mat-raised-button>
       Toggle extra text
     </button></div>
+   </div>
   </mat-drawer>
 
   <!-- Main Content Area -->
   <div class="example-sidenav-content">
-
     <button mat-button aria-label="Toggle sidenav" (click)="drawer.toggle()">
       <mat-icon>menu</mat-icon>
     </button>
-
-
-
-
-
-    <!-- Routing for child components -->
-
-    <app-schedule></app-schedule>  <!-- Add your ChildComponent here -->
     <router-outlet></router-outlet>
   </div>
+
 </mat-drawer-container>

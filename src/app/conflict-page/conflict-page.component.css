@@ -1,14 +1,3 @@
-.toggle-btn {
-  position: fixed;
-  top: 10px; /* Position the button at the top */
-  left: 10px; /* Position the button at the left */
-  padding: 10px 20px; /* Adjust the padding to ensure the size is appropriate */
-  font-size: 18px; /* Adjust the font size as needed */
-  cursor: pointer;
-  z-index: 1000; /* Ensure it appears above other elements */
-  width: auto; /* Ensure the button does not fill the screen width */
-}
-
 
 
 .example-container {
