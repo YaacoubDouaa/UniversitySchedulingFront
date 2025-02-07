@@ -27,6 +27,8 @@ import {
   MatExpansionPanelTitle
 } from '@angular/material/expansion';
 import { ConflictPageComponent } from './conflict-page/conflict-page.component';
+import {ConflictDetectionService} from './conflict.service';
+import { RoomsComponent } from './rooms/rooms.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +38,7 @@ import { ConflictPageComponent } from './conflict-page/conflict-page.component';
     SidenavComponent,
     ConflictListComponent,
     ConflictPageComponent,
+    RoomsComponent,
 
   ],
   imports: [
@@ -80,8 +83,9 @@ import { ConflictPageComponent } from './conflict-page/conflict-page.component';
 
   ],
   providers: [
-    provideAnimationsAsync()
+    provideAnimationsAsync(),ConflictDetectionService
   ],
+
   bootstrap: [AppComponent]
 })
 export class AppModule { }

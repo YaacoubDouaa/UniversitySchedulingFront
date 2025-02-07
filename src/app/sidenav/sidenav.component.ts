@@ -20,6 +20,10 @@ export class SidenavComponent {
   navigateToConflicts() {
     this.router.navigate(['/conflict']);
   }
+  navigateToRooms() {
+    this.router.navigate(['/rooms']);
+  }
+
 
   navigateToExtraText() {
     this.router.navigate(['/extra-text']);
@@ -27,6 +31,10 @@ export class SidenavComponent {
 
   navigateToAnotherPage() {
     this.router.navigate(['/another-page']);
+  }
+
+  navigateToSchedule() {
+    this.router.navigate(['/schedule']);
   }
 }
 
