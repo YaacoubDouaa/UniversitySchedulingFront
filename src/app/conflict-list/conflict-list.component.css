@@ -1,0 +1,70 @@
+.toggle-btn {
+  position: fixed;
+  top: 10px; /* Position the button at the top */
+  left: 10px; /* Position the button at the left */
+  padding: 10px 20px; /* Adjust the padding to ensure the size is appropriate */
+  font-size: 18px; /* Adjust the font size as needed */
+  cursor: pointer;
+  z-index: 1000; /* Ensure it appears above other elements */
+  width: auto; /* Ensure the button does not fill the screen width */
+}
+
+.example-container {
+  width: 100%;
+  height: 100vh;
+}
+
+.example-sidenav {
+  padding: 20px;
+  min-width: 200px;
+}
+
+.example-sidenav button {
+  margin-bottom: 10px; /* Add spacing between buttons */
+}
+
+.content {
+  padding: 20px;
+}
+
+.example-sidenav-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: url('https://i.postimg.cc/02CcpQx6/i-want-a-simple-degrad-background-in-this-color-tone-CAE9-FF-all-blue-tone-more-homogunous-i-want-it.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+.demo-section {
+  margin: 20px;
+}
+
+/* Styling the accordion elements */
+mat-accordion {
+  margin: 20px;
+}
+
+mat-expansion-panel {
+  background-color: transparent; /* Color the accordion elements */
+  color: #FF331F; /* Make the text color white for better contrast */
+}
+.p {
+  background-color: transparent; /* Color the accordion elements */
+  color: #FF331F; /* Make the text color white for better contrast */
+}
+
+mat-expansion-panel-header {
+  background-color: transparent; /* Color the accordion elements */
+  color: #FF331F; /* Make the text color white for better contrast */
+}
+
+/* You can add global styles to this file, and also import other style files */
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* styles.css (or styles.scss) */
+body {
+  background: url('https://i.postimg.cc/02CcpQx6/i-want-a-simple-degrad-background-in-this-color-tone-CAE9-FF-all-blue-tone-more-homogunous-i-want-it.jpg') no-repeat center center fixed;
+  background-size: cover;
+  height: 100vh;
+  margin: 0;
+}

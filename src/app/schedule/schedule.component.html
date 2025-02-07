@@ -1,0 +1,200 @@
+<!--&lt;!&ndash; schedule.component.html &ndash;&gt;-->
+<!--<div class="schedule-container">-->
+<!--  <table class="schedule-table">-->
+<!--    <thead>-->
+<!--    <tr>-->
+<!--      <th class="time-column">-->
+<!--        <div class="header-container">Horaire</div>-->
+<!--      </th>-->
+<!--      <th *ngFor="let day of days">-->
+<!--        <div class="header-container">{{ day }}</div>-->
+<!--      </th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    <tbody>-->
+<!--    <tr *ngFor="let time of timeSlots">-->
+<!--      <td class="time-slot">-->
+<!--        <div class="time-container">{{ time }}</div>-->
+<!--      </td>-->
+<!--      <td *ngFor="let day of days">-->
+<!--        <div class="activity-container"-->
+<!--             [ngClass]="{'has-activity': schedule[day][time]}"-->
+<!--             [style.backgroundColor]="getActivityColor(schedule[day][time]?.type)"-->
+<!--             (click)="openEditModal(schedule[day][time], day, time)"-->
+<!--             [attr.aria-label]="schedule[day][time] ? 'Edit ' + schedule[day][time]?.name : 'Empty slot'">-->
+<!--          <div *ngIf="schedule[day][time]" class="activity-cell">-->
+<!--            <div class="activity-name">{{ schedule[day][time]?.name }}</div>-->
+<!--            <div class="activity-room">{{ schedule[day][time]?.room }}</div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </td>-->
+<!--    </tr>-->
+<!--    </tbody>-->
+<!--  </table>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; Modal &ndash;&gt;-->
+<!--&lt;!&ndash;<div *ngIf="selectedActivity" class="modal" (click)="closeModal($event)">&ndash;&gt;-->
+<!--&lt;!&ndash;  <div class="modal-content" (click)="$event.stopPropagation()">&ndash;&gt;-->
+<!--&lt;!&ndash;    <h2>Edit Activity</h2>&ndash;&gt;-->
+<!--&lt;!&ndash;    <form class="example-form">&ndash;&gt;-->
+<!--&lt;!&ndash;      <mat-form-field class="example-full-width">&ndash;&gt;-->
+<!--&lt;!&ndash;        <mat-label>Activity Name</mat-label>&ndash;&gt;-->
+<!--&lt;!&ndash;        <input matInput [(ngModel)]="selectedActivity.seance.name" name="name" placeholder="Ex. Math Class">&ndash;&gt;-->
+<!--&lt;!&ndash;      </mat-form-field>&ndash;&gt;-->
+
+<!--&lt;!&ndash;      <mat-form-field class="example-full-width">&ndash;&gt;-->
+<!--&lt;!&ndash;        <mat-label>Room</mat-label>&ndash;&gt;-->
+<!--&lt;!&ndash;        <input matInput [(ngModel)]="selectedActivity.seance.room" name="room" placeholder="Ex. A-101">&ndash;&gt;-->
+<!--&lt;!&ndash;      </mat-form-field>&ndash;&gt;-->
+
+<!--&lt;!&ndash;      <mat-form-field class="example-full-width">&ndash;&gt;-->
+<!--&lt;!&ndash;        <mat-label>Type</mat-label>&ndash;&gt;-->
+<!--&lt;!&ndash;        <input matInput [(ngModel)]="selectedActivity.seance.type" name="type" placeholder="Ex. Lecture">&ndash;&gt;-->
+<!--&lt;!&ndash;      </mat-form-field>&ndash;&gt;-->
+
+<!--&lt;!&ndash;      <button mat-button (click)="closeModal()">Close</button>&ndash;&gt;-->
+<!--&lt;!&ndash;      <button mat-raised-button color="primary" (click)="saveChanges()">Save</button>&ndash;&gt;-->
+<!--&lt;!&ndash;    </form>&ndash;&gt;-->
+<!--&lt;!&ndash;  </div>&ndash;&gt;-->
+<!--&lt;!&ndash;</div>&ndash;&gt;-->
+<!--<div *ngIf="selectedActivity" class="modal" (click)="closeModal($event)">-->
+<!--  <div class="modal-content" (click)="$event.stopPropagation()">-->
+<!--    <h2>Edit Activity</h2>-->
+<!--    <form class="example-form">-->
+<!--      <mat-form-field class="example-full-width">-->
+<!--        <mat-label>Activity Name</mat-label>-->
+<!--        <input matInput [formControl]="nameControl" [(ngModel)]="selectedActivity.seance.name" name="name" placeholder="Ex. Math Class" [matAutocomplete]="autoName">-->
+<!--        <mat-autocomplete #autoName="matAutocomplete">-->
+<!--          <mat-option *ngFor="let option of filteredNames | async" [value]="option">-->
+<!--            {{option}}-->
+<!--          </mat-option>-->
+<!--        </mat-autocomplete>-->
+<!--      </mat-form-field>-->
+
+<!--      <mat-form-field class="example-full-width">-->
+<!--        <mat-label>Room</mat-label>-->
+<!--        <input matInput [formControl]="roomControl"  [(ngModel)]="selectedActivity.seance.room" name="room" placeholder="Ex. A-101" [matAutocomplete]="autoRoom">-->
+<!--        <mat-autocomplete #autoRoom="matAutocomplete">-->
+<!--          <mat-option *ngFor="let option of filteredRooms | async" [value]="option">-->
+<!--            {{option}}-->
+<!--          </mat-option>-->
+<!--        </mat-autocomplete>-->
+<!--      </mat-form-field>-->
+
+<!--      <mat-form-field class="example-full-width">-->
+<!--        <mat-label>Type</mat-label>-->
+<!--        <input matInput  [(ngModel)]="selectedActivity.seance.type" name="type"  [formControl]="typeControl" placeholder="Ex. COURS" [matAutocomplete]="autoType">-->
+<!--        <mat-autocomplete #autoType="matAutocomplete">-->
+<!--          <mat-option *ngFor="let option of filteredTypes | async" [value]="option">-->
+<!--            {{option}}-->
+<!--          </mat-option>-->
+<!--        </mat-autocomplete>-->
+<!--      </mat-form-field>-->
+
+<!--      <button mat-button (click)="closeModal()">Close</button>-->
+<!--      <button mat-raised-button color="primary" (click)="saveChanges()">Save</button>-->
+<!--    </form>-->
+<!--  </div>-->
+<!--</div>-->
+<!-- schedule.component.html -->
+<div class="schedule-container">
+  <table class="schedule-table">
+    <thead>
+    <tr>
+      <th class="time-column">
+        <div class="header">Horaire</div>
+      </th>
+      <th *ngFor="let day of days">
+        <div class="header-container">{{ day }}</div>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let time of timeSlots">
+      <td class="time-slot">
+        <div class="time-container">{{ time }}</div>
+      </td>
+      <td *ngFor="let day of days">
+        <div class="activity-container"
+             [ngClass]="{'has-activity': schedule[day][time]}"
+             [style.backgroundColor]="getActivityColor(schedule[day][time]?.type)"
+             (click)="openEditModal(schedule[day][time], day, time)"
+             [attr.aria-label]="schedule[day][time] ? 'Edit ' + schedule[day][time]?.name : 'Empty slot'">
+          <div *ngIf="schedule[day][time]" class="activity-cell">
+            <div class="activity-name">{{ schedule[day][time]?.name }}</div>
+            <div class="activity-room">{{ schedule[day][time]?.room }}</div>
+            <div class="activity-room">{{ schedule[day][time]?.professor }}</div>
+            <div class="activity-room">{{ schedule[day][time]?.type}}</div>
+          </div>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal -->
+<!--<div *ngIf="selectedActivity" class="modal" (click)="closeModal($event)">-->
+<!--  <div class="modal-content" (click)="$event.stopPropagation()">-->
+<!--    <h2>Edit Activity</h2>-->
+<!--    <form class="example-form">-->
+<!--      <mat-form-field class="example-full-width">-->
+<!--        <mat-label>Activity Name</mat-label>-->
+<!--        <input matInput [(ngModel)]="selectedActivity.seance.name" name="name" placeholder="Ex. Math Class">-->
+<!--      </mat-form-field>-->
+
+<!--      <mat-form-field class="example-full-width">-->
+<!--        <mat-label>Room</mat-label>-->
+<!--        <input matInput [(ngModel)]="selectedActivity.seance.room" name="room" placeholder="Ex. A-101">-->
+<!--      </mat-form-field>-->
+
+<!--      <mat-form-field class="example-full-width">-->
+<!--        <mat-label>Type</mat-label>-->
+<!--        <input matInput [(ngModel)]="selectedActivity.seance.type" name="type" placeholder="Ex. Lecture">-->
+<!--      </mat-form-field>-->
+
+<!--      <button mat-button (click)="closeModal()">Close</button>-->
+<!--      <button mat-raised-button color="primary" (click)="saveChanges()">Save</button>-->
+<!--    </form>-->
+<!--  </div>-->
+<!--</div>-->
+<div *ngIf="selectedActivity" class="modal" (click)="closeModal($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Edit Activity</h2>
+    <form class="example-form">
+      <mat-form-field class="example-full-width">
+        <mat-label>Activity Name</mat-label>
+        <input matInput [formControl]="nameControl" [(ngModel)]="selectedActivity.seance.name" name="name" placeholder="Ex. Math Class" [matAutocomplete]="autoName">
+        <mat-autocomplete #autoName="matAutocomplete">
+          <mat-option *ngFor="let option of filteredNames | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Room</mat-label>
+        <input matInput [formControl]="roomControl"  [(ngModel)]="selectedActivity.seance.room" name="room" placeholder="Ex. A-101" [matAutocomplete]="autoRoom">
+        <mat-autocomplete #autoRoom="matAutocomplete">
+          <mat-option *ngFor="let option of filteredRooms | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Type</mat-label>
+        <input matInput  [(ngModel)]="selectedActivity.seance.type" name="type"  [formControl]="typeControl" placeholder="Ex. COURS" [matAutocomplete]="autoType">
+        <mat-autocomplete #autoType="matAutocomplete">
+          <mat-option *ngFor="let option of filteredTypes | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <button mat-button (click)="closeModal()">Close</button>
+      <button mat-raised-button color="primary" (click)="saveChanges()">Save</button>
+    </form>
+  </div>
+</div>

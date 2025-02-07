@@ -1,0 +1,35 @@
+<body>
+<div class="container">
+
+  <!-- Username Input -->
+  <mat-form-field class="example-full-width">
+    <mat-label>Username</mat-label>
+    <input matInput type="text" placeholder="USERNAME">
+  </mat-form-field>
+
+  <!-- Password Input -->
+  <mat-form-field class="example-full-width">
+    <mat-label>Password</mat-label>
+    <input matInput type="password" placeholder="PASSWORD">
+  </mat-form-field>
+
+  <!-- Role Selection with Autocomplete (Grouped Options) -->
+  <mat-form-field appearance="fill" class="example-full-width">
+    <mat-label>Choose an option</mat-label>
+    <input matInput [formControl]="myControl" [matAutocomplete]="autoGroup">
+    <mat-autocomplete #autoGroup="matAutocomplete">
+      <mat-optgroup *ngFor="let group of stateGroupOptions | async" [label]="group.letter">
+        <mat-option *ngFor="let name of group.names" [value]="name">
+          {{ options }}
+        </mat-option>
+      </mat-optgroup>
+    </mat-autocomplete>
+  </mat-form-field>
+
+
+
+  <!-- Login Button -->
+  <button mat-raised-button color="primary" class="login-btn" (click)="navigate()">LOGIN</button>
+
+</div>
+</body>
