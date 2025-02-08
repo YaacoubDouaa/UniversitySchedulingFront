@@ -1,6 +1,7 @@
 body {
 
   background-size: cover;
+  background: #a9d6e5 !important;
   height: 100vh;
   margin: 0;
 }
@@ -8,6 +9,7 @@ body {
 .schedule-container {
   padding: 20px;
   font-family: Arial, sans-serif;
+  background-color: #e0fbfc !important;
 }
 
 .schedule-table {
@@ -57,7 +59,8 @@ body {
 /*#ffc300 */
 /*#83c5be*/
 .time-slot{
-  background-color:rgba(224, 251, 252, 0.8);
+  /*background-color:rgba(224, 251, 252, 0.8);*/
+  background-color: #a9d6e5 !important;
 }
 .time-container {
   background-color:rgba(224, 251, 252, 0.4);

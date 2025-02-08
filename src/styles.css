@@ -90,13 +90,4 @@ body {
   background-size: cover;
 }
 
-/* You can add global styles to this file, and also import other style files */
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-/* styles.css (or styles.scss) */
-body {
-  background: url('https://i.postimg.cc/02CcpQx6/i-want-a-simple-degrad-background-in-this-color-tone-CAE9-FF-all-blue-tone-more-homogunous-i-want-it.jpg') no-repeat center center fixed;
-  background-size: cover;
-  height: 100vh;
-  margin: 0;
-}
+
