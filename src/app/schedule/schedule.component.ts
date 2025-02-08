@@ -370,7 +370,7 @@ export class ScheduleComponent  {
 
   openAddModal(day: string, time: string) {
     this.selectedActivity = {
-      seance: { name: '', id: Date.now(), room: '', type: 'COURS', professor: '', code: '', biWeekly: false },
+      seance: { name: '', id:0 , room: '', type: 'COURS', professor: '', code: '', biWeekly: false },
       day,
       time
     };
@@ -379,11 +379,23 @@ export class ScheduleComponent  {
   saveAddChanges() {
     if (this.selectedActivity) {
       const { day, time, seance } = this.selectedActivity;
-      const group = Object.keys(this.schedule[day]).find(grp => this.schedule[day][grp][time]);
-      if (group) {
-        // If the seance does not exist, add it to the list
-        this.schedule[day][group][time].push(seance);
+      let group = Object.keys(this.schedule[day]).find(grp => this.schedule[day][grp][time]);
+
+      if (!group) {
+        // If no group exists for the specified time slot, use the selected group
+        group = this.selectedGroup;
+        // If the group does not exist in the schedule for the day, create it
+        if (!this.schedule[day][group]) {
+          this.schedule[day][group] = {};
+        }
+        // If the time slot does not exist for the group, create it
+        if (!this.schedule[day][group][time]) {
+          this.schedule[day][group][time] = [];
+
+        }
       }
+      // Add the new seance to the specified time slot
+      this.schedule[day][group][time].push(seance);
     }
     this.closeModal();
   }

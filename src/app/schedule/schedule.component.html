@@ -153,4 +153,44 @@
       <button mat-raised-button color="primary" (click)="saveChanges()">Save</button>
     </form>
   </div>
+
+
+  <div *ngIf="selectedActivity" class="modal" (click)="closeModal($event)">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h2>Edit Activity</h2>
+      <form class="example-form">
+        <mat-form-field class="example-full-width">
+          <mat-label>Activity Name</mat-label>
+          <input matInput [formControl]="nameControl" [(ngModel)]="selectedActivity.seance.name" name="name" placeholder="Ex. Math Class" [matAutocomplete]="autoName">
+          <mat-autocomplete #autoName="matAutocomplete">
+            <mat-option *ngFor="let option of filteredNames | async" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Room</mat-label>
+          <input matInput [formControl]="roomControl"  [(ngModel)]="selectedActivity.seance.room" name="room" placeholder="Ex. A-101" [matAutocomplete]="autoRoom">
+          <mat-autocomplete #autoRoom="matAutocomplete">
+            <mat-option *ngFor="let option of filteredRooms | async" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Type</mat-label>
+          <input matInput  [(ngModel)]="selectedActivity.seance.type" name="type"  [formControl]="typeControl" placeholder="Ex. COURS" [matAutocomplete]="autoType">
+          <mat-autocomplete #autoType="matAutocomplete">
+            <mat-option *ngFor="let option of filteredTypes | async" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <button mat-button (click)="closeModal()">Close</button>
+        <button mat-raised-button color="primary" (click)="saveAddChanges()">Save</button>
+      </form>
+    </div>
+</div>
 </div>
