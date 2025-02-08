@@ -115,7 +115,8 @@ export class ScheduleComponent  {
     time: string;
 
   } | null = null;
-
+  showTD = true;
+  showTP = true;
   schedule: Schedule = {
     LUNDI: {
       ING1_INFO: {
@@ -367,6 +368,25 @@ export class ScheduleComponent  {
 
 
 
+  openAddModal(day: string, time: string) {
+    this.selectedActivity = {
+      seance: { name: '', id: Date.now(), room: '', type: 'COURS', professor: '', code: '', biWeekly: false },
+      day,
+      time
+    };
+    this.showModal = true;
+  }
+  saveAddChanges() {
+    if (this.selectedActivity) {
+      const { day, time, seance } = this.selectedActivity;
+      const group = Object.keys(this.schedule[day]).find(grp => this.schedule[day][grp][time]);
+      if (group) {
+        // If the seance does not exist, add it to the list
+        this.schedule[day][group][time].push(seance);
+      }
+    }
+    this.closeModal();
+  }
 
   openEditModal(seance: Seance | null, day: string, time: string) {
     this.selectedActivity = {
@@ -408,7 +428,7 @@ export class ScheduleComponent  {
   getActivityColor(biweekly: boolean | undefined): string {
     switch (biweekly) {
       case true:
-        return "rgba(224, 251, 252, 0.8)";
+        return "#fff6cc";
       case false:
         return 'transparent';
       default:
@@ -426,7 +446,53 @@ export class ScheduleComponent  {
         return 'transparent';
     }}
 
-  protected readonly Object = Object;
+  selectedGroup: string = '';
+  displayedGroup: string[] = [];
+  getDisplayedGroup(): string[] {
+    this.displayedGroup = [];
+    if (this.selectedGroup === 'ING1_INFO_TD1 || ING1_INFO_TD2') {
+      this.displayedGroup.push('ING1_INFO_TD1 || ING1_INFO_TD2');
+    } else if (this.selectedGroup === 'ING1_INFO_TD1') {
+      this.displayedGroup.push('ING1_INFO_TD1', 'ING1_INFO_TD1 || ING1_INFO_TD2','ING1_INFO');
+    } else if (this.selectedGroup === 'ING1_INFO_TD2') {
+      this.displayedGroup.push('ING1_INFO_TD2', 'ING1_INFO_TD1 || ING1_INFO_TD2','ING1_INFO');
+    }
+    if(this.selectedGroup === 'ING1_INFO') {this.displayedGroup.push('ING1_INFO_TD1', 'ING1_INFO_TD1 || ING1_INFO_TD2','ING1_INFO');}
+    return this.displayedGroup;
+  }
+
+  filteredSchedule: Seance[] = [];
+  groupOptions: string[] = ['ING1_INFO','ING1_INFO_TD1', 'ING1_INFO_TD2','ING1_INFO_TD1 || ING1_INFO_TD2'];
+  getFilteredSchedule(): { [day: string]: { [time: string]: Seance[] | null } } {
+    const filteredSchedule: { [day: string]: { [time: string]: Seance[] | null } } = {};
+
+    this.days.forEach(day => {
+      filteredSchedule[day] = {};
+      Object.keys(this.schedule[day]).forEach(group => {
+        if (this.getDisplayedGroup().includes(group)) {
+          Object.keys(this.schedule[day][group]).forEach(time => {
+            if (this.schedule[day][group][time]) {
+              if (!filteredSchedule[day][time]) {
+                filteredSchedule[day][time] = [];
+              }
+              this.schedule[day][group][time]!.forEach(seance => {
+                if (
+                  seance && (
+                    (this.showTD && seance.type === 'TD') ||
+                    (this.showTP && seance.type === 'TP') ||
+                    seance.type === 'COURS'
+                  )
+                ) {
+                  filteredSchedule[day][time]!.push(seance);
+                }
+              });
+            }
+          });
+        }
+      });
+    });
+    return filteredSchedule;
+  }
 }
 
 

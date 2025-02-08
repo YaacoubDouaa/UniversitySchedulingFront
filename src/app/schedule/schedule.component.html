@@ -11,6 +11,70 @@
   </div>
 </section>
 
+<!--<div class="schedule-container">-->
+<!--  <table class="schedule-table">-->
+<!--    <thead>-->
+<!--    <tr>-->
+<!--      <th class="time-column">-->
+<!--        <div class="header">Horaire</div>-->
+<!--      </th>-->
+<!--      <th *ngFor="let time of timeSlots">-->
+<!--        <div class="header-container">{{ time }}</div>-->
+<!--      </th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    <tbody>-->
+<!--    <tr *ngFor="let day of days">-->
+<!--      <td class="time-slot">-->
+<!--        <div class="time-container">{{ day }}</div>-->
+<!--      </td>-->
+<!--      <td *ngFor="let time of timeSlots">-->
+
+<!--        <ng-container >-->
+<!--          <div *ngFor="let group of Object.keys(schedule[day])">-->
+
+<!--            <div *ngFor="let seance of schedule[day][group][time]" class="activity-container"-->
+
+
+<!--              <div  class="activity-cell">-->
+<!--                <div class="activity-name">{{ seance.name }}</div>-->
+<!--                <div class="activity-room">{{ seance.room }}</div>-->
+<!--                <div class="activity-professor">{{ seance.professor }}</div>-->
+<!--                <div class="activity-type">{{ seance.type }}</div>-->
+<!--                <div class="activity-code">{{ seance.code }}</div>-->
+<!--                <div class="activity-biweekly" *ngIf="seance.biWeekly">(Biweekly)</div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            </div>-->
+<!--          <section>-->
+
+<!--            <div class="example-button-container">-->
+<!--              <button mat-mini-fab aria-label="Example icon button with an add icon" (click)="openAddModal(day,time)">-->
+<!--                <mat-icon>add</mat-icon>-->
+
+<!--              </button>-->
+<!--            </div></section>-->
+<!--        </ng-container>-->
+<!--      </td>-->
+<!--    </tr>-->
+<!--    </tbody>-->
+<!--  </table>-->
+<!--</div>-->
+<form>
+<h4>Select Group</h4>
+<mat-form-field appearance="fill">
+  <mat-label>Choose a Group</mat-label>
+  <mat-select [(ngModel)]="selectedGroup" name="group">
+    <mat-option *ngFor="let group of groupOptions" [value]="group">
+      {{ group }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-checkbox [(ngModel)]="showTD" name="showTD">Show TD</mat-checkbox>
+<mat-checkbox [(ngModel)]="showTP" name="showTP">Show TP</mat-checkbox>
+</form>
+
 <div class="schedule-container">
   <table class="schedule-table">
     <thead>
@@ -29,30 +93,28 @@
         <div class="time-container">{{ day }}</div>
       </td>
       <td *ngFor="let time of timeSlots">
-        <ng-container *ngIf="schedule[day]">
-          <div *ngFor="let group of Object.keys(schedule[day])">
-            <div *ngFor="let seance of schedule[day][group][time]" class="activity-container"
-                 [ngStyle]="{'background-color': getActivityColor(seance.biWeekly), 'color': getTypeColor(seance.type)}"
-                 [ngClass]="{'has-activity': seance}"
-                 [attr.aria-label]="seance ? 'Edit ' + seance.name : 'Empty slot'"
-                 (click)="openEditModal(seance, day, time)">
-              <div class="activity-cell">
-                <div class="activity-name">{{ seance.name }}</div>
-                <div class="activity-room">{{ seance.room }}</div>
-                <div class="activity-professor">{{ seance.professor }}</div>
-                <div class="activity-type">{{ seance.type }}</div>
-                <div class="activity-code">{{ seance.code }}</div>
-                <div class="activity-biweekly" *ngIf="seance.biWeekly">(Biweekly)</div>
-              </div>
+        <ng-container *ngIf="getFilteredSchedule()[day] && getFilteredSchedule()[day][time]">
+          <div *ngFor="let seance of getFilteredSchedule()[day][time]" class="activity-container"
+               [ngStyle]="{'background-color': getActivityColor(seance.biWeekly), 'color': getTypeColor(seance.type)}"
+               [ngClass]="{'has-activity': seance}"
+               (click)="openEditModal(seance, day, time)"
+               [attr.aria-label]="seance ? 'Edit ' + seance.name : 'Empty slot'">
+            <div class="activity-cell">
+              <div class="activity-name">{{ seance.name }}</div>
+              <div class="activity-room">{{ seance.room }}</div>
+              <div class="activity-professor">{{ seance.professor }}</div>
+              <div class="activity-type">{{ seance.type }}</div>
+              <div class="activity-type">{{ seance.code }}</div>
+              <div class="activity-biweekly" *ngIf="seance.biWeekly">(Biweekly)</div>
             </div>
           </div>
         </ng-container>
+        <div *ngIf="!getFilteredSchedule()[day][time]" class="activity-container" (click)="openAddModal(day,time)"></div>
       </td>
     </tr>
     </tbody>
   </table>
 </div>
-
 <div *ngIf="selectedActivity" class="modal" (click)="closeModal($event)">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <h2>Edit Activity</h2>
