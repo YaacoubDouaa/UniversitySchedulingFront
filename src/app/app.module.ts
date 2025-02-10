@@ -32,6 +32,8 @@ import { RoomsComponent } from './rooms/rooms.component';
 import {ViewScheduleComponent} from './view-schedule/view-schedule.component';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {MatSelect} from '@angular/material/select';
+import {SalleScheduleServiceService} from './salle-schedule-service.service';
+import {RoomScheduleComponent} from './room-schedule/room-schedule.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,9 @@ import {MatSelect} from '@angular/material/select';
     ConflictPageComponent,
     RoomsComponent,
     ViewScheduleComponent,
-    ScheduleComponent
+    ScheduleComponent,
+    RoomScheduleComponent,
+
 
   ],
   imports: [

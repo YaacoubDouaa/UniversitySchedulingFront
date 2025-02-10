@@ -1,12 +1,101 @@
-<div class="card-container">
-      <div class="card" *ngFor="let card of cards">
-        <h2>{{ card.title }}</h2>
-        <p>{{ card.description }}</p>
+
+
+
+<!--<div class="card-container" style="display: flex; flex-wrap: wrap; gap: 1rem;">-->
+<!--  <div *ngFor="let salle of Object.keys(salles)">-->
+<!--    <div *ngIf="isSalleAvailable(salle, selectedDay, selectedTime)">-->
+<!--      <div class="card" style="width: 18rem;">-->
+<!--        <img src="..." class="card-img-top" alt="...">-->
+<!--        <div class="card-body">-->
+<!--          <h5 class="card-title">{{ salle }}</h5>-->
+<!--          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
+<!--          <a href="#" class="btn btn-primary">Go somewhere</a>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+<section>
+  <div class="example-button-row">
+    <div class="example-flex-container">
+      <div class="example-button-container">
+        <button mat-fab extended >
+          <mat-icon>visibility</mat-icon>
+          View
+        </button>
       </div>
     </div>
+  </div>
+</section>
+<form class="filter-container">
+  <div class="filter-item">
+    <h4>Select a Day</h4>
+    <mat-form-field appearance="fill">
+      <mat-label>Choose a day</mat-label>
+      <mat-select [(ngModel)]="selectedDay" name="group">
+        <mat-option *ngFor="let day of days" [value]="day">
+          {{ day }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="filter-item">
+    <h4>Select a Time</h4>
+    <mat-form-field appearance="fill">
+      <mat-label>Choose a time</mat-label>
+      <mat-select [(ngModel)]="selectedTime" name="time">
+        <mat-option *ngFor="let time of times" [value]="time">
+          {{ time }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div><div class="filter-item">
+  <h4>Select a Type</h4>
+  <mat-form-field appearance="fill">
+    <mat-label>Choose a type</mat-label>
+    <mat-select [(ngModel)]="selectedType" name="type">
+      <mat-option [value]="">All</mat-option> <!-- ✅ "All" option -->
+      <mat-option *ngFor="let type of types" [value]="type">
+        {{ type }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+</form>
 
 
 
+<div class="card-container" style="display: flex; flex-wrap: wrap; gap: 1rem;">
+  <div *ngFor="let salle of Object.keys(salles)">
+    <div *ngIf="shouldDisplaySalle(salles[salle])"
+         class="card"
+         style="width: 18rem; cursor: pointer;"
+         [style.backgroundColor]="getSalleColor(salle, selectedDay, selectedTime, selectedType)"
+         (click)="onSelectSalle(salles[salle].schedule)">
 
+      <div class="card-body">
+        <h1 class="card-title">{{ salle }}</h1>
+        <p class="card-text">Capacity: {{ salles[salle].capacite }}</p>
+        <p class="card-text">Type: {{ salles[salle].type }}</p>
+        <p class="card-disponibilité">{{ isSalleAvailable(salle, selectedDay, selectedTime) ? "Disponible" : "Occupée" }}</p>
 
+        <section *ngIf="isSalleAvailable(salle, selectedDay, selectedTime)">
+          <button mat-fab extended (click)="onSelectSalle(salles[salle].schedule)">
+            <mat-icon>add</mat-icon>
+            Assign a session
+          </button>
+        </section>
 
+        <section *ngIf="!isSalleAvailable(salle, selectedDay, selectedTime)">
+          <button mat-fab extended (click)="onSelectSalle(salles[salle].schedule)">
+            <mat-icon>visibility</mat-icon>
+            Session
+          </button>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

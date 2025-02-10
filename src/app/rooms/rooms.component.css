@@ -1,27 +1,66 @@
-.card-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}
+/*.container {*/
+/*  margin-top: 20px;*/
+/*}*/
+
+/*.card {*/
+/*  margin-bottom: 20px;*/
+/*}*/
+
+/*.card-body {*/
+/*  padding: 15px;*/
+/*}*/
+
+/*.card-title {*/
+/*  margin-bottom: 10px;*/
+/*}*/
+
 
 .card {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  padding: 16px;
-  width: calc(25% - 16px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.card h2 {
-  margin-top: 0;
+.filters {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
-.card p {
-  margin: 0;
+select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+.filter-container {
+  display: flex;
+  gap: 1rem; /* Space between the selectors */
+  align-items: center;
+  flex-wrap: wrap; /* Responsive for smaller screens */
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+}
+.card-disponibilité{font-weight: bold;
+color: #FF331F;}
+.card-container{ display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  position: relative;
+  left: 20px; /* Adjust this value to move it more or less to the right */
+}
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  position: relative;
+  left: 20px; /* Adjust this value to move it more or less to the right */
 }

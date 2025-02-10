@@ -25,8 +25,7 @@ body {
 .schedule-table td {
   padding: 4px;
   text-align: center;
-  border: 1px solid #014F86 !important;
-  /*border: 1px solid #014F86;  !* Change border color for separation lines *!*/
+  border: 1px solid #014F86;  /* Change border color for separation lines */
   width: 140px;  /* Fixed width for all cells */
 }
 
@@ -36,23 +35,10 @@ body {
 }
 .header{color:#014F86 !important;
   background: transparent;}
-/*.header-container {*/
-/*  background-color: #014F86;*/
-
-/*  color: #e0fbfc;*/
-
-
-/*  font-weight: bold;*/
-/*  padding: 12px;*/
-/*  height: 60px;  !* Fixed height *!*/
-/*  display: flex;*/
-/*  align-items: center;*/
-/*  justify-content: center;*/
-/*  backdrop-filter: blur(4px);*/
-/*}*/
 .header-container {
-  background-color: #014F86 !important;
-  color: #a9d6e5 ;
+  background-color: #014F86;
+  color: #e0fbfc;
+
   font-weight: bold;
   padding: 12px;
   height: 60px;  /* Fixed height */
@@ -60,7 +46,6 @@ body {
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(4px);
-  border-radius: 12px;  /* Add this line to give rounded corners */
 }
 
 /*.time-column .header-container {*/

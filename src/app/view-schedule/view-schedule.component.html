@@ -1,0 +1,102 @@
+
+  <section>
+    <div class="example-button-row">
+      <div class="example-flex-container">
+        <div class="example-button-container">
+          <button mat-fab extended (click)="navigateToSchedule()">
+            <mat-icon>edit</mat-icon>
+            Edit
+          </button>
+        </div>
+      </div></div>
+  </section><form>
+    <h4>Select Group</h4>
+    <mat-form-field appearance="fill">
+      <mat-label>Choose a Group</mat-label>
+      <mat-select [(ngModel)]="selectedGroup" name="group">
+        <mat-option *ngFor="let group of groupOptions" [value]="group">
+          {{ group }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-checkbox [(ngModel)]="showTD" name="showTD">Show TD</mat-checkbox>
+    <mat-checkbox [(ngModel)]="showTP" name="showTP">Show TP</mat-checkbox>
+  </form>
+
+
+
+
+
+<!--  <div class="schedule-container">-->
+<!--    <table class="schedule-table">-->
+<!--      <thead>-->
+<!--      <tr>-->
+<!--        <th class="time-column">-->
+<!--          <div class="header">Horaire</div>-->
+<!--        </th>-->
+<!--        <th *ngFor="let time of timeSlots">-->
+<!--          <div class="header-container">{{ time }}</div>-->
+<!--        </th>-->
+<!--      </tr>-->
+<!--      </thead>-->
+<!--      <tbody>-->
+<!--      <tr *ngFor="let day of days">-->
+<!--        <td class="time-slot">-->
+<!--          <div class="time-container">{{day}}</div>-->
+<!--        </td>-->
+<!--        <td *ngFor="let time of timeSlots">-->
+<!--          <div class="activity-container"-->
+<!--               [ngClass]="{'has-activity': getFilteredSchedule()[day] && getFilteredSchedule()[day][time]}"-->
+<!--               [attr.aria-label]="getFilteredSchedule()[day] && getFilteredSchedule()[day][time] ? 'Edit ' + getFilteredSchedule()[day][time]?.name : 'Empty slot'">-->
+<!--            <div *ngIf="getFilteredSchedule()[day] && getFilteredSchedule()[day][time]" class="activity-cell">-->
+<!--              <div class="activity-name">{{ getFilteredSchedule()[day][time]?.name }}</div>-->
+<!--              <div class="activity-room">{{ getFilteredSchedule()[day][time]?.room }}</div>-->
+<!--              <div class="activity-professor">{{ getFilteredSchedule()[day][time]?.professor }}</div>-->
+<!--              <div class="activity-type">{{ getFilteredSchedule()[day][time]?.type }}</div>-->
+<!--              <div class="activity-type">{{ selectedGroup }}</div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </td>-->
+<!--      </tr>-->
+<!--      </tbody>-->
+<!--    </table>-->
+<!--  </div>-->
+  <div class="schedule-container">
+    <table class="schedule-table">
+      <thead>
+      <tr>
+        <th class="time-column">
+          <div class="header">Horaire</div>
+        </th>
+        <th *ngFor="let time of timeSlots">
+          <div class="header-container">{{ time }}</div>
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let day of days">
+        <td class="time-slot">
+          <div class="time-container">{{ day }}</div>
+        </td>
+        <td *ngFor="let time of timeSlots">
+          <ng-container *ngIf="getFilteredSchedule()[day] && getFilteredSchedule()[day][time]">
+            <div *ngFor="let seance of getFilteredSchedule()[day][time]" class="activity-container"
+                 [ngStyle]="{'background-color': getActivityColor(seance.biWeekly),'color':getTypeColor(seance.type)}"
+                 [ngClass]="{'has-activity': seance}"
+                 [attr.aria-label]="seance ? 'Edit ' + seance.name : 'Empty slot'">
+              <div class="activity-cell">
+                <div class="activity-name">{{ seance.name }}</div>
+                <div class="activity-room">{{ seance.room }}</div>
+                <div class="activity-professor">{{ seance.professor }}</div>
+                <div class="activity-type">{{ seance.type }}</div>
+                <div class="activity-type">{{ seance.code }}</div>
+                <div class="activity-biweekly" *ngIf="seance.biWeekly">(Biweekly)</div>
+              </div>
+            </div>
+          </ng-container>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>

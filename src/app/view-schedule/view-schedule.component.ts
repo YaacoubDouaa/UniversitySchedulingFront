@@ -1,37 +1,24 @@
 import { Component } from '@angular/core';
-import {Router} from '@angular/router';
-import {FormControl} from '@angular/forms';
-import {map, Observable, startWith} from 'rxjs';
-import {Seance} from '../models/Seance';
+import { map, Observable, startWith } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 import {Schedule} from '../models/Schedule';
+import {Seance} from '../models/Seance';
+
+
 @Component({
-  selector: 'app-schedule',
+  selector: 'app-view-schedule',
   standalone: false,
-  templateUrl: './schedule.component.html',
-  styleUrls: ['./schedule.component.css']
+  templateUrl: './view-schedule.component.html',
+  styleUrl: './view-schedule.component.css'
 })
-export class ScheduleComponent  {
+export class ViewScheduleComponent {
   days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
-  showModal = true;
+
   timeSlots = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
-
-  selectedActivity: {
-    seance: Seance;
-    day: string;
-    time: string;
-
-
-  } | null = null;
   showTD = true;
   showTP = true;
-  showAdd:boolean=false;
-  showDeleteModal=false
-  seanceToDelete: {
-    id: number;
-    day: string;
-    group: string;
-    time: string;
-  } | null = null;
+  selectedWeek = 'all'; // all, even, or odd
   schedule: Schedule = {
     LUNDI: {
       ING1_INFO: {
@@ -243,182 +230,16 @@ export class ScheduleComponent  {
       }
     }
   };
-  idCounter: number = 20;
-
-  // FormControl for autocomplete
-  nameControl = new FormControl('');
-  roomControl = new FormControl('');
-  typeControl = new FormControl('');
-  professorControl = new FormControl('');
-  frequencyControl= new FormControl('');
-
-  filteredNames: Observable<string[]>;
-  filteredRooms: Observable<string[]>;
-  filteredTypes: Observable<string[]>;
-  filteredFrequency: Observable<string[]>;
-  filteredProf: Observable<string[]>;
-
-  // Dummy options for autocomplete
-  nameOptions: string[] = ['Math Class', 'History Class', 'Physics Class', 'Chemistry Class'];
-  roomOptions: string[] = ['A-101', 'A-102', 'A-201', 'B-101'];
-  typeOptions: string[] = ['COURS', 'TD', 'TP'];
-  frequencyOptions: string[] = ['biweekly', 'weekly'];
-  profOptions: string[] = ['prof1', 'prof2', 'prof3'];
-  selectedFrequency:string='';
 
   constructor(private router: Router) {
-    // Setup filtering for the autocomplete inputs
-    this.filteredNames = this.nameControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value, this.nameOptions))
-    );
-    this.filteredRooms = this.roomControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value, this.roomOptions))
-    );
-    this.filteredTypes = this.typeControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value, this.typeOptions))
-    );
-    this.filteredFrequency = this.typeControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value, this.frequencyOptions))
-    );
-    this.filteredProf = this.typeControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value, this.profOptions))
-    );
 
   }
 
   private _filter(value: string | null, options: string[]): string[] {
-    const filterValue = value ? value.toLowerCase() : ''; // Handle null or undefined values
+    const filterValue = value ? value.toLowerCase() : '';
     return options.filter(option => option.toLowerCase().includes(filterValue));
   }
 
-  openAddModal(day: string, time: string) {
-    this.selectedActivity = null;
-    this.selectedActivity = {
-      seance: { name: '', id:0 , room: '', type: 'COURS', professor: '', code: '', biWeekly: true},
-      day,
-      time
-    };
-    this.showModal = false;
-  }
-  saveAddChanges() {
-    if (this.selectedActivity) {
-      const { day, time, seance } = this.selectedActivity;
-      let group = Object.keys(this.schedule[day]).find(grp => this.schedule[day][grp][time]);
-
-      seance.biWeekly = this.selectedFrequency === 'biweekly';
-      seance.id=this.idCounter++;
-      if (!group) {
-        group = this.selectedGroup;
-
-        if (!this.schedule[day][group]) {
-          this.schedule[day][group] = {};
-        }
-
-        if (!this.schedule[day][group][time]) {
-          this.schedule[day][group][time] = [];
-        }
-      }
-
-      const timeSlotSeances = this.schedule[day][group][time];
-
-      // Count the number of biweekly and weekly seances in the current time slot
-      const biWeeklyCount = timeSlotSeances.filter((s: any) => s.biWeekly).length;
-      const weeklyCount = timeSlotSeances.filter((s: any) => !s.biWeekly).length;
-      if (biWeeklyCount==2)
-      {  alert("Cannot add seance: This time slot already contains the maximum allowed seances.");}
-      // Check if the seance already exists
-      const existingSeance = timeSlotSeances.find((s: any) => s.id === seance.id);
-
-      // Validation Rules
-      if (existingSeance) {
-        // Update existing seance if needed
-        Object.assign(existingSeance, seance);
-      } else if (
-        (biWeeklyCount === 1 && seance.biWeekly) ||
-        (biWeeklyCount === 0 && weeklyCount === 0)
-      ) {
-        // Add if only one biweekly exists and new is biweekly, or if it's an empty slot
-        timeSlotSeances.push(seance);
-      } else {
-        // Show warning if adding is not allowed
-        alert("Cannot add seance: This time slot already contains the maximum allowed seances.");
-      }
-    }
-    this.closeModal();
-  }
-
-  openEditModal(seance: Seance | null, day: string, time: string) {
-    this.selectedActivity = {
-      seance: seance ? { ...seance } : { name: '',id:0, room: '', type: 'COURS', professor: '', code: '',biWeekly: this.selectedFrequency==='biweekly' },
-      day,
-      time,
-
-    };
-    this.showModal = true;
-  }
-
-  closeModal(event?: Event): void {
-    if (event) {
-      event.stopPropagation(); // Prevent closing when clicking inside the modal
-    }
-    this.selectedActivity = null;
-  }
-
-  saveChanges() {
-    if (this.selectedActivity) {
-      const { day, time, seance } = this.selectedActivity;
-      seance.biWeekly = this.selectedFrequency==='biweekly';
-      const group = Object.keys(this.schedule[day]).find(grp => this.schedule[day][grp][time]);
-      if (group) {
-        const seanceIndex = this.schedule[day][group][time].findIndex(s => s.id === seance.id);
-        if (seanceIndex !== -1) {
-          // Update the existing seance with the new one
-          this.schedule[day][group][time][seanceIndex] = seance;
-        } else {
-          // If the seance does not exist, add it to the list
-          this.schedule[day][group][time].push(seance);
-        }
-      }
-    }
-    this.closeModal();
-  }
-  openDeleteModal(id: number, day: string, group: string, time: string) {
-    this.seanceToDelete = { id, day, group, time };
-    this.showDeleteModal = true;
-  }
-
-  confirmDelete() {
-    if (this.seanceToDelete) {
-      const { id, day, group, time } = this.seanceToDelete;
-      this.deleteSeance(id, day, group, time);
-    }
-    this.closeDeleteModal();
-  }
-
-  closeDeleteModal() {
-    this.showDeleteModal = false;
-    this.seanceToDelete = null;
-  }
-
-  deleteSeance(seanceId: number, day: string, group: string, time: string) {
-    const seances = this.schedule[day][group][time];
-    const seanceIndex = seances.findIndex(s => s.id === seanceId);
-
-    if (seanceIndex !== -1) {
-      seances.splice(seanceIndex, 1);
-    }
-
-  }
-
-
-  navigateToView() {
-    this.router.navigate(['/view']);
-  }
   getActivityColor(biweekly: boolean | undefined): string {
     switch (biweekly) {
       case true:
@@ -440,7 +261,18 @@ export class ScheduleComponent  {
         return 'transparent';
     }}
 
-  selectedGroup: string = '';
+//     return 'rgba(131, 197, 190, 0.8)';
+  //   case 'TP':
+  //     return '#489fb5';
+  //   default:
+  //     return 'transparent';
+  // }
+
+  navigateToSchedule() {
+    this.router.navigate(['schedule']);
+  }
+
+   selectedGroup: string = '';
   displayedGroup: string[] = [];
   getDisplayedGroup(): string[] {
     this.displayedGroup = [];
@@ -454,18 +286,9 @@ export class ScheduleComponent  {
     if(this.selectedGroup === 'ING1_INFO') {this.displayedGroup.push('ING1_INFO_TD1', 'ING1_INFO_TD1 || ING1_INFO_TD2','ING1_INFO');}
     return this.displayedGroup;
   }
-  onBlur(): void {
-    // Optionally, set a timeout to allow the list to close after a small delay
-    setTimeout(() => {
-      // Logic to close the list (if your autocomplete dropdown is handled by a component)
-      // For instance, in case of mat-autocomplete, you could manually trigger its close action
-    }, 100);
-  }
 
-
+  filteredSchedule: Seance[] = [];
   groupOptions: string[] = ['ING1_INFO','ING1_INFO_TD1', 'ING1_INFO_TD2','ING1_INFO_TD1 || ING1_INFO_TD2'];
-
-
   getFilteredSchedule(): { [day: string]: { [time: string]: Seance[] | null } } {
     const filteredSchedule: { [day: string]: { [time: string]: Seance[] | null } } = {};
 
@@ -496,20 +319,4 @@ export class ScheduleComponent  {
     });
     return filteredSchedule;
   }
-
 }
-
-
-
-
-
-
-//     return 'rgba(131, 197, 190, 0.8)';
-  //   case 'TP':
-  //     return '#489fb5';
-  //   default:
-  //     return 'transparent';
-  // }
-
-
-
