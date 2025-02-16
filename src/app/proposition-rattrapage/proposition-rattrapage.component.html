@@ -1,0 +1,28 @@
+<div class="propositions-container">
+  <h2>Propositions de Rattrapage</h2>
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Date</th>
+      <th>Raison</th>
+      <th>Statut</th>
+      <th>Enseignant</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let prop of propositions" [ngClass]="{'confirmed': prop.status === 'Confirmé', 'refused': prop.status === 'Refusé'}">
+      <td>{{ prop.id }}</td>
+      <td>{{ prop.date }}</td>
+      <td>{{ prop.reason }}</td>
+      <td>{{ prop.status }}</td>
+      <td>{{ prop.enseignantId }}</td>
+      <td>
+        <button (click)="confirmer(prop.id)" [disabled]="prop.status !== 'En attente'">Confirmer</button>
+        <button (click)="refuser(prop.id)" [disabled]="prop.status !== 'En attente'">Refuser</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
