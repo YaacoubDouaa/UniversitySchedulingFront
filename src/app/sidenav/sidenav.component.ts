@@ -36,5 +36,8 @@ export class SidenavComponent {
   navigateToGlobalSchedule() {
     this.router.navigate(['/global']);
   }
+  navigateToRattrapage() {
+    this.router.navigate(['/rattrapage']);
+  }
 }
 

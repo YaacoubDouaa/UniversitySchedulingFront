@@ -10,6 +10,7 @@ import {ViewScheduleComponent} from './view-schedule/view-schedule.component';
 import {RoomScheduleComponent} from './room-schedule/room-schedule.component';
 import {ProfessorsComponent} from './professors/professors.component';
 import {GlobalScheduleComponent} from './global-schedule/global-schedule.component';
+import {PropositionRattrapageComponent} from './proposition-rattrapage/proposition-rattrapage.component';
 
 const routes: Routes = [ { path: '', component: LoginComponent },
 
@@ -22,6 +23,7 @@ const routes: Routes = [ { path: '', component: LoginComponent },
   {path:'view', component:ViewScheduleComponent},
   {path:'room-schedule', component:RoomScheduleComponent},
   { path: 'global', component: GlobalScheduleComponent },
+  { path: 'rattrapage', component: PropositionRattrapageComponent},
   // Add more routes as needed
 ];
 

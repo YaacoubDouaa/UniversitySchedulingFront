@@ -42,6 +42,7 @@ import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {MatDivider} from '@angular/material/divider';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatBadge} from '@angular/material/badge';
+import { PropositionRattrapageComponent } from './proposition-rattrapage/proposition-rattrapage.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import {MatBadge} from '@angular/material/badge';
     ProfessorsComponent,
     ProfScheduleComponent,
     RoomScheduleComponent,
-    GlobalScheduleComponent
+    GlobalScheduleComponent,
+    PropositionRattrapageComponent
 
 
   ],
