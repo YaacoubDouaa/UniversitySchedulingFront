@@ -25,4 +25,9 @@ export class PropositionRattrapageComponent {
       prop.id === id ? { ...prop, status: 'Refusé' } : prop
     );
   }
+  reinitialiser(id: number) {
+    this.propositions = this.propositions.map(prop =>
+      prop.id === id ? { ...prop, status: 'En attente' } : prop
+    );
+  }
 }
