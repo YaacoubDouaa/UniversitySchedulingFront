@@ -1,0 +1,66 @@
+/*.container {*/
+/*  margin-top: 20px;*/
+/*}*/
+
+/*.card {*/
+/*  margin-bottom: 20px;*/
+/*}*/
+
+/*.card-body {*/
+/*  padding: 15px;*/
+/*}*/
+
+/*.card-title {*/
+/*  margin-bottom: 10px;*/
+/*}*/
+
+
+.card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.filters {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+.filter-container {
+  display: flex;
+  gap: 1rem; /* Space between the selectors */
+  align-items: center;
+  flex-wrap: wrap; /* Responsive for smaller screens */
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+}
+.card-disponibilité{font-weight: bold;
+  color: #EF233C;}
+.card-container{ display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  position: relative;
+  left: 20px; /* Adjust this value to move it more or less to the right */
+}
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  position: relative;
+  left: 20px; /* Adjust this value to move it more or less to the right */
+}

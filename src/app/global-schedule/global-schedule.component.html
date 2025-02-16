@@ -1,0 +1,53 @@
+<div class="schedule-container">
+  <div *ngFor="let day of getDays()" class="day-container">
+    <h2>{{ day }}</h2>
+    <div *ngFor="let timeSlot of timeSlots" class="time-slot-container">
+      <h3>{{ timeSlot }}</h3>
+      <div *ngFor="let niveau of getNiveaux(day)">
+        <ng-container *ngIf="schedule[day][niveau][timeSlot]">
+          <div *ngFor="let seance of schedule[day][niveau][timeSlot]"
+               class="seance-item"
+               [style.background-color]="getActivityColor(seance.biWeekly)"
+               [style.border-left-color]="getTypeColor(seance.type)">
+            <h4>{{ seance.name }}</h4>
+            <p>Room: {{ seance.room }}</p>
+            <p>Professor: {{ seance.professor }}</p>
+            <p>Type: {{ seance.type }}</p>
+            <button (click)="openEditModal(seance, day, timeSlot)">Edit</button>
+            <button (click)="openDeleteModal(seance.id, day, niveau, timeSlot)">Delete</button>
+          </div>
+        </ng-container>
+      </div>
+      <button (click)="openAddModal(day, timeSlot)">Add Session</button>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div *ngIf="selectedActivity" class="modal">
+    <div class="modal-content">
+      <h2>{{ selectedActivity.seance.id ? 'Edit' : 'Add' }} Session</h2>
+      <input [(ngModel)]="selectedActivity.seance.name" placeholder="Name">
+      <input [(ngModel)]="selectedActivity.seance.room" placeholder="Room">
+      <select [(ngModel)]="selectedActivity.seance.type">
+        <option *ngFor="let type of typeOptions" [value]="type">{{ type }}</option>
+      </select>
+      <input [(ngModel)]="selectedActivity.seance.professor" placeholder="Professor">
+      <select [(ngModel)]="selectedFrequency">
+        <option value="weekly">Weekly</option>
+        <option value="biweekly">Bi-weekly</option>
+      </select>
+      <button (click)="selectedActivity.seance.id ? saveChanges() : saveAddChanges()">Save</button>
+      <button (click)="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="showDeleteModal" class="modal">
+    <div class="modal-content">
+      <h2>Confirm Delete</h2>
+      <p>Are you sure you want to delete this session?</p>
+      <button (click)="confirmDelete()">Delete</button>
+      <button (click)="closeDeleteModal()">Cancel</button>
+    </div>
+  </div>
+</div>
