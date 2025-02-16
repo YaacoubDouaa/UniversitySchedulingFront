@@ -12,8 +12,8 @@
         <p><strong>Enseignant ID :</strong> {{ prop.enseignantId }}</p>
       </div>
       <div class="card-footer">
-        <button (click)="confirmer(prop.id)" >Confirmer</button>
-        <button (click)="refuser(prop.id)">Refuser</button>
+        <button (click)="confirmer(prop)" [disabled]="prop.status !== 'En attente'">Confirmer</button>
+        <button (click)="refuser(prop.id)" [disabled]="prop.status !== 'En attente'">Refuser</button>
       </div>
     </div>
   </div>
