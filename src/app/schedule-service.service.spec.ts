@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SalleScheduleServiceService } from './salle-schedule-service.service';
+import { SalleScheduleServiceService } from './schedule-service.service';
 
 describe('SalleScheduleServiceService', () => {
   let service: SalleScheduleServiceService;

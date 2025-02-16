@@ -19,8 +19,6 @@ export class ScheduleComponent  {
     seance: Seance;
     day: string;
     time: string;
-
-
   } | null = null;
   showTD = true;
   showTP = true;
@@ -388,8 +386,9 @@ export class ScheduleComponent  {
     this.closeModal();
   }
   openDeleteModal(id: number, day: string, group: string, time: string) {
-    this.seanceToDelete = { id, day, group, time };
     this.showDeleteModal = true;
+    this.seanceToDelete = { id, day, group, time };
+
   }
 
   confirmDelete() {
@@ -422,7 +421,7 @@ export class ScheduleComponent  {
   getActivityColor(biweekly: boolean | undefined): string {
     switch (biweekly) {
       case true:
-        return "#fff6cc";
+        return "#B0B8C7";
       case false:
         return 'transparent';
       default:
@@ -431,11 +430,11 @@ export class ScheduleComponent  {
   getTypeColor(type: string | undefined): string {
     switch (type) {
       case 'TD' :
-        return "#7209b7";
+        return "#5603ad";
       case 'TP':
-        return '#2b9348';
+        return '#2a9d8f';
       case 'COURS':
-        return '#FF331F'
+        return '#ee4266'
       default:
         return 'transparent';
     }}

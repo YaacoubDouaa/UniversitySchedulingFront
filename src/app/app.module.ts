@@ -32,8 +32,16 @@ import { RoomsComponent } from './rooms/rooms.component';
 import {ViewScheduleComponent} from './view-schedule/view-schedule.component';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {MatSelect} from '@angular/material/select';
-import {SalleScheduleServiceService} from './salle-schedule-service.service';
+import {ScheduleService} from './schedule-service.service';
 import {RoomScheduleComponent} from './room-schedule/room-schedule.component';
+import { ViewRoomsComponent } from './view-rooms/view-rooms.component';
+import { ProfessorsComponent } from './professors/professors.component';
+import { ProfScheduleComponent } from './prof-schedule/prof-schedule.component';
+import { GlobalScheduleComponent } from './global-schedule/global-schedule.component';
+import {MatTab, MatTabGroup} from '@angular/material/tabs';
+import {MatDivider} from '@angular/material/divider';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import {MatBadge} from '@angular/material/badge';
 
 @NgModule({
   declarations: [
@@ -45,7 +53,11 @@ import {RoomScheduleComponent} from './room-schedule/room-schedule.component';
     RoomsComponent,
     ViewScheduleComponent,
     ScheduleComponent,
+    ViewRoomsComponent,
+    ProfessorsComponent,
+    ProfScheduleComponent,
     RoomScheduleComponent,
+    GlobalScheduleComponent
 
 
   ],
@@ -90,7 +102,13 @@ import {RoomScheduleComponent} from './room-schedule/room-schedule.component';
     MatAccordion,
     MatCheckbox,
     MatSelect,
-
+    MatTabGroup,
+    MatTab,
+    MatDivider,
+    MatMenu,
+    MatBadge,
+    MatMenuTrigger,
+    MatMenuItem,
 
   ],
   providers: [

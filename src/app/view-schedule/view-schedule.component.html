@@ -1,17 +1,19 @@
-
-  <section>
-    <div class="example-button-row">
-      <div class="example-flex-container">
-        <div class="example-button-container">
-          <button mat-fab extended (click)="navigateToSchedule()">
-            <mat-icon>edit</mat-icon>
-            Edit
-          </button>
-        </div>
-      </div></div>
-  </section><form>
+<section>
+  <div class="example-button-row">
+    <div class="example-flex-container">
+      <div class="example-button-container">
+        <!-- View Button -->
+        <button class="custom-button" mat-fab extended (click)="navigateToSchedule()">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+ <form>
     <h4>Select Group</h4>
-    <mat-form-field appearance="fill">
+    <mat-form-field appearance="outline">
       <mat-label>Choose a Group</mat-label>
       <mat-select [(ngModel)]="selectedGroup" name="group">
         <mat-option *ngFor="let group of groupOptions" [value]="group">

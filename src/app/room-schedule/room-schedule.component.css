@@ -1,0 +1,37 @@
+/* CSS for mat-drawer-container and mat-drawer */
+
+.example-container {
+  background-color: #edede9; /* Light beige background for the container */
+  height: 100vh; /* Full viewport height */
+  border-radius: 12px; /* Rounded corners */
+}
+
+.example-sidenav {
+  background-color: #edede9; /* Matching drawer background color */
+  padding: 16px; /* Add some padding for aesthetics */
+  width: 250px; /* Set a fixed width for the drawer */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for separation */
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Space between drawer elements */
+  border-radius: 12px; /* Rounded corners */
+  border: 1px solid #B0B8C7; /* Updated border color */
+}
+
+.example-sidenav p,
+.example-sidenav button,
+.example-sidenav div {
+  background-color: #edede9; /* Matching background for all elements */
+  color: #333; /* Consistent text color */
+  padding: 8px; /* Uniform padding */
+  border-radius: 12px; /* Rounded corners */
+  border: 1px solid #B0B8C7; /* Updated border color */
+}
+
+
+
+
+
+.mat-icon {
+  color: #333; /* Icon color for consistency */
+}

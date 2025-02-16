@@ -7,6 +7,9 @@ import {ConflictListComponent} from './conflict-list/conflict-list.component';
 import {ConflictPageComponent} from './conflict-page/conflict-page.component';
 import {RoomsComponent} from './rooms/rooms.component';
 import {ViewScheduleComponent} from './view-schedule/view-schedule.component';
+import {RoomScheduleComponent} from './room-schedule/room-schedule.component';
+import {ProfessorsComponent} from './professors/professors.component';
+import {GlobalScheduleComponent} from './global-schedule/global-schedule.component';
 
 const routes: Routes = [ { path: '', component: LoginComponent },
 
@@ -16,8 +19,9 @@ const routes: Routes = [ { path: '', component: LoginComponent },
   { path: 'conflict', component: ConflictListComponent },
   { path: 'rooms', component: RoomsComponent },
   { path: 'schedule', component: ScheduleComponent },
-  {path:'view', component:ViewScheduleComponent}
-
+  {path:'view', component:ViewScheduleComponent},
+  {path:'room-schedule', component:RoomScheduleComponent},
+  { path: 'global', component: GlobalScheduleComponent },
   // Add more routes as needed
 ];
 

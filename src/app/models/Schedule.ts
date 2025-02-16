@@ -7,6 +7,8 @@ export interface Schedule {
     };
   };
 }
+
+
 // export interface Schedule {
 //   [day: string]: {
 //     [tp: TP]: {

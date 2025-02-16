@@ -1,101 +1,195 @@
+<!--<form class="filter-container">-->
+<!--  <div class="filter-item">-->
+<!--    <h4>Select a Day</h4>-->
+<!--    <mat-form-field appearance="outline">-->
+<!--      <mat-label>Choose a day</mat-label>-->
+<!--      <mat-select [(ngModel)]="selectedDay" name="group">-->
+<!--        <mat-option *ngFor="let day of days" [value]="day">-->
+<!--          {{ day }}-->
+<!--        </mat-option>-->
+<!--      </mat-select>-->
+<!--    </mat-form-field>-->
+<!--  </div>-->
 
-
-
-<!--<div class="card-container" style="display: flex; flex-wrap: wrap; gap: 1rem;">-->
+<!--  <div class="filter-item">-->
+<!--    <h4>Select a Time</h4>-->
+<!--    <mat-form-field appearance="outline">-->
+<!--      <mat-label>Choose a time</mat-label>-->
+<!--      <mat-select [(ngModel)]="selectedTime" name="time">-->
+<!--        <mat-option *ngFor="let time of times" [value]="time">-->
+<!--          {{ time }}-->
+<!--        </mat-option>-->
+<!--      </mat-select>-->
+<!--    </mat-form-field>-->
+<!--  </div><div class="filter-item">-->
+<!--  <h4>Select a Type</h4>-->
+<!--  <mat-form-field appearance="outline">-->
+<!--    <mat-label>Choose a type</mat-label>-->
+<!--    <mat-select [(ngModel)]="selectedType" name="type">-->
+<!--      <mat-option [value]="">All</mat-option> &lt;!&ndash; ✅ "All" option &ndash;&gt;-->
+<!--      <mat-option *ngFor="let type of types" [value]="type">-->
+<!--        {{ type }}-->
+<!--      </mat-option>-->
+<!--    </mat-select>-->
+<!--  </mat-form-field>-->
+<!--</div>-->
+<!--</form>-->
+<!--<div *ngIf="selectedTime !== '' && selectedDay !== ''">-->
+<!--<div  class="card-container" style="display: flex; flex-wrap: wrap; gap: 1rem;">-->
 <!--  <div *ngFor="let salle of Object.keys(salles)">-->
-<!--    <div *ngIf="isSalleAvailable(salle, selectedDay, selectedTime)">-->
-<!--      <div class="card" style="width: 18rem;">-->
-<!--        <img src="..." class="card-img-top" alt="...">-->
-<!--        <div class="card-body">-->
-<!--          <h5 class="card-title">{{ salle }}</h5>-->
-<!--          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
-<!--          <a href="#" class="btn btn-primary">Go somewhere</a>-->
+<!--    <div *ngIf="shouldDisplaySalle(salles[salle])"-->
+<!--         class="card"-->
+<!--         style="width: 18rem; cursor: pointer;"-->
+<!--         [style.backgroundColor]="getSalleColor(salle, selectedDay, selectedTime, selectedType)">-->
+
+<!--      <div class="card-body" >-->
+<!--        <h1 class="card-title">{{ salle }}</h1>-->
+<!--        <p class="card-text">Capacity: {{ salles[salle].capacite }}</p>-->
+<!--        <p class="card-text">Type: {{ salles[salle].type }}</p>-->
+<!--        <p class="card-disponibilité">{{ isSalleAvailable(salle, selectedDay, selectedTime) ? "Disponible" : "Occupée" }}</p>-->
+
+<!--        <div class="button-group">-->
+<!--          <section *ngIf="isSalleAvailable(salle, selectedDay, selectedTime)">-->
+<!--            <button mat-raised-button color="#EDF2F4" (click)="openAddModal(selectedDay,selectedTime); $event.stopPropagation()">Add a Session</button>-->
+<!--          </section>-->
+
+<!--          <section>-->
+<!--            <button mat-raised-button color="#EDF2F4" (click)="onSelectSalle(salles[salle].schedule); $event.stopPropagation()">View Schedule</button>-->
+<!--          </section>-->
+
+<!--          <section *ngIf="!isSalleAvailable(salle, selectedDay, selectedTime)">-->
+<!--            <button mat-raised-button color="#EDF2F4" (click)="openViewModal(salle,selectedDay,selectedTime); $event.stopPropagation()">View Session</button>-->
+<!--          </section>-->
 <!--        </div>-->
+
 <!--      </div>-->
 <!--    </div>-->
 <!--  </div>-->
 <!--</div>-->
+<!--</div>-->
+<!--<div *ngIf="selectedActivity" class="modal" (click)="closeModal($event)">-->
+<!--  <div class="modal-content" (click)="$event.stopPropagation()">-->
+<!--    <h2>{{ selectedActivity.seance.id ? 'Edit Activity' : 'Add Activity' }}</h2>-->
 
-<section>
-  <div class="example-button-row">
-    <div class="example-flex-container">
-      <div class="example-button-container">
-        <button mat-fab extended >
-          <mat-icon>visibility</mat-icon>
-          View
+<!--    <form class="form-container" *ngIf="showModal">-->
+<!--      <div>-->
+<!--        <mat-form-field class="full-width">-->
+<!--          <mat-label>Activity Name</mat-label>-->
+<!--          <input matInput [(ngModel)]="selectedActivity.seance.name" name="activityName" required />-->
+<!--        </mat-form-field>-->
+<!--      </div>-->
+<!--      <div>-->
+<!--        <mat-form-field class="full-width">-->
+<!--          <mat-label>Professor</mat-label>-->
+<!--          <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required />-->
+<!--        </mat-form-field>-->
+<!--      </div>-->
+<!--      <div>-->
+<!--        <mat-form-field class="full-width">-->
+<!--          <mat-label>Type</mat-label>-->
+<!--          <input matInput [(ngModel)]="selectedActivity.seance.type" name="type" />-->
+<!--        </mat-form-field>-->
+<!--      </div>-->
+<!--      <div>-->
+<!--        <div class="button-group">-->
+<!--          <button mat-button (click)="closeModal(); $event.stopPropagation()">Close</button>-->
+<!--          <button mat-raised-button color="primary"-->
+<!--                  (click)="selectedActivity.seance.id ? saveEditChanges() : saveAddChanges(); $event.stopPropagation()">-->
+<!--            Save-->
+<!--          </button>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </form>-->
+<!--  </div>-->
+<!--</div>-->
+
+<div class="rooms-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Room Availability</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form class="filter-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Day</mat-label>
+          <mat-select [(ngModel)]="selectedDay" name="day">
+            <mat-option *ngFor="let day of days" [value]="day">{{ day }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Time</mat-label>
+          <mat-select [(ngModel)]="selectedTime" name="time">
+            <mat-option *ngFor="let time of times" [value]="time">{{ time }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select [(ngModel)]="selectedType" name="type">
+            <mat-option value="">All</mat-option>
+            <mat-option *ngFor="let type of types" [value]="type">{{ type }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <div *ngIf="selectedTime !== '' && selectedDay !== ''" class="rooms-grid">
+    <mat-card *ngFor="let salle of Object.keys(salles)" class="room-card"
+              [ngClass]="{'available': isSalleAvailable(salle, selectedDay, selectedTime), 'occupied': !isSalleAvailable(salle, selectedDay, selectedTime)}"
+              [style.display]="shouldDisplaySalle(salles[salle]) ? 'block' : 'none'">
+      <mat-card-header>
+        <mat-card-title>{{ salle }}</mat-card-title>
+        <mat-card-subtitle>{{ salles[salle].type }} - Capacity: {{ salles[salle].capacite }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="availability">
+          {{ isSalleAvailable(salle, selectedDay, selectedTime) ? "Available" : "Occupied" }}
+        </p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" *ngIf="isSalleAvailable(salle, selectedDay, selectedTime)"
+                (click)="openAddModal(selectedDay, selectedTime)">Add Session</button>
+        <button mat-button color="primary" (click)="onSelectSalle(salles[salle].schedule)">View Schedule</button>
+        <button mat-button color="primary" *ngIf="!isSalleAvailable(salle, selectedDay, selectedTime)"
+                (click)="openViewModal(salle, selectedDay, selectedTime)">View Session</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>
+
+<ng-container *ngIf="selectedActivity">
+  <div class="modal-overlay" (click)="closeModal($event)">
+    <mat-card class="modal-card" (click)="$event.stopPropagation()">
+      <mat-card-header>
+        <mat-card-title>{{ selectedActivity.seance.id ? 'Edit Session' : 'Add Session' }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form class="session-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Session Name</mat-label>
+            <input matInput [(ngModel)]="selectedActivity.seance.name" name="name" required>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Professor</mat-label>
+            <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Type</mat-label>
+            <mat-select [(ngModel)]="selectedActivity.seance.type" name="type" required>
+              <mat-option *ngFor="let type of types" [value]="type">{{ type }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-button (click)="closeModal()">Cancel</button>
+        <button mat-raised-button color="primary"
+                (click)="selectedActivity.seance.id ? saveEditChanges() : saveAddChanges()">
+          Save
         </button>
-      </div>
-    </div>
+      </mat-card-actions>
+    </mat-card>
   </div>
-</section>
-<form class="filter-container">
-  <div class="filter-item">
-    <h4>Select a Day</h4>
-    <mat-form-field appearance="fill">
-      <mat-label>Choose a day</mat-label>
-      <mat-select [(ngModel)]="selectedDay" name="group">
-        <mat-option *ngFor="let day of days" [value]="day">
-          {{ day }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-
-  <div class="filter-item">
-    <h4>Select a Time</h4>
-    <mat-form-field appearance="fill">
-      <mat-label>Choose a time</mat-label>
-      <mat-select [(ngModel)]="selectedTime" name="time">
-        <mat-option *ngFor="let time of times" [value]="time">
-          {{ time }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div><div class="filter-item">
-  <h4>Select a Type</h4>
-  <mat-form-field appearance="fill">
-    <mat-label>Choose a type</mat-label>
-    <mat-select [(ngModel)]="selectedType" name="type">
-      <mat-option [value]="">All</mat-option> <!-- ✅ "All" option -->
-      <mat-option *ngFor="let type of types" [value]="type">
-        {{ type }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-</div>
-
-</form>
-
-
-
-<div class="card-container" style="display: flex; flex-wrap: wrap; gap: 1rem;">
-  <div *ngFor="let salle of Object.keys(salles)">
-    <div *ngIf="shouldDisplaySalle(salles[salle])"
-         class="card"
-         style="width: 18rem; cursor: pointer;"
-         [style.backgroundColor]="getSalleColor(salle, selectedDay, selectedTime, selectedType)"
-         (click)="onSelectSalle(salles[salle].schedule)">
-
-      <div class="card-body">
-        <h1 class="card-title">{{ salle }}</h1>
-        <p class="card-text">Capacity: {{ salles[salle].capacite }}</p>
-        <p class="card-text">Type: {{ salles[salle].type }}</p>
-        <p class="card-disponibilité">{{ isSalleAvailable(salle, selectedDay, selectedTime) ? "Disponible" : "Occupée" }}</p>
-
-        <section *ngIf="isSalleAvailable(salle, selectedDay, selectedTime)">
-          <button mat-fab extended (click)="onSelectSalle(salles[salle].schedule)">
-            <mat-icon>add</mat-icon>
-            Assign a session
-          </button>
-        </section>
-
-        <section *ngIf="!isSalleAvailable(salle, selectedDay, selectedTime)">
-          <button mat-fab extended (click)="onSelectSalle(salles[salle].schedule)">
-            <mat-icon>visibility</mat-icon>
-            Session
-          </button>
-        </section>
-      </div>
-    </div>
-  </div>
-</div>
+</ng-container>

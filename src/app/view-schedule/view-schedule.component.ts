@@ -243,7 +243,7 @@ export class ViewScheduleComponent {
   getActivityColor(biweekly: boolean | undefined): string {
     switch (biweekly) {
       case true:
-        return "#fff6cc";
+        return "#B0B8C7";
       case false:
         return 'transparent';
       default:
@@ -252,14 +252,15 @@ export class ViewScheduleComponent {
   getTypeColor(type: string | undefined): string {
     switch (type) {
       case 'TD' :
-        return "#7209b7";
+        return "#5603ad";
       case 'TP':
-        return '#2b9348';
+        return '#2a9d8f';
       case 'COURS':
-        return '#FF331F'
+        return '#ee4266'
       default:
         return 'transparent';
     }}
+
 
 //     return 'rgba(131, 197, 190, 0.8)';
   //   case 'TP':

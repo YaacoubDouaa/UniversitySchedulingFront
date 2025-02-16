@@ -1,34 +1,67 @@
 <mat-drawer-container class="example-container" autosize>
   <!-- Side Navigation Drawer -->
   <mat-drawer #drawer class="example-sidenav" mode="side" opened>
-    <p>Auto-resizing sidenav</p>
+    <p>University Scheduler</p>
 
-    <button (click)="navigateToConflicts()" mat-raised-button>
-      Conflicts
+    <button mat-button (click)="navigateToConflicts()">
+      <mat-icon>warning</mat-icon> Conflicts
     </button>
-    <div><button (click)="navigateToRooms()" mat-raised-button>
-      Rooms
-    </button></div>
-   <div>
-     <div><button (click)="navigateToView()" mat-raised-button>
-       Schedule
-     </button></div>
-     <div>
-    <button (click)="toggleFiller()" mat-raised-button>
-      Toggle extra text
-    </button></div>
-   <div> <button (click)="toggleFiller()" mat-raised-button>
-      Toggle extra text
-    </button></div>
-   </div>
+    <button mat-button (click)="navigateToRooms()">
+      <mat-icon>room</mat-icon> Rooms
+    </button>
+    <button mat-button (click)="navigateToView()">
+      <mat-icon>calendar_today</mat-icon> Schedule
+    </button>
+    <button mat-button (click)="navigateToProfs()">
+      <mat-icon>school</mat-icon> Professors
+    </button>
+    <button mat-button (click)="navigateToGlobalSchedule()">
+      <mat-icon>public</mat-icon> Global
+    </button>
   </mat-drawer>
 
   <!-- Main Content Area -->
   <div class="example-sidenav-content">
-    <button mat-button aria-label="Toggle sidenav" (click)="drawer.toggle()">
-      <mat-icon>menu</mat-icon>
-    </button>
+    <div class="example-sidenav-content">
+      <mat-toolbar class="main-toolbar">
+        <button mat-icon-button class="example-icon" aria-label="Toggle sidenav" (click)="drawer.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span class="toolbar-title">University Scheduling System</span>
+
+        <span class="toolbar-spacer"></span>
+
+        <button mat-icon-button aria-label="Show notifications" class="notification-button">
+          <mat-icon [matBadge]="notificationCount" matBadgeColor="warn">notifications</mat-icon>
+        </button>
+
+        <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
+          <mat-icon>account_circle</mat-icon>
+          <span>John Doe</span>
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+        <mat-menu #userMenu="matMenu">
+          <button mat-menu-item>
+            <mat-icon>person</mat-icon>
+            <span>Profile</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item>
+            <mat-icon>exit_to_app</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
+      </mat-toolbar>
+
     <router-outlet></router-outlet>
   </div>
+  </div></mat-drawer-container>
+
+
+<mat-drawer-container class="example-container" autosize>
+  <!-- Side Navigation Drawer (unchanged) -->
+  <mat-drawer #drawer class="example-sidenav" mode="side" opened>
+    <!-- ... (previous sidenav content) ... -->
+  </mat-drawer>
 
 </mat-drawer-container>
