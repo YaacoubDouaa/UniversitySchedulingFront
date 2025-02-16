@@ -1,4 +1,6 @@
 // FichierExcel Interface
+import {Seance} from './Seance';
+
 export interface FichierExcel {
   id: number;
   fileName: string;
@@ -25,6 +27,9 @@ export interface PropositionDeRattrapage {
   reason: string;
   status: string;
   enseignantId: number;
+  type: string;
+  name: string;
+  niveau: string;
 }
 
 // Signal Interface
