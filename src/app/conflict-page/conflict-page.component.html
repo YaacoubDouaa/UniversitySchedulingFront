@@ -1,1 +1,58 @@
 
+<div class="conflicts-container">
+  <h2>Schedule Conflicts</h2>
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let conflict of conflicts; let i = index">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Conflict #{{ i + 1 }}
+        </mat-panel-title>
+        <mat-panel-description>
+          {{ conflict.seance1.name }} vs {{ conflict.seance2.name }}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="conflict-details">
+        <div class="conflict-types">
+          <h3>Conflict Types:</h3>
+          <mat-chip-list>
+            <mat-chip *ngFor="let type of conflict.conflictTypes" color="warn" selected>
+              <mat-icon>{{ getConflictIcon(type) }}</mat-icon>
+              {{ type }}
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="seance-details">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>{{ conflict.seance1.name }}</mat-card-title>
+              <mat-card-subtitle>{{ conflict.seance1.code }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <p><strong>Professor:</strong> {{ conflict.seance1.professor }}</p>
+              <p><strong>Room:</strong> {{ conflict.seance1.room }}</p>
+              <p><strong>Type:</strong> {{ conflict.seance1.type }}</p>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-icon class="vs-icon">compare_arrows</mat-icon>
+
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>{{ conflict.seance2.name }}</mat-card-title>
+              <mat-card-subtitle>{{ conflict.seance2.code }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <p><strong>Professor:</strong> {{ conflict.seance2.professor }}</p>
+              <p><strong>Room:</strong> {{ conflict.seance2.room }}</p>
+              <p><strong>Type:</strong> {{ conflict.seance2.type }}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
