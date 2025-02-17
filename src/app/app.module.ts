@@ -58,7 +58,7 @@ import {
 } from '@angular/material/table';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import {MatTooltip} from '@angular/material/tooltip';
-import { NotificationsComponent } from './notifications/notifications.component';
+import { ProfessorSpaceComponent } from './professor-space/professor-space.component';
 
 @NgModule({
   declarations: [
@@ -77,7 +77,8 @@ import { NotificationsComponent } from './notifications/notifications.component'
     GlobalScheduleComponent,
     PropositionRattrapageComponent,
     DashboardComponent,
-    NotificationsComponent
+    ProfessorSpaceComponent,
+
 
 
   ],

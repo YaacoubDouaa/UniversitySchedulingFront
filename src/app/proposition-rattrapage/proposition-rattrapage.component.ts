@@ -6,6 +6,7 @@ import { RattrapageService } from '../rattrapage.service';
 
 import { RattrapageSchedule } from '../models/Schedule';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
+import {NotificationService} from '../notifications.service';
 
 @Component({
   selector: 'app-proposition-rattrapage',
@@ -22,14 +23,17 @@ export class PropositionRattrapageComponent implements OnInit {
   displayedColumns: string[] = ['id', 'date', 'reason', 'status', 'enseignantId', 'type', 'niveau', 'actions'];
 
   rattrapageSchedule: RattrapageSchedule = {};
-
   constructor(
     private rattrapageService: RattrapageService,
+    private notificationService: NotificationService,
     private dialog: MatDialog
   ) {}
 
   ngOnInit() {
     // You can load propositions from a service here if needed
+    this.propositions.forEach(prop => {
+      this.notificationService.addNotification(`New make-up session proposal: ${prop.name} on ${prop.date}`, 'info');
+    });
   }
 
   openConfirmationDialog(action: string, prop: PropositionDeRattrapage): void {
@@ -68,14 +72,19 @@ export class PropositionRattrapageComponent implements OnInit {
 
       this.rattrapageService.addRattrapageSeance(this.rattrapageSchedule, day, time, seance);
     }
+    this.notificationService.addNotification(`Make-up session confirmed: ${prop.name} on ${prop.date}`, 'success');
+
   }
 
   refuser(id: number) {
     this.propositions = this.propositions.map(prop =>
-      prop.id === id ? { ...prop, status: 'Refusé' } : prop
+      prop.id === id ? {...prop, status: 'Refusé'} : prop
     );
+    const refusedProp = this.propositions.find(prop => prop.id === id);
+    if (refusedProp) {
+      this.notificationService.addNotification(`Make-up session rejected: ${refusedProp.name} on ${refusedProp.date}`, 'error');
+    }
   }
-
   reinitialiser(id: number) {
     this.propositions = this.propositions.map(prop =>
       prop.id === id ? { ...prop, status: 'En attente' } : prop
