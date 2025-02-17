@@ -267,8 +267,8 @@ export class ScheduleComponent implements OnInit {
   frequencyOptions: string[] = ['biweekly', 'weekly'];
   profOptions: string[] = ['prof1', 'prof2', 'prof3'];
   selectedFrequency:string='';
-  private rattrapageSchedule: Observable<RattrapageSchedule>=;
-
+  // Initialize rattrapageSchedule as an empty object instead of null
+  rattrapageSchedule: RattrapageSchedule = {};
   constructor(private router: Router,private rattrapageService: RattrapageService) {
 
     // Setup filtering for the autocomplete inputs
@@ -295,8 +295,11 @@ export class ScheduleComponent implements OnInit {
 
   }
   ngOnInit(): void {
-    // Initialize the observable
-    this.rattrapageSchedule = this.rattrapageService.getRattrapageSchedule();
+    // Subscribe to the rattrapageSchedule observable
+    this.rattrapageService.getRattrapageSchedule().subscribe((schedule: RattrapageSchedule) => {
+      this.rattrapageSchedule = schedule;
+      // Now you can safely access the schedule and manipulate the UI accordingly
+    });
   }
 
   private _filter(value: string | null, options: string[]): string[] {
@@ -475,27 +478,22 @@ export class ScheduleComponent implements OnInit {
 
   groupOptions: string[] = ['ING1_INFO','ING1_INFO_TD1', 'ING1_INFO_TD2','ING1_INFO_TD1 || ING1_INFO_TD2'];
 
-  ngOnInit() {
-    this.loadRattrapageSchedule();
-  }
 
-  loadRattrapageSchedule() {
-    this.rattarpageSchedule = this.rattrapageService.getRattrapageSchedule();
-  }
 
   getFilteredSchedule(): { [day: string]: { [time: string]: Seance[] | null } } {
     const filteredSchedule: { [day: string]: { [time: string]: Seance[] | null } } = {};
 
     this.days.forEach(day => {
       filteredSchedule[day] = {};
-      Object.keys(this.schedule[day]).forEach(group => {
+      Object.keys(this.schedule[day] || {}).forEach(group => {
         if (this.getDisplayedGroup().includes(group)) {
-          Object.keys(this.schedule[day][group]).forEach(time => {
-            if (this.schedule[day][group][time]) {
+          Object.keys(this.schedule[day]?.[group] || {}).forEach(time => {
+            const seances = this.schedule[day]?.[group]?.[time];
+            if (seances) {
               if (!filteredSchedule[day][time]) {
                 filteredSchedule[day][time] = [];
               }
-              this.schedule[day][group][time]!.forEach(seance => {
+              seances.forEach(seance => {
                 if (
                   seance && (
                     (this.showTD && seance.type === 'TD') ||
@@ -511,18 +509,24 @@ export class ScheduleComponent implements OnInit {
         }
       });
 
-      // Add rattrapage seances
-      if (this.rattarpageSchedule[day]) {
-        Object.keys(this.rattarpageSchedule[day]).forEach(time => {
+      // Add rattrapage seances with more robust checks
+      if (this.rattrapageSchedule?.[day]) {
+        Object.keys(this.rattrapageSchedule[day]).forEach(time => {
           if (!filteredSchedule[day][time]) {
             filteredSchedule[day][time] = [];
           }
-          Object.values(this.rattarpageSchedule[day][time]).forEach(seance => {
-            filteredSchedule[day][time]!.push({
-              ...seance,
-              // isRattrapage: true
+
+          // Only add rattrapage seances if they're valid
+          const rattrapageSeances = this.rattrapageSchedule[day]?.[time];
+          if (Array.isArray(rattrapageSeances) && rattrapageSeances.length > 0) {
+            rattrapageSeances.forEach(seance => {
+              filteredSchedule[day][time]!.push({
+                ...seance,
+                // You can uncomment the line below to track rattrapage sessions
+                // isRattrapage: true
+              });
             });
-          });
+          }
         });
       }
     });
@@ -532,17 +536,6 @@ export class ScheduleComponent implements OnInit {
 
 }
 
-
-
-
-
-
-//     return 'rgba(131, 197, 190, 0.8)';
-  //   case 'TP':
-  //     return '#489fb5';
-  //   default:
-  //     return 'transparent';
-  // }
 
 
 
