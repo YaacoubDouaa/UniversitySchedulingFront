@@ -243,6 +243,9 @@ export class ScheduleComponent  {
     }
   };
   idCounter: number = 20;
+
+
+
   // FormControl for autocomplete
   nameControl = new FormControl('');
   roomControl = new FormControl('');
@@ -263,7 +266,7 @@ export class ScheduleComponent  {
   frequencyOptions: string[] = ['biweekly', 'weekly'];
   profOptions: string[] = ['prof1', 'prof2', 'prof3'];
   selectedFrequency:string='';
-
+  rattarpageSchedule:RattrapageSchedule={};
   constructor(private router: Router,private rattrapageService: RattrapageService) {
 
     // Setup filtering for the autocomplete inputs
@@ -304,12 +307,6 @@ export class ScheduleComponent  {
     };
     this.showModal = false;
   }
-  addRattrapageSeance() {
-    if (this.selectedActivity) {
-      const { day, time, seance } = this.selectedActivity;
-      this.rattrapageService.addRattrapageSeance(day, time, seance);
-    }
-  }
 
   saveAddChanges() {
     if (this.selectedActivity) {
@@ -317,7 +314,7 @@ export class ScheduleComponent  {
       let group = Object.keys(this.schedule[day]).find(grp => this.schedule[day][grp][time]);
 
       seance.biWeekly = this.selectedFrequency === 'biweekly';
-      seance.id = this.idCounter++;
+      seance.id=this.idCounter++;
       if (!group) {
         group = this.selectedGroup;
 
@@ -332,76 +329,31 @@ export class ScheduleComponent  {
 
       const timeSlotSeances = this.schedule[day][group][time];
 
+      // Count the number of biweekly and weekly seances in the current time slot
       const biWeeklyCount = timeSlotSeances.filter((s: any) => s.biWeekly).length;
       const weeklyCount = timeSlotSeances.filter((s: any) => !s.biWeekly).length;
-      if (biWeeklyCount == 2) {
-        alert("Cannot add seance: This time slot already contains the maximum allowed seances.");
-      }
-
+      if (biWeeklyCount==2)
+      {  alert("Cannot add seance: This time slot already contains the maximum allowed seances.");}
+      // Check if the seance already exists
       const existingSeance = timeSlotSeances.find((s: any) => s.id === seance.id);
 
+      // Validation Rules
       if (existingSeance) {
+        // Update existing seance if needed
         Object.assign(existingSeance, seance);
       } else if (
         (biWeeklyCount === 1 && seance.biWeekly) ||
         (biWeeklyCount === 0 && weeklyCount === 0)
       ) {
+        // Add if only one biweekly exists and new is biweekly, or if it's an empty slot
         timeSlotSeances.push(seance);
       } else {
+        // Show warning if adding is not allowed
         alert("Cannot add seance: This time slot already contains the maximum allowed seances.");
       }
-
-      // Add the rattrapage seance
-      this.addRattrapageSeance();
     }
     this.closeModal();
   }
-  // saveAddChanges() {
-  //   if (this.selectedActivity) {
-  //     const { day, time, seance } = this.selectedActivity;
-  //     let group = Object.keys(this.schedule[day]).find(grp => this.schedule[day][grp][time]);
-  //
-  //     seance.biWeekly = this.selectedFrequency === 'biweekly';
-  //     seance.id=this.idCounter++;
-  //     if (!group) {
-  //       group = this.selectedGroup;
-  //
-  //       if (!this.schedule[day][group]) {
-  //         this.schedule[day][group] = {};
-  //       }
-  //
-  //       if (!this.schedule[day][group][time]) {
-  //         this.schedule[day][group][time] = [];
-  //       }
-  //     }
-  //
-  //     const timeSlotSeances = this.schedule[day][group][time];
-  //
-  //     // Count the number of biweekly and weekly seances in the current time slot
-  //     const biWeeklyCount = timeSlotSeances.filter((s: any) => s.biWeekly).length;
-  //     const weeklyCount = timeSlotSeances.filter((s: any) => !s.biWeekly).length;
-  //     if (biWeeklyCount==2)
-  //     {  alert("Cannot add seance: This time slot already contains the maximum allowed seances.");}
-  //     // Check if the seance already exists
-  //     const existingSeance = timeSlotSeances.find((s: any) => s.id === seance.id);
-  //
-  //     // Validation Rules
-  //     if (existingSeance) {
-  //       // Update existing seance if needed
-  //       Object.assign(existingSeance, seance);
-  //     } else if (
-  //       (biWeeklyCount === 1 && seance.biWeekly) ||
-  //       (biWeeklyCount === 0 && weeklyCount === 0)
-  //     ) {
-  //       // Add if only one biweekly exists and new is biweekly, or if it's an empty slot
-  //       timeSlotSeances.push(seance);
-  //     } else {
-  //       // Show warning if adding is not allowed
-  //       alert("Cannot add seance: This time slot already contains the maximum allowed seances.");
-  //     }
-  //   }
-  //   this.closeModal();
-  // }
 
   openEditModal(seance: Seance | null, day: string, time: string) {
     this.selectedActivity = {
@@ -548,6 +500,7 @@ export class ScheduleComponent  {
     });
     return filteredSchedule;
   }
+
 
 }
 

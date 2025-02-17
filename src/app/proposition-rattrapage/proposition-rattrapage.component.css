@@ -1,95 +1,50 @@
-.propositions-container {
-  max-width: 900px;
-  margin: auto;
+.rattrapage-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+table {
+  width: 100%;
+}
+
+.mat-column-actions {
+  width: 120px;
   text-align: center;
-  font-family: Arial, sans-serif;
 }
 
-h2 {
-  color: #2c3e50;
-}
-
-.cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-}
-
-.card {
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  width: 300px;
-  border-left: 5px solid #007bff;
-  transition: transform 0.3s ease-in-out;
-}
-
-.card:hover {
-  transform: scale(1.05);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.status {
-  padding: 5px 10px;
-  border-radius: 5px;
+.status-pending {
+  color: #ffa000;
   font-weight: bold;
 }
 
-.confirmed .status {
-  background-color: #d4edda;
-  color: #155724;
+.status-confirmed {
+  color: #4caf50;
+  font-weight: bold;
 }
 
-.refused .status {
-  background-color: #f8d7da;
-  color: #721c24;
+.status-rejected {
+  color: #f44336;
+  font-weight: bold;
 }
 
-.card-body p {
-  margin: 5px 0;
-}
+@media (max-width: 600px) {
+  .mat-card-title {
+    font-size: 18px;
+  }
 
-.card-footer {
-  margin-top: 15px;
-  display: flex;
-  justify-content: space-between;
-}
+  .mat-header-cell, .mat-cell {
+    font-size: 12px;
+    padding: 8px;
+  }
 
-button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
+  .mat-icon-button {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+  }
 
-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-
-button:first-child {
-  background: #28a745;
-  color: white;
-}
-
-button:first-child:hover {
-  background: #218838;
-}
-
-button:last-child {
-  background: #dc3545;
-  color: white;
-}
-
-button:last-child:hover {
-  background: #c82333;
+  .mat-icon {
+    font-size: 18px;
+  }
 }

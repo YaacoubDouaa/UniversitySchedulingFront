@@ -10,6 +10,7 @@ import {SalleSchedule} from './models/Salle';
 export class ScheduleService {
   private scheduleSource = new BehaviorSubject<SalleSchedule | null>(null);
   currentDisponibilite = this.scheduleSource.asObservable();
+
   constructor() { }
 
   changeSchedule(salleSchedule: SalleSchedule) {

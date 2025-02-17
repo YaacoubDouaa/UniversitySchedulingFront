@@ -1,20 +1,69 @@
-<div class="propositions-container">
-  <h2>Propositions de Rattrapage</h2>
-  <div class="cards">
-    <div class="card" *ngFor="let prop of propositions" [ngClass]="{'confirmed': prop.status === 'Confirmé', 'refused': prop.status === 'Refusé'}">
-      <div class="card-header">
-        <h3>Proposition #{{ prop.id }}</h3>
-        <span class="status">{{ prop.status }}</span>
-      </div>
-      <div class="card-body">
-        <p><strong>Date :</strong> {{ prop.date }}</p>
-        <p><strong>Raison :</strong> {{ prop.reason }}</p>
-        <p><strong>Enseignant ID :</strong> {{ prop.enseignantId }}</p>
-      </div>
-      <div class="card-footer">
-        <button (click)="confirmer(prop)" [disabled]="prop.status !== 'En attente'">Confirmer</button>
-        <button (click)="refuser(prop.id)" [disabled]="prop.status !== 'En attente'">Refuser</button>
-      </div>
-    </div>
-  </div>
+<div class="rattrapage-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Propositions de Rattrapage</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="propositions" class="mat-elevation-z8">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <td mat-cell *matCellDef="let prop"> {{prop.id}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef> Date </th>
+          <td mat-cell *matCellDef="let prop"> {{prop.date | date:'dd/MM/yyyy'}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="reason">
+          <th mat-header-cell *matHeaderCellDef> Raison </th>
+          <td mat-cell *matCellDef="let prop"> {{prop.reason}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Statut </th>
+          <td mat-cell *matCellDef="let prop">
+            <span [ngClass]="{'status-pending': prop.status === 'En attente',
+                              'status-confirmed': prop.status === 'Confirmé',
+                              'status-rejected': prop.status === 'Refusé'}">
+              {{prop.status}}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="enseignantId">
+          <th mat-header-cell *matHeaderCellDef> ID Enseignant </th>
+          <td mat-cell *matCellDef="let prop"> {{prop.enseignantId}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef> Type </th>
+          <td mat-cell *matCellDef="let prop"> {{prop.type}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="niveau">
+          <th mat-header-cell *matHeaderCellDef> Niveau </th>
+          <td mat-cell *matCellDef="let prop"> {{prop.niveau}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let prop">
+            <button mat-icon-button color="primary" (click)="openConfirmationDialog('confirm', prop)" [disabled]="prop.status !== 'En attente'" matTooltip="Confirmer">
+              <mat-icon>check</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="openConfirmationDialog('reject', prop)" [disabled]="prop.status !== 'En attente'" matTooltip="Refuser">
+              <mat-icon>close</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" (click)="reinitialiser(prop.id)" [disabled]="prop.status === 'En attente'" matTooltip="Réinitialiser">
+              <mat-icon>refresh</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
 </div>

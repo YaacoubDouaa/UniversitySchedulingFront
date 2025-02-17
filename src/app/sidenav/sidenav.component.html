@@ -21,6 +21,7 @@
     <button mat-button (click)=" navigateToRattrapage()">
       <mat-icon>public</mat-icon> Global
     </button>
+
   </mat-drawer>
 
   <!-- Main Content Area -->
@@ -49,7 +50,7 @@
             <span>Profile</span>
           </button>
           <mat-divider></mat-divider>
-          <button mat-menu-item>
+          <button mat-menu-item (click)="navigateToDashBoard()">
             <mat-icon>exit_to_app</mat-icon>
             <span>Logout</span>
           </button>

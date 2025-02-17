@@ -4,6 +4,7 @@ import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import {Schedule} from '../models/Schedule';
 import {Seance} from '../models/Seance';
+import {RattrapageService} from '../rattrapage.service';
 
 
 @Component({
@@ -231,7 +232,7 @@ export class ViewScheduleComponent {
     }
   };
 
-  constructor(private router: Router) {
+  constructor(private router: Router,private rattrapageService: RattrapageService) {
 
   }
 

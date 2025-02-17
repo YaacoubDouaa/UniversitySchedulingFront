@@ -20,7 +20,7 @@ import {MatDrawer, MatDrawerContainer, MatSidenavModule} from '@angular/material
 import {RouterModule} from '@angular/router';
 import { ConflictListComponent } from './conflict-list/conflict-list.component';
 import {
-  MatAccordion,
+  MatAccordion, MatExpansionModule,
   MatExpansionPanel,
   MatExpansionPanelDescription,
   MatExpansionPanelHeader,
@@ -39,10 +39,37 @@ import { ProfessorsComponent } from './professors/professors.component';
 import { ProfScheduleComponent } from './prof-schedule/prof-schedule.component';
 import { GlobalScheduleComponent } from './global-schedule/global-schedule.component';
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
-import {MatDivider} from '@angular/material/divider';
+import {MatDivider, MatDividerModule} from '@angular/material/divider';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatBadge} from '@angular/material/badge';
 import { PropositionRattrapageComponent } from './proposition-rattrapage/proposition-rattrapage.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import {MatList, MatListItem, MatListModule} from '@angular/material/list';
+import {MatLine, MatNativeDateModule} from '@angular/material/core';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {
+  MatCell, MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
+  MatHeaderRow, MatHeaderRowDef,
+  MatRow, MatRowDef,
+  MatTable
+} from '@angular/material/table';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import {MatTooltip} from '@angular/material/tooltip';
+import { ProfessorSpaceComponent } from './professor-space/professor-space.component';
+import { ProfessorDashboardComponent } from './professor-dashboard/professor-dashboard.component';
+import { ProfessorViewScheduleComponent } from './professor-view-schedule/professor-view-schedule.component';
+import { ProposeRattrapageComponent } from './propose-rattrapage/propose-rattrapage.component';
+import {
+  MatDatepicker,
+  MatDatepickerInput,
+  MatDatepickerModule,
+  MatDatepickerToggle
+} from '@angular/material/datepicker';
+import {MatGridList, MatGridListModule, MatGridTile} from '@angular/material/grid-list';
+import {MatChip,MatChipsModule} from '@angular/material/chips';
 
 @NgModule({
   declarations: [
@@ -59,11 +86,17 @@ import { PropositionRattrapageComponent } from './proposition-rattrapage/proposi
     ProfScheduleComponent,
     RoomScheduleComponent,
     GlobalScheduleComponent,
-    PropositionRattrapageComponent
-
+    PropositionRattrapageComponent,
+    DashboardComponent,
+    ProfessorSpaceComponent,
+    ProfessorDashboardComponent,
+    ProfessorViewScheduleComponent,
+    ProposeRattrapageComponent,
+    ProfessorViewScheduleComponent,
 
   ],
   imports: [
+    BrowserAnimationsModule,
     BrowserModule,
     AppRoutingModule,
     MatButtonModule,
@@ -80,6 +113,15 @@ import { PropositionRattrapageComponent } from './proposition-rattrapage/proposi
     MatIcon,
     MatDrawer,
     MatDrawerContainer,
+    MatListModule,
+    MatCardModule,
+    MatButtonModule,
+    MatGridListModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     // RouterModule.forRoot([
     //   {
     //     path: '',
@@ -111,6 +153,31 @@ import { PropositionRattrapageComponent } from './proposition-rattrapage/proposi
     MatBadge,
     MatMenuTrigger,
     MatMenuItem,
+    MatListItem,
+    MatList,
+    MatLine,
+    MatTable,
+    ConfirmationDialogComponent,
+    MatHeaderRow,
+    MatRow,
+    MatColumnDef,
+    MatHeaderCell,
+    MatCell,
+    MatTooltip,
+    MatHeaderCellDef,
+    MatCellDef,
+    MatHeaderRowDef,
+    MatRowDef,
+    MatDatepicker,
+    MatDatepickerToggle,
+    MatDatepickerInput,
+    MatGridTile,
+    MatGridList,
+    MatChip,
+    MatCardModule,
+    MatChipsModule,
+    MatIconModule,
+    MatDividerModule,
 
   ],
   providers: [
@@ -118,5 +185,6 @@ import { PropositionRattrapageComponent } from './proposition-rattrapage/proposi
   ],
 
   bootstrap: [AppComponent]
+  
 })
 export class AppModule { }
