@@ -1,30 +1,30 @@
-<!--<div class="schedule-container">-->
-<!--  <h1>Weekly Schedule</h1>-->
+<div class="schedule-container">
+  <h1>Weekly Schedule</h1>
 
-<!--  <div class="schedule-grid">-->
-<!--    <div class="schedule-header">-->
-<!--      <div class="time-slot"></div>-->
-<!--      <div class="day" *ngFor="let day of days">{{ day }}</div>-->
-<!--    </div>-->
+  <div class="schedule-grid">
+    <div class="schedule-header">
+      <div class="time-slot"></div>
+      <div class="day" *ngFor="let day of days">{{ day }}</div>
+    </div>
 
-<!--    <div class="schedule-body">-->
-<!--      <ng-container *ngFor="let time of timeSlots">-->
-<!--        <div class="time-slot">{{ time }}</div>-->
-<!--        <div class="schedule-cell" *ngFor="let day of days">-->
-<!--          <ng-container *ngIf="getSession(day, time) as class; else emptyCell">-->
-<!--            <div class="class-info">-->
-<!--              <strong>{{ class.name }}</strong>-->
-<!--              <small>Room: {{ class.room }}</small>-->
-<!--              <small>Type: {{ class.type }}</small>-->
-<!--              <small>Code: {{ class.code }}</small>-->
-<!--              <small *ngIf="class.biWeekly">Bi-Weekly</small>-->
-<!--            </div>-->
-<!--          </ng-container>-->
-<!--          <ng-template #emptyCell>-->
-<!--            <div class="empty-cell"></div>-->
-<!--          </ng-template>-->
-<!--        </div>-->
-<!--      </ng-container>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
+    <div class="schedule-body">
+      <ng-container *ngFor="let time of timeSlots">
+        <div class="time-slot">{{ time }}</div>
+        <div class="schedule-cell" *ngFor="let day of days">
+          <ng-container *ngIf="getSession(day, time) as class; else emptyCell">
+            <div *ngFor="let class of getSession(day,time)" class="class-info">
+              <strong>{{ class.name }}</strong>
+              <small>Room: {{ class.room }}</small>
+              <small>Type: {{ class.type }}</small>
+              <small>Code: {{ class.code }}</small>
+              <small *ngIf="class.biWeekly">Bi-Weekly</small>
+            </div>
+          </ng-container>
+          <ng-template #emptyCell>
+            <div class="empty-cell"></div>
+          </ng-template>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

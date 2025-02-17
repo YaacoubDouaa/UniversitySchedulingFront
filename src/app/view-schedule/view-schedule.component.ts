@@ -321,4 +321,30 @@ export class ViewScheduleComponent {
     });
     return filteredSchedule;
   }
+
+  getSession(day: string, time: string): Seance[] {
+    const sessions: Seance[] = [];
+
+    if (this.schedule[day]) {
+      Object.keys(this.schedule[day]).forEach(group => {
+        if (this.getDisplayedGroup().includes(group)) {
+          const seances = this.schedule[day][group][time];
+          if (seances) {
+            seances.forEach(seance => {
+              if (
+                (this.showTD && seance.type === 'TD') ||
+                (this.showTP && seance.type === 'TP') ||
+                seance.type === 'COURS'
+              ) {
+                sessions.push(seance);
+              }
+            });
+          }
+        }
+      });
+    }
+
+    return sessions;
+  }
+
 }

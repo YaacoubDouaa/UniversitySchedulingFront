@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {FormControl} from '@angular/forms';
 import {map, Observable, startWith} from 'rxjs';
@@ -11,7 +11,8 @@ import {RattrapageService} from '../rattrapage.service';
   templateUrl: './schedule.component.html',
   styleUrls: ['./schedule.component.css']
 })
-export class ScheduleComponent  {
+export class ScheduleComponent implements OnInit {
+
   days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
   showModal = true;
   timeSlots = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
@@ -266,7 +267,8 @@ export class ScheduleComponent  {
   frequencyOptions: string[] = ['biweekly', 'weekly'];
   profOptions: string[] = ['prof1', 'prof2', 'prof3'];
   selectedFrequency:string='';
-  rattarpageSchedule:RattrapageSchedule={};
+  private rattrapageSchedule: Observable<RattrapageSchedule>=;
+
   constructor(private router: Router,private rattrapageService: RattrapageService) {
 
     // Setup filtering for the autocomplete inputs
@@ -291,6 +293,10 @@ export class ScheduleComponent  {
       map(value => this._filter(value, this.profOptions))
     );
 
+  }
+  ngOnInit(): void {
+    // Initialize the observable
+    this.rattrapageSchedule = this.rattrapageService.getRattrapageSchedule();
   }
 
   private _filter(value: string | null, options: string[]): string[] {
@@ -469,6 +475,13 @@ export class ScheduleComponent  {
 
   groupOptions: string[] = ['ING1_INFO','ING1_INFO_TD1', 'ING1_INFO_TD2','ING1_INFO_TD1 || ING1_INFO_TD2'];
 
+  ngOnInit() {
+    this.loadRattrapageSchedule();
+  }
+
+  loadRattrapageSchedule() {
+    this.rattarpageSchedule = this.rattrapageService.getRattrapageSchedule();
+  }
 
   getFilteredSchedule(): { [day: string]: { [time: string]: Seance[] | null } } {
     const filteredSchedule: { [day: string]: { [time: string]: Seance[] | null } } = {};
@@ -497,10 +510,25 @@ export class ScheduleComponent  {
           });
         }
       });
+
+      // Add rattrapage seances
+      if (this.rattarpageSchedule[day]) {
+        Object.keys(this.rattarpageSchedule[day]).forEach(time => {
+          if (!filteredSchedule[day][time]) {
+            filteredSchedule[day][time] = [];
+          }
+          Object.values(this.rattarpageSchedule[day][time]).forEach(seance => {
+            filteredSchedule[day][time]!.push({
+              ...seance,
+              // isRattrapage: true
+            });
+          });
+        });
+      }
     });
+
     return filteredSchedule;
   }
-
 
 }
 

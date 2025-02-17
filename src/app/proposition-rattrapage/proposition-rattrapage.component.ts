@@ -22,7 +22,6 @@ export class PropositionRattrapageComponent implements OnInit {
 
   displayedColumns: string[] = ['id', 'date', 'reason', 'status', 'enseignantId', 'type', 'niveau', 'actions'];
 
-  rattrapageSchedule: RattrapageSchedule = {};
   constructor(
     private rattrapageService: RattrapageService,
     private notificationService: NotificationService,
@@ -70,7 +69,7 @@ export class PropositionRattrapageComponent implements OnInit {
         biWeekly: false
       };
 
-      this.rattrapageService.addRattrapageSeance(this.rattrapageSchedule, day, time, seance);
+      this.rattrapageService.addRattrapageSeance( day, time, seance);
     }
     this.notificationService.addNotification(`Make-up session confirmed: ${prop.name} on ${prop.date}`, 'success');
 
