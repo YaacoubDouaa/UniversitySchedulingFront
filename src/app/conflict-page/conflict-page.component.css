@@ -1,4 +1,69 @@
+.conflicts-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
+h2 {
+  color: #3f51b5;
+  margin-bottom: 20px;
+}
+
+.conflict-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.conflict-types {
+  margin-bottom: 20px;
+}
+
+.conflict-types h3 {
+  margin-bottom: 10px;
+}
+
+mat-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+mat-divider {
+  margin: 20px 0;
+}
+
+.seance-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+mat-card {
+  flex: 1;
+  max-width: 45%;
+}
+
+.vs-icon {
+  font-size: 24px;
+  color: #f44336;
+}
+
+@media (max-width: 600px) {
+  .seance-details {
+    flex-direction: column;
+  }
+
+  mat-card {
+    max-width: 100%;
+  }
+
+  .vs-icon {
+    transform: rotate(90deg);
+    margin: 10px 0;
+  }
+}
 
 .example-container {
   width: 100%;

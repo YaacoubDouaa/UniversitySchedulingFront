@@ -39,7 +39,7 @@ import { ProfessorsComponent } from './professors/professors.component';
 import { ProfScheduleComponent } from './prof-schedule/prof-schedule.component';
 import { GlobalScheduleComponent } from './global-schedule/global-schedule.component';
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
-import {MatDivider} from '@angular/material/divider';
+import {MatDivider, MatDividerModule} from '@angular/material/divider';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatBadge} from '@angular/material/badge';
 import { PropositionRattrapageComponent } from './proposition-rattrapage/proposition-rattrapage.component';
@@ -69,6 +69,7 @@ import {
   MatDatepickerToggle
 } from '@angular/material/datepicker';
 import {MatGridList, MatGridListModule, MatGridTile} from '@angular/material/grid-list';
+import {MatChip,MatChipsModule} from '@angular/material/chips';
 
 @NgModule({
   declarations: [
@@ -91,9 +92,7 @@ import {MatGridList, MatGridListModule, MatGridTile} from '@angular/material/gri
     ProfessorDashboardComponent,
     ProfessorViewScheduleComponent,
     ProposeRattrapageComponent,
-    ProfessorViewScheduleComponent
-
-
+    ProfessorViewScheduleComponent,
 
   ],
   imports: [
@@ -174,6 +173,11 @@ import {MatGridList, MatGridListModule, MatGridTile} from '@angular/material/gri
     MatDatepickerInput,
     MatGridTile,
     MatGridList,
+    MatChip,
+    MatCardModule,
+    MatChipsModule,
+    MatIconModule,
+    MatDividerModule,
 
   ],
   providers: [
@@ -181,5 +185,6 @@ import {MatGridList, MatGridListModule, MatGridTile} from '@angular/material/gri
   ],
 
   bootstrap: [AppComponent]
+  
 })
 export class AppModule { }
