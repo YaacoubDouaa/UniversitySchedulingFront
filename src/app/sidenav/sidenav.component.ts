@@ -39,5 +39,8 @@ export class SidenavComponent {
   navigateToRattrapage() {
     this.router.navigate(['/rattrapage']);
   }
+  navigateToDashBoard() {
+    this.router.navigate(['/dashboard']);
+  }
 }
 

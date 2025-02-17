@@ -266,7 +266,7 @@ export class ScheduleComponent  {
   frequencyOptions: string[] = ['biweekly', 'weekly'];
   profOptions: string[] = ['prof1', 'prof2', 'prof3'];
   selectedFrequency:string='';
-
+  rattarpageSchedule:RattrapageSchedule={};
   constructor(private router: Router,private rattrapageService: RattrapageService) {
 
     // Setup filtering for the autocomplete inputs
@@ -307,12 +307,7 @@ export class ScheduleComponent  {
     };
     this.showModal = false;
   }
-  addRattrapageSeance() {
-    if (this.selectedActivity) {
-      const { day, time, seance } = this.selectedActivity;
-      this.rattrapageService.addRattrapageSeance(day, time, seance);
-    }
-  }
+
   saveAddChanges() {
     if (this.selectedActivity) {
       const { day, time, seance } = this.selectedActivity;
@@ -505,6 +500,7 @@ export class ScheduleComponent  {
     });
     return filteredSchedule;
   }
+
 
 }
 

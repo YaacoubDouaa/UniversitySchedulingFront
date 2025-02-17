@@ -43,6 +43,22 @@ import {MatDivider} from '@angular/material/divider';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatBadge} from '@angular/material/badge';
 import { PropositionRattrapageComponent } from './proposition-rattrapage/proposition-rattrapage.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import {MatList, MatListItem, MatListModule} from '@angular/material/list';
+import {MatLine} from '@angular/material/core';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {
+  MatCell, MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
+  MatHeaderRow, MatHeaderRowDef,
+  MatRow, MatRowDef,
+  MatTable
+} from '@angular/material/table';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import {MatTooltip} from '@angular/material/tooltip';
+import { NotificationsComponent } from './notifications/notifications.component';
 
 @NgModule({
   declarations: [
@@ -59,11 +75,14 @@ import { PropositionRattrapageComponent } from './proposition-rattrapage/proposi
     ProfScheduleComponent,
     RoomScheduleComponent,
     GlobalScheduleComponent,
-    PropositionRattrapageComponent
+    PropositionRattrapageComponent,
+    DashboardComponent,
+    NotificationsComponent
 
 
   ],
   imports: [
+    BrowserAnimationsModule,
     BrowserModule,
     AppRoutingModule,
     MatButtonModule,
@@ -80,6 +99,9 @@ import { PropositionRattrapageComponent } from './proposition-rattrapage/proposi
     MatIcon,
     MatDrawer,
     MatDrawerContainer,
+    MatListModule,
+    MatCardModule,
+    MatButtonModule,
     // RouterModule.forRoot([
     //   {
     //     path: '',
@@ -111,6 +133,21 @@ import { PropositionRattrapageComponent } from './proposition-rattrapage/proposi
     MatBadge,
     MatMenuTrigger,
     MatMenuItem,
+    MatListItem,
+    MatList,
+    MatLine,
+    MatTable,
+    ConfirmationDialogComponent,
+    MatHeaderRow,
+    MatRow,
+    MatColumnDef,
+    MatHeaderCell,
+    MatCell,
+    MatTooltip,
+    MatHeaderCellDef,
+    MatCellDef,
+    MatHeaderRowDef,
+    MatRowDef,
 
   ],
   providers: [
