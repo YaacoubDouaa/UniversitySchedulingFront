@@ -40,7 +40,7 @@ export class SidenavComponent {
     this.router.navigate(['/rattrapage']);
   }
   navigateToDashBoard() {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/professor']);
   }
 }
 

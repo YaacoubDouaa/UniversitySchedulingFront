@@ -12,6 +12,10 @@ import {ProfessorsComponent} from './professors/professors.component';
 import {GlobalScheduleComponent} from './global-schedule/global-schedule.component';
 import {PropositionRattrapageComponent} from './proposition-rattrapage/proposition-rattrapage.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
+import {ProfessorSpaceComponent} from './professor-space/professor-space.component';
+import {ProfessorDashboardComponent} from './professor-dashboard/professor-dashboard.component';
+import {ProposeRattrapageComponent} from './propose-rattrapage/propose-rattrapage.component';
+import {ProfessorViewScheduleComponent} from './professor-view-schedule/professor-view-schedule.component';
 
 const routes: Routes = [ { path: '', component: LoginComponent },
 
@@ -26,6 +30,16 @@ const routes: Routes = [ { path: '', component: LoginComponent },
   { path: 'global', component: GlobalScheduleComponent },
   { path: 'rattrapage', component: PropositionRattrapageComponent },
   { path: 'dashboard', component: DashboardComponent},
+  {
+    path: 'professor',
+    component: ProfessorSpaceComponent,
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: ProfessorDashboardComponent },
+      { path: 'schedule', component: ProfessorViewScheduleComponent },
+      { path: 'propose-rattrapage', component: ProposeRattrapageComponent }
+    ]
+  }
   // Add more routes as needed
 ];
 

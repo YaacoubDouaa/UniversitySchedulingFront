@@ -20,7 +20,7 @@ import {MatDrawer, MatDrawerContainer, MatSidenavModule} from '@angular/material
 import {RouterModule} from '@angular/router';
 import { ConflictListComponent } from './conflict-list/conflict-list.component';
 import {
-  MatAccordion,
+  MatAccordion, MatExpansionModule,
   MatExpansionPanel,
   MatExpansionPanelDescription,
   MatExpansionPanelHeader,
@@ -45,7 +45,7 @@ import {MatBadge} from '@angular/material/badge';
 import { PropositionRattrapageComponent } from './proposition-rattrapage/proposition-rattrapage.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {MatList, MatListItem, MatListModule} from '@angular/material/list';
-import {MatLine} from '@angular/material/core';
+import {MatLine, MatNativeDateModule} from '@angular/material/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {
   MatCell, MatCellDef,
@@ -59,6 +59,16 @@ import {
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import {MatTooltip} from '@angular/material/tooltip';
 import { ProfessorSpaceComponent } from './professor-space/professor-space.component';
+import { ProfessorDashboardComponent } from './professor-dashboard/professor-dashboard.component';
+import { ProfessorViewScheduleComponent } from './professor-view-schedule/professor-view-schedule.component';
+import { ProposeRattrapageComponent } from './propose-rattrapage/propose-rattrapage.component';
+import {
+  MatDatepicker,
+  MatDatepickerInput,
+  MatDatepickerModule,
+  MatDatepickerToggle
+} from '@angular/material/datepicker';
+import {MatGridList, MatGridListModule, MatGridTile} from '@angular/material/grid-list';
 
 @NgModule({
   declarations: [
@@ -78,6 +88,10 @@ import { ProfessorSpaceComponent } from './professor-space/professor-space.compo
     PropositionRattrapageComponent,
     DashboardComponent,
     ProfessorSpaceComponent,
+    ProfessorDashboardComponent,
+    ProfessorViewScheduleComponent,
+    ProposeRattrapageComponent,
+    ProfessorViewScheduleComponent
 
 
 
@@ -103,6 +117,12 @@ import { ProfessorSpaceComponent } from './professor-space/professor-space.compo
     MatListModule,
     MatCardModule,
     MatButtonModule,
+    MatGridListModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     // RouterModule.forRoot([
     //   {
     //     path: '',
@@ -149,6 +169,11 @@ import { ProfessorSpaceComponent } from './professor-space/professor-space.compo
     MatCellDef,
     MatHeaderRowDef,
     MatRowDef,
+    MatDatepicker,
+    MatDatepickerToggle,
+    MatDatepickerInput,
+    MatGridTile,
+    MatGridList,
 
   ],
   providers: [
