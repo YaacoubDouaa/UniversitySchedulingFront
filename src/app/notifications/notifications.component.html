@@ -1,0 +1,26 @@
+<mat-menu #notificationMenu="matMenu" class="notification-menu">
+  <div class="notification-header">
+    <h3>Notifications</h3>
+    <button mat-button color="primary" (click)="markAllAsRead()">Mark all as read</button>
+  </div>
+  <mat-divider></mat-divider>
+  <div class="notification-list">
+    <mat-list>
+      <mat-list-item *ngFor="let notification of notifications"
+                     [ngClass]="{'unread': !notification.read}"
+                     (click)="markAsRead(notification)">
+        <mat-icon mat-list-icon [ngClass]="notification.type">
+          {{ notification.type === 'info' ? 'info' :
+          notification.type === 'warning' ? 'warning' :
+            notification.type === 'success' ? 'check_circle' : 'error' }}
+        </mat-icon>
+        <div mat-line>{{notification.message}}</div>
+        <div mat-line class="notification-time">{{notification.timestamp | date:'short'}}</div>
+      </mat-list-item>
+    </mat-list>
+  </div>
+  <mat-divider></mat-divider>
+  <div class="notification-footer">
+    <button mat-button color="warn" (click)="clearNotifications()">Clear all</button>
+  </div>
+</mat-menu>

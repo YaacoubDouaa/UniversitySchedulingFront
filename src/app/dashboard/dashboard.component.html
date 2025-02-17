@@ -1,0 +1,53 @@
+<div class="dashboard-container">
+  <h1>Welcome to Your Dashboard</h1>
+
+  <div class="dashboard-grid">
+    <!-- Upcoming Classes Card -->
+    <mat-card class="dashboard-card upcoming-classes">
+      <mat-card-header>
+        <mat-card-title>Upcoming Classes</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let class of upcomingClasses">
+            <h3 matLine>{{ class.name }}</h3>
+            <p matLine>
+              <span>{{ class.time }}</span>
+              <span class="dashboard-spacer"></span>
+              <span>Room: {{ class.room }}</span>
+            </p>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Recent Announcements Card -->
+    <mat-card class="dashboard-card announcements">
+      <mat-card-header>
+        <mat-card-title>Recent Announcements</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let announcement of recentAnnouncements">
+            <h3 matLine>{{ announcement.title }}</h3>
+            <p matLine>
+              <span>{{ announcement.date | date }}</span>
+            </p>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Quick Links Card -->
+    <mat-card class="dashboard-card quick-links">
+      <mat-card-header>
+        <mat-card-title>Quick Links</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <button mat-raised-button color="primary" class="dashboard-button">View Full Schedule</button>
+        <button mat-raised-button color="accent" class="dashboard-button">Check Exam Dates</button>
+        <button mat-raised-button color="warn" class="dashboard-button">Report an Issue</button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

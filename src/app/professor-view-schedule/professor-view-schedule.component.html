@@ -1,0 +1,30 @@
+<div class="schedule-container">
+  <h1>Weekly Schedule</h1>
+
+  <div class="schedule-grid">
+    <div class="schedule-header">
+      <div class="time-slot"></div>
+      <div class="day" *ngFor="let day of days">{{ day }}</div>
+    </div>
+
+    <div class="schedule-body">
+      <ng-container *ngFor="let time of timeSlots">
+        <div class="time-slot">{{ time }}</div>
+        <div class="schedule-cell" *ngFor="let day of days">
+          <ng-container *ngIf="getSession(day, time) as session ; else emptyCell">
+            <div class="class-info">
+              <strong>{{session.name }}</strong>
+              <small>Room: {{ session.room }}</small>
+              <small>Type: {{ session.type }}</small>
+              <small>Code: {{ session.code }}</small>
+              <small *ngIf="session.biWeekly">Bi-Weekly</small>
+            </div>
+          </ng-container>
+          <ng-template #emptyCell>
+            <div class="empty-cell"></div>
+          </ng-template>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

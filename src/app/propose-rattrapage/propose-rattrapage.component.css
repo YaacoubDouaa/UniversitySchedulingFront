@@ -1,0 +1,17 @@
+.propose-container {
+  padding: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+}
+
+mat-form-field {
+  margin-bottom: 20px;
+}
+
+button[type="submit"] {
+  align-self: flex-start;
+}

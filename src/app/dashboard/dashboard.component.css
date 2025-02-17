@@ -1,0 +1,138 @@
+/* Main container */
+.dashboard-container {
+  padding: 30px;
+  background-color: #f0f4f8; /* Light background for a modern feel */
+  border-radius: 12px;
+  max-width: 1300px;
+  margin: 50px auto;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  text-align: center; /* Center align heading */
+}
+
+/* Grid layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+
+/* Card styling */
+.dashboard-card {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff; /* White background for cards */
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px); /* Subtle lift effect */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* More pronounced shadow */
+}
+
+/* Card headers */
+mat-card-header {
+  margin-bottom: 20px;
+  background-color: #003366; /* Deep blue for the header */
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: left;
+}
+
+/* Card titles */
+mat-card-title {
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* List items */
+mat-list {
+  padding: 0;
+}
+
+mat-list-item {
+  padding: 15px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+mat-list-item:last-child {
+  border-bottom: none;
+}
+
+/* Styling for list item headings */
+mat-list-item h3 {
+  margin: 5px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #003366;
+}
+
+/* Quick links buttons */
+.dashboard-button {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 12px;
+  font-size: 16px;
+  text-align: center;
+  border-radius: 8px; /* Rounded corners */
+  transition: background-color 0.3s ease;
+}
+
+/* Primary button */
+.dashboard-button.mat-raised-button.primary {
+  background-color: #003366;
+  color: #fff;
+}
+
+.dashboard-button.mat-raised-button.primary:hover {
+  background-color: #002244; /* Darker blue */
+}
+
+/* Accent button */
+.dashboard-button.mat-raised-button.accent {
+  background-color: #0066cc; /* Lighter blue */
+  color: #fff;
+}
+
+.dashboard-button.mat-raised-button.accent:hover {
+  background-color: #005bb5; /* Darker blue */
+}
+
+/* Warning button */
+.dashboard-button.mat-raised-button.warn {
+  background-color: #f44336; /* Red */
+  color: #fff;
+}
+
+.dashboard-button.mat-raised-button.warn:hover {
+  background-color: #d32f2f;
+}
+
+/* Title styling */
+h1 {
+  font-size: 32px;
+  font-weight: bold;
+  color: #003366; /* Deep blue */
+  margin-bottom: 40px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-button {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+}
+

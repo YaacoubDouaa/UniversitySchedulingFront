@@ -1,0 +1,15 @@
+.professor-container {
+  height: 100vh;
+}
+
+.professor-sidenav {
+  width: 250px;
+}
+
+.professor-content {
+  padding: 20px;
+}
+
+.mat-list-item.active {
+  background-color: rgba(0, 0, 0, 0.04);
+}
