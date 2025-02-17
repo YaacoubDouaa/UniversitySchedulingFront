@@ -295,11 +295,12 @@ export class ScheduleComponent implements OnInit {
 
   }
   ngOnInit(): void {
-    // Subscribe to the rattrapageSchedule observable
+    // Subscribe to the rattrapageSchedule observable to get the latest data
     this.rattrapageService.getRattrapageSchedule().subscribe((schedule: RattrapageSchedule) => {
       this.rattrapageSchedule = schedule;
-      // Now you can safely access the schedule and manipulate the UI accordingly
+      console.log(this.rattrapageSchedule); // Just to see if it's working
     });
+
   }
 
   private _filter(value: string | null, options: string[]): string[] {
