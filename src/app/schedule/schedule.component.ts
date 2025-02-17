@@ -267,8 +267,8 @@ export class ScheduleComponent implements OnInit {
   frequencyOptions: string[] = ['biweekly', 'weekly'];
   profOptions: string[] = ['prof1', 'prof2', 'prof3'];
   selectedFrequency:string='';
-  private rattrapageSchedule: Observable<RattrapageSchedule>=;
-
+  // The rattrapage schedule, use it properly in the subscription
+  rattrapageSchedule: RattrapageSchedule | null = null;
   constructor(private router: Router,private rattrapageService: RattrapageService) {
 
     // Setup filtering for the autocomplete inputs
@@ -295,8 +295,11 @@ export class ScheduleComponent implements OnInit {
 
   }
   ngOnInit(): void {
-    // Initialize the observable
-    this.rattrapageSchedule = this.rattrapageService.getRattrapageSchedule();
+    // Subscribe to the rattrapageSchedule observable
+    this.rattrapageService.getRattrapageSchedule().subscribe((schedule: RattrapageSchedule) => {
+      this.rattrapageSchedule = schedule;
+      // Now you can safely access the schedule and manipulate the UI accordingly
+    });
   }
 
   private _filter(value: string | null, options: string[]): string[] {
@@ -475,13 +478,7 @@ export class ScheduleComponent implements OnInit {
 
   groupOptions: string[] = ['ING1_INFO','ING1_INFO_TD1', 'ING1_INFO_TD2','ING1_INFO_TD1 || ING1_INFO_TD2'];
 
-  ngOnInit() {
-    this.loadRattrapageSchedule();
-  }
 
-  loadRattrapageSchedule() {
-    this.rattarpageSchedule = this.rattrapageService.getRattrapageSchedule();
-  }
 
   getFilteredSchedule(): { [day: string]: { [time: string]: Seance[] | null } } {
     const filteredSchedule: { [day: string]: { [time: string]: Seance[] | null } } = {};
@@ -512,19 +509,21 @@ export class ScheduleComponent implements OnInit {
       });
 
       // Add rattrapage seances
-      if (this.rattarpageSchedule[day]) {
-        Object.keys(this.rattarpageSchedule[day]).forEach(time => {
+      if (this.rattrapageSchedule){
+      if (this.rattrapageSchedule[day]) {
+        Object.keys(this.rattrapageSchedule[day]).forEach(time => {
           if (!filteredSchedule[day][time]) {
             filteredSchedule[day][time] = [];
           }
-          Object.values(this.rattarpageSchedule[day][time]).forEach(seance => {
+         if (this.rattrapageSchedule[day][time] && this.rattrapageSchedule[day][time].length > 0) {
+          Object.values(this.rattrapageSchedule[day][time]).forEach(seance => {
             filteredSchedule[day][time]!.push({
               ...seance,
               // isRattrapage: true
             });
           });
         });
-      }
+      }}
     });
 
     return filteredSchedule;
