@@ -14,13 +14,13 @@
 
       <div class="conflict-details">
         <div class="conflict-types">
-          <h3>Conflict Types:</h3>
-          <mat-chip-list>
+<!--          <h3>Conflict Types:</h3>-->
+
             <mat-chip *ngFor="let type of conflict.conflictTypes" color="warn" selected>
               <mat-icon>{{ getConflictIcon(type) }}</mat-icon>
               {{ type }}
             </mat-chip>
-          </mat-chip-list>
+
         </div>
 
         <mat-divider></mat-divider>
