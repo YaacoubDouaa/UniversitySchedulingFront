@@ -1,32 +1,54 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { PropositionDeRattrapage } from '../models/Notifications';
-import { Seance } from '../models/Seance';
-import { RattrapageService } from '../rattrapage.service';
+import {Component, OnInit} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {PropositionDeRattrapage} from '../models/Notifications';
+import {Seance} from '../models/Seance';
+import {RattrapageService} from '../rattrapage.service';
 
-import { RattrapageSchedule } from '../models/Schedule';
+import {RattrapageSchedule} from '../models/Schedule';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
 import {NotificationService} from '../notifications.service';
+import {Salle} from '../models/Salle';
 
 @Component({
   selector: 'app-proposition-rattrapage',
   templateUrl: './proposition-rattrapage.component.html',
   styleUrls: ['./proposition-rattrapage.component.css'],
-  standalone:false
+  standalone: false
 })
 export class PropositionRattrapageComponent implements OnInit {
   propositions: PropositionDeRattrapage[] = [
-    { id: 1, date: '2025-03-10', reason: 'Maladie', status: 'En attente', enseignantId: 101, type: 'COURS', name: 'Mathématiques', niveau: 'ING_1' },
-    { id: 2, date: '2025-03-12', reason: 'Voyage académique', status: 'En attente', enseignantId: 102, type: 'COURS', name: 'Physique', niveau: 'ING_1' },
+    {
+      id: 1,
+      date: '2025-03-10',
+      reason: 'Maladie',
+      status: 'En attente',
+      enseignantId: 101,
+      type: 'COURS',
+      name: 'Mathématiques',
+      niveau: 'ING_1'
+    },
+    {
+      id: 2,
+      date: '2025-03-12',
+      reason: 'Voyage académique',
+      status: 'En attente',
+      enseignantId: 102,
+      type: 'COURS',
+      name: 'Physique',
+      niveau: 'ING_1'
+    },
   ];
 
   displayedColumns: string[] = ['id', 'date', 'reason', 'status', 'enseignantId', 'type', 'niveau', 'actions'];
+  sallesList: Salle[] = [];
+  private rattrapageScheduleMap = new Map<number, { day: string, time: string, seanceId: number }>();
 
   constructor(
     private rattrapageService: RattrapageService,
     private notificationService: NotificationService,
     private dialog: MatDialog
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     // You can load propositions from a service here if needed
@@ -38,7 +60,7 @@ export class PropositionRattrapageComponent implements OnInit {
   openConfirmationDialog(action: string, prop: PropositionDeRattrapage): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '300px',
-      data: { action, proposition: prop }
+      data: {action, proposition: prop}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -56,7 +78,7 @@ export class PropositionRattrapageComponent implements OnInit {
     if (prop && prop.status === 'En attente') {
       prop.status = 'Confirmé';
       const dateObj = new Date(prop.date);
-      const day = dateObj.toLocaleDateString('fr-FR', { weekday: 'long' }).toUpperCase();
+      const day = dateObj.toLocaleDateString('fr-FR', {weekday: 'long'}).toUpperCase();
       const time = '10:15-11:45';
 
       const seance: Seance = {
@@ -69,7 +91,7 @@ export class PropositionRattrapageComponent implements OnInit {
         biWeekly: false
       };
 
-      this.rattrapageService.addRattrapageSeance( day, time, seance);
+      this.rattrapageService.addRattrapageSeance(day, time, seance);
     }
     this.notificationService.addNotification(`Make-up session confirmed: ${prop.name} on ${prop.date}`, 'success');
 
@@ -84,9 +106,51 @@ export class PropositionRattrapageComponent implements OnInit {
       this.notificationService.addNotification(`Make-up session rejected: ${refusedProp.name} on ${refusedProp.date}`, 'error');
     }
   }
+
   reinitialiser(id: number) {
     this.propositions = this.propositions.map(prop =>
-      prop.id === id ? { ...prop, status: 'En attente' } : prop
+      prop.id === id ? {...prop, status: 'En attente'} : prop
     );
   }
+
+  updateSalle(event: Event, propId: number) {
+    const target = event.target as HTMLInputElement;
+    const newSalle = target.value;
+
+    // Get the stored mapping for this proposition
+    const scheduleInfo = this.rattrapageScheduleMap.get(propId);
+
+    if (!scheduleInfo) {
+      this.notificationService.addNotification('Cannot update salle: session mapping not found', 'error');
+      return;
+    }
+
+    const { day, time, seanceId } = scheduleInfo;
+
+    // Update the salle
+    const success = this.rattrapageService.updateSeanceSalle(
+      day,
+      time,
+      seanceId,
+      newSalle
+    );
+
+    if (success) {
+      // Update the proposition's salle in the local array
+      this.propositions = this.propositions.map(prop =>
+        prop.id === propId ? { ...prop, salle: newSalle } : prop
+      );
+
+      this.notificationService.addNotification(
+        `Salle updated to ${newSalle}`,
+        'success'
+      );
+    } else {
+      this.notificationService.addNotification(
+        'Failed to update salle',
+        'error'
+      );
+    }
+  }
+
 }

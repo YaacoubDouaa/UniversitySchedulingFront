@@ -30,6 +30,7 @@ export interface PropositionDeRattrapage {
   type: string;
   name: string;
   niveau: string;
+  salle?: string; // Add this line
 }
 
 // Signal Interface

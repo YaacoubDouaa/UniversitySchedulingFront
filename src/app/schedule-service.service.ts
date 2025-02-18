@@ -16,4 +16,5 @@ export class ScheduleService {
   changeSchedule(salleSchedule: SalleSchedule) {
     this.scheduleSource.next(salleSchedule);
   }
+
 }

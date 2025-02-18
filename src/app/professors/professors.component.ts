@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import {ProfList, ProfSchedule} from '../models/Professors';
 import {Router} from '@angular/router';
-import {ProfScheduleService} from '../prof-schedule-service.service';
 import {SalleSchedule} from '../models/Salle';
 import {ScheduleService} from '../schedule-service.service';
 import {Seance} from '../models/Seance';
