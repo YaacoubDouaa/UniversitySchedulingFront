@@ -1,15 +1,4 @@
-<section>
-  <div class="button-row">
-    <div class="flex-container">
-      <div class="button-container">
-        <button mat-fab extended (click)="navigateToView()">
-          <mat-icon>visibility</mat-icon>
-          View
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
+
 
 <form>
   <h4>Select Group</h4>
@@ -41,129 +30,55 @@
     <tbody>
     <tr *ngFor="let day of days">
       <td class="time-slot">
-        <div class="time-container" >{{ day }}</div>
+        <div class="time-container">{{ day }}</div>
       </td>
       <td *ngFor="let time of timeSlots">
         <ng-container *ngIf="getFilteredSchedule()[day] && getFilteredSchedule()[day][time]">
-          <div *ngFor="let seance of getFilteredSchedule()[day][time]" class="session-card"
-               [ngStyle]="{'background-color': getActivityColor(seance.biWeekly), 'color': getTypeColor(seance.type)}"
-               [ngClass]="{'has-activity': seance}"
-               (click)="openEditModal(seance, day, time)"
-               [attr.aria-label]="seance ? 'Edit ' + seance.name : 'Empty slot'">
+          <div *ngFor="let seance of getFilteredSchedule()[day][time]"
+               class="session-card"
+               [ngClass]="{
+                   'has-activity': seance}
+                   // 'rattrapage-session': seance.isRattrapage
+                 }"
+               [ngStyle]="{
+                   'background-color': getActivityColor(seance.biWeekly),
+                   'color': getTypeColor(seance.type)
+                 }">
             <div class="session-card-content">
-              <div class="session-name">{{ seance.name }}</div>
-              <div class="session-room">{{ seance.room }}</div>
-              <div class="session-professor">{{ seance.professor }}</div>
-              <div class="session-type">{{ seance.type }}</div>
-              <div class="session-code">{{ seance.code }}</div>
-              <div class="session-frequency" *ngIf="seance.biWeekly">(Biweekly)</div>
+              <div class="session-header">
+                <div class="session-name">{{ seance.name }}</div>
+<!--                <div class="session-tag" *ngIf="seance.isRattrapage">Rattrapage</div>-->
+              </div>
+              <div class="session-details">
+                <div class="session-info">
+                  <mat-icon>room</mat-icon>
+                  <span class="session-room">{{ seance.room }}</span>
+                </div>
+                <div class="session-info">
+                  <mat-icon>person</mat-icon>
+                  <span class="session-professor">{{ seance.professor }}</span>
+                </div>
+                <div class="session-info">
+                  <mat-icon>class</mat-icon>
+                  <span class="session-type">{{ seance.type }}</span>
+                </div>
+                <div class="session-info">
+                  <mat-icon>code</mat-icon>
+                  <span class="session-code">{{ seance.code }}</span>
+                </div>
+                <div class="session-frequency" *ngIf="seance.biWeekly">
+                  <mat-icon>calendar_today</mat-icon>
+                  <span>(Biweekly)</span>
+                </div>
+              </div>
             </div>
-            <section *ngIf="seance.biWeekly">
-              <div class="button-row">
-                <div class="flex-container">
-                  <div class="button-container">
-                    <button mat-fab aria-label="Add session" (click)="openAddModal(day,time); $event.stopPropagation()">
-                      <mat-icon>add</mat-icon>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </section>
-            <section>
-              <div class="button-row">
-                <div class="flex-container">
-                  <div class="button-container">
-                    <button mat-fab aria-label="Delete session" (click)="openDeleteModal(seance.id,day,selectedGroup,time); $event.stopPropagation()">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </section>
           </div>
         </ng-container>
-        <div *ngIf="!getFilteredSchedule()[day][time]" class="session-card empty" (click)="openAddModal(day, time)">
+        <div *ngIf="!getFilteredSchedule()[day][time]" class="session-card empty">
+          <div class="empty-slot-text">No session scheduled</div>
         </div>
       </td>
     </tr>
     </tbody>
   </table>
-</div>
-
-<div *ngIf="selectedActivity" class="modal" (click)="closeModal($event)">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <h2>{{ selectedActivity.seance.id!=0 ? 'Edit Activity' : 'Add Activity' }}</h2>
-    <form class="form-group">
-
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>Activity Name</mat-label>
-          <input matInput [formControl]="nameControl" [(ngModel)]="selectedActivity.seance.name" name="name" placeholder="Ex. Math Class" [matAutocomplete]="autoName" (blur)="onBlur()">
-          <mat-autocomplete #autoName="matAutocomplete">
-            <mat-option *ngFor="let option of filteredNames | async" [value]="option">
-              {{option}}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-      </div>
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>Room</mat-label>
-          <input matInput [formControl]="roomControl" [(ngModel)]="selectedActivity.seance.room" name="room" placeholder="Ex. A-101" [matAutocomplete]="autoRoom" (blur)="onBlur()">
-          <mat-autocomplete #autoRoom="matAutocomplete">
-            <mat-option *ngFor="let option of filteredRooms | async" [value]="option">
-              {{option}}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-      </div>
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>Type</mat-label>
-          <input matInput [(ngModel)]="selectedActivity.seance.type" name="type" [formControl]="typeControl" placeholder="Ex. COURS" [matAutocomplete]="autoType" (blur)="onBlur()">
-          <mat-autocomplete #autoType="matAutocomplete">
-            <mat-option *ngFor="let option of filteredTypes | async" [value]="option">
-              {{option}}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-      </div>
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>Biweekly</mat-label>
-          <input matInput [(ngModel)]="selectedFrequency" name="biweekly" [formControl]="frequencyControl" placeholder="Choose frequency" [matAutocomplete]="autoFrequency" (blur)="onBlur()">
-          <mat-autocomplete #autoFrequency="matAutocomplete">
-            <mat-option *ngFor="let option of filteredFrequency | async" [value]="option">
-              {{option}}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-      </div>
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>Prof</mat-label>
-          <input matInput [(ngModel)]="selectedActivity.seance.professor" name="prof" [formControl]="professorControl" placeholder="Choose professor" [matAutocomplete]="autoProf" (blur)="onBlur()">
-          <mat-autocomplete #autoProf="matAutocomplete">
-            <mat-option *ngFor="let option of filteredProf | async" [value]="option">
-              {{option}}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-      </div>
-      <button mat-button (click)="closeModal()">Close</button>
-      <button mat-raised-button color="primary" (click)="selectedActivity.seance.id ? saveChanges() : saveAddChanges()">Save</button>
-
-    </form>
-  </div>
-</div>
-
-<div *ngIf="showDeleteModal" class="modal">
-  <div class="modal-content">
-    <h2>Confirm Deletion</h2>
-    <p>Are you sure you want to delete this session?</p>
-    <div class="button-group">
-      <button (click)="confirmDelete()" class="btn btn-primary">Yes</button>
-      <button (click)="closeDeleteModal()" class="btn btn-secondary">No</button>
-    </div>
-  </div>
 </div>

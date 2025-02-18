@@ -5,6 +5,7 @@ import {map, Observable, startWith} from 'rxjs';
 import {Seance} from '../models/Seance';
 import {RattrapageSchedule, Schedule} from '../models/Schedule';
 import {RattrapageService} from '../rattrapage.service';
+import { Injector } from '@angular/core';
 @Component({
   selector: 'app-schedule',
   standalone: false,
@@ -269,7 +270,9 @@ export class ScheduleComponent implements OnInit {
   selectedFrequency:string='';
   // Initialize rattrapageSchedule as an empty object instead of null
   rattrapageSchedule: RattrapageSchedule = {};
-  constructor(private router: Router,private rattrapageService: RattrapageService) {
+
+
+  constructor(private router: Router,private rattrapageService: RattrapageService, private injector:Injector) {
 
     // Setup filtering for the autocomplete inputs
     this.filteredNames = this.nameControl.valueChanges.pipe(
@@ -295,12 +298,13 @@ export class ScheduleComponent implements OnInit {
 
   }
   ngOnInit(): void {
-    // Subscribe to the rattrapageSchedule observable to get the latest data
+// Lazy injection of the service
+    this.rattrapageService = this.injector.get(RattrapageService);
+    // Subscribe to get the latest schedule data
     this.rattrapageService.getRattrapageSchedule().subscribe((schedule: RattrapageSchedule) => {
       this.rattrapageSchedule = schedule;
-      console.log(this.rattrapageSchedule); // Just to see if it's working
+      console.log(this.rattrapageSchedule); // Just to confirm it's working
     });
-
   }
 
   private _filter(value: string | null, options: string[]): string[] {
@@ -523,8 +527,7 @@ export class ScheduleComponent implements OnInit {
             rattrapageSeances.forEach(seance => {
               filteredSchedule[day][time]!.push({
                 ...seance,
-                // You can uncomment the line below to track rattrapage sessions
-                // isRattrapage: true
+                 //isRattrapage: true
               });
             });
           }

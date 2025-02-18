@@ -1,30 +1,73 @@
-<div class="schedule-container">
-  <h1>Weekly Schedule</h1>
-
-  <div class="schedule-grid">
-    <div class="schedule-header">
-      <div class="time-slot"></div>
-      <div class="day" *ngFor="let day of days">{{ day }}</div>
-    </div>
-
-    <div class="schedule-body">
-      <ng-container *ngFor="let time of timeSlots">
-        <div class="time-slot">{{ time }}</div>
-        <div class="schedule-cell" *ngFor="let day of days">
-          <ng-container *ngIf="getSession(day, time) as class; else emptyCell">
-            <div *ngFor="let class of getSession(day,time)" class="class-info">
-              <strong>{{ class.name }}</strong>
-              <small>Room: {{ class.room }}</small>
-              <small>Type: {{ class.type }}</small>
-              <small>Code: {{ class.code }}</small>
-              <small *ngIf="class.biWeekly">Bi-Weekly</small>
-            </div>
-          </ng-container>
-          <ng-template #emptyCell>
-            <div class="empty-cell"></div>
-          </ng-template>
-        </div>
-      </ng-container>
+<section>
+  <div class="button-row">
+    <div class="flex-container">
+      <div class="button-container">
+        <button mat-fab extended (click)="navigateToSchedule()">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+      </div>
     </div>
   </div>
+</section>
+
+<form class="filter-form">
+  <h4>Select Group</h4>
+  <mat-form-field appearance="outline">
+    <mat-label>Choose a Group</mat-label>
+    <mat-select [(ngModel)]="selectedGroup" name="group">
+      <mat-option *ngFor="let group of groupOptions" [value]="group">
+        {{ group }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-checkbox [(ngModel)]="showTD" name="showTD">Show TD</mat-checkbox>
+  <mat-checkbox [(ngModel)]="showTP" name="showTP">Show TP</mat-checkbox>
+</form>
+
+<div class="schedule-container">
+  <table class="schedule-table">
+    <thead>
+    <tr>
+      <th class="time-slot">
+        <div class="header">Horaire</div>
+      </th>
+      <th *ngFor="let time of timeSlots">
+        <div class="header-container">{{ time }}</div>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let day of days">
+      <td class="time-slot">
+        <div class="time-container">{{ day }}</div>
+      </td>
+      <td *ngFor="let time of timeSlots">
+        <ng-container *ngIf="getFilteredSchedule()[day] && getFilteredSchedule()[day][time]">
+          <div *ngFor="let seance of getFilteredSchedule()[day][time]"
+               class="session-card view-only"
+               [ngStyle]="{
+                   'background-color': getActivityColor(seance.biWeekly),
+                   'color': getTypeColor(seance.type)
+                 }"
+               [ngClass]="{'has-activity': seance}">
+            <div class="session-card-content">
+              <div class="session-name">{{ seance.name }}</div>
+              <div class="session-details">
+                <div class="session-room">Room: {{ seance.room }}</div>
+                <div class="session-professor">Prof: {{ seance.professor }}</div>
+                <div class="session-type">Type: {{ seance.type }}</div>
+                <div class="session-code">Code: {{ seance.code }}</div>
+                <div class="session-frequency" *ngIf="seance.biWeekly">(Biweekly)</div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <div *ngIf="!getFilteredSchedule()[day][time]" class="session-card empty view-only">
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
 </div>
