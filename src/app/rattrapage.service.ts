@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs'; // Import Observable and of from rxjs
+import { BehaviorSubject, Observable } from 'rxjs';
 import { RattrapageSchedule } from './models/Schedule';
 import { Seance } from './models/Seance';
 
@@ -8,6 +8,7 @@ import { Seance } from './models/Seance';
 })
 export class RattrapageService {
   private rattrapageSchedule: RattrapageSchedule = {};
+  private rattrapageScheduleSubject = new BehaviorSubject<RattrapageSchedule>(this.rattrapageSchedule);
 
   constructor() {}
 
@@ -21,21 +22,12 @@ export class RattrapageService {
     }
 
     this.rattrapageSchedule[day][time].push(seance);
-  }
 
-  getRattrapageSessions(day?: string, time?: string): Seance[] {
-    if (day && time) {
-      return this.rattrapageSchedule[day]?.[time] || [];
-    } else if (day) {
-      return Object.values(this.rattrapageSchedule[day] || {}).flat();
-    } else {
-      return Object.values(this.rattrapageSchedule).flatMap(daySchedule =>
-        Object.values(daySchedule).flat()
-      );
-    }
+    // Emit updated schedule to all subscribers
+    this.rattrapageScheduleSubject.next(this.rattrapageSchedule);
   }
 
   getRattrapageSchedule(): Observable<RattrapageSchedule> {
-    return of(this.rattrapageSchedule);  // Return the schedule as an observable
+    return this.rattrapageScheduleSubject.asObservable(); // Return an observable that updates automatically
   }
 }

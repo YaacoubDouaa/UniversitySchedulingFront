@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
+
 // Import Angular Material components
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -26,6 +27,7 @@ import {
   MatExpansionPanelHeader,
   MatExpansionPanelTitle
 } from '@angular/material/expansion';
+import { HttpClientModule } from '@angular/common/http';
 import { ConflictPageComponent } from './conflict-page/conflict-page.component';
 import {ConflictDetectionService} from './conflict.service';
 import { RoomsComponent } from './rooms/rooms.component';
@@ -178,6 +180,7 @@ import {MatChip,MatChipsModule} from '@angular/material/chips';
     MatChipsModule,
     MatIconModule,
     MatDividerModule,
+    HttpClientModule
 
   ],
   providers: [
@@ -185,6 +188,6 @@ import {MatChip,MatChipsModule} from '@angular/material/chips';
   ],
 
   bootstrap: [AppComponent]
-  
+
 })
 export class AppModule { }
