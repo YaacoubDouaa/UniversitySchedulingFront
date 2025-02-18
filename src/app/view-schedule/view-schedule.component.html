@@ -11,7 +11,7 @@
   </div>
 </section>
 
-<form class="filter-form">
+<form>
   <h4>Select Group</h4>
   <mat-form-field appearance="outline">
     <mat-label>Choose a Group</mat-label>
@@ -46,25 +46,47 @@
       <td *ngFor="let time of timeSlots">
         <ng-container *ngIf="getFilteredSchedule()[day] && getFilteredSchedule()[day][time]">
           <div *ngFor="let seance of getFilteredSchedule()[day][time]"
-               class="session-card view-only"
+               class="session-card"
+               [ngClass]="{
+                   'has-activity': seance,
+
+                 }"
                [ngStyle]="{
                    'background-color': getActivityColor(seance.biWeekly),
                    'color': getTypeColor(seance.type)
-                 }"
-               [ngClass]="{'has-activity': seance}">
+                 }">
             <div class="session-card-content">
-              <div class="session-name">{{ seance.name }}</div>
+              <div class="session-header">
+                <div class="session-name">{{ seance.name }}</div>
+<!--                <div class="session-tag" *ngIf="seance.isRattrapage">Rattrapage</div>-->
+              </div>
               <div class="session-details">
-                <div class="session-room">Room: {{ seance.room }}</div>
-                <div class="session-professor">Prof: {{ seance.professor }}</div>
-                <div class="session-type">Type: {{ seance.type }}</div>
-                <div class="session-code">Code: {{ seance.code }}</div>
-                <div class="session-frequency" *ngIf="seance.biWeekly">(Biweekly)</div>
+                <div class="session-info">
+                  <mat-icon>room</mat-icon>
+                  <span class="session-room">{{ seance.room }}</span>
+                </div>
+                <div class="session-info">
+                  <mat-icon>person</mat-icon>
+                  <span class="session-professor">{{ seance.professor }}</span>
+                </div>
+                <div class="session-info">
+                  <mat-icon>class</mat-icon>
+                  <span class="session-type">{{ seance.type }}</span>
+                </div>
+                <div class="session-info">
+
+                  <span class="session-code">{{ seance.code }}</span>
+                </div>
+                <div class="session-frequency" *ngIf="seance.biWeekly">
+                  <mat-icon>calendar_today</mat-icon>
+                  <span>(Biweekly)</span>
+                </div>
               </div>
             </div>
           </div>
         </ng-container>
-        <div *ngIf="!getFilteredSchedule()[day][time]" class="session-card empty view-only">
+        <div *ngIf="!getFilteredSchedule()[day][time]" class="session-card empty">
+          <div class="empty-slot-text">No session scheduled</div>
         </div>
       </td>
     </tr>

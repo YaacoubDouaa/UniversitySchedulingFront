@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import {Component, Injector} from '@angular/core';
 import { map, Observable, startWith } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import {Schedule} from '../models/Schedule';
+import {RattrapageSchedule, Schedule} from '../models/Schedule';
 import {Seance} from '../models/Seance';
 import {RattrapageService} from '../rattrapage.service';
 
@@ -231,11 +231,20 @@ export class ViewScheduleComponent {
       }
     }
   };
+  private rattrapageSchedule: RattrapageSchedule={};
 
-  constructor(private router: Router,private rattrapageService: RattrapageService) {
+  constructor(private router: Router,private rattrapageService: RattrapageService,private injector: Injector) {
 
   }
-
+  ngOnInit(): void {
+// Lazy injection of the service
+    this.rattrapageService = this.injector.get(RattrapageService);
+    // Subscribe to get the latest schedule data
+    this.rattrapageService.getRattrapageSchedule().subscribe((schedule: RattrapageSchedule) => {
+      this.rattrapageSchedule = schedule;
+      console.log(this.rattrapageSchedule); // Just to confirm it's working
+    });
+  }
   private _filter(value: string | null, options: string[]): string[] {
     const filterValue = value ? value.toLowerCase() : '';
     return options.filter(option => option.toLowerCase().includes(filterValue));
@@ -291,19 +300,21 @@ export class ViewScheduleComponent {
 
   filteredSchedule: Seance[] = [];
   groupOptions: string[] = ['ING1_INFO','ING1_INFO_TD1', 'ING1_INFO_TD2','ING1_INFO_TD1 || ING1_INFO_TD2'];
+
   getFilteredSchedule(): { [day: string]: { [time: string]: Seance[] | null } } {
     const filteredSchedule: { [day: string]: { [time: string]: Seance[] | null } } = {};
 
     this.days.forEach(day => {
       filteredSchedule[day] = {};
-      Object.keys(this.schedule[day]).forEach(group => {
+      Object.keys(this.schedule[day] || {}).forEach(group => {
         if (this.getDisplayedGroup().includes(group)) {
-          Object.keys(this.schedule[day][group]).forEach(time => {
-            if (this.schedule[day][group][time]) {
+          Object.keys(this.schedule[day]?.[group] || {}).forEach(time => {
+            const seances = this.schedule[day]?.[group]?.[time];
+            if (seances) {
               if (!filteredSchedule[day][time]) {
                 filteredSchedule[day][time] = [];
               }
-              this.schedule[day][group][time]!.forEach(seance => {
+              seances.forEach(seance => {
                 if (
                   seance && (
                     (this.showTD && seance.type === 'TD') ||
@@ -318,10 +329,30 @@ export class ViewScheduleComponent {
           });
         }
       });
+
+      // Add rattrapage seances with more robust checks
+      if (this.rattrapageSchedule?.[day]) {
+        Object.keys(this.rattrapageSchedule[day]).forEach(time => {
+          if (!filteredSchedule[day][time]) {
+            filteredSchedule[day][time] = [];
+          }
+
+          // Only add rattrapage seances if they're valid
+          const rattrapageSeances = this.rattrapageSchedule[day]?.[time];
+          if (Array.isArray(rattrapageSeances) && rattrapageSeances.length > 0) {
+            rattrapageSeances.forEach(seance => {
+              filteredSchedule[day][time]!.push({
+                ...seance,
+                //isRattrapage: true
+              });
+            });
+          }
+        });
+      }
     });
+
     return filteredSchedule;
   }
-
   getSession(day: string, time: string): Seance[] {
     const sessions: Seance[] = [];
 
