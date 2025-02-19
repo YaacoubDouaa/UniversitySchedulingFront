@@ -73,6 +73,9 @@ import {
 import {MatGridList, MatGridListModule, MatGridTile} from '@angular/material/grid-list';
 import {MatChip, MatChipListbox, MatChipsModule} from '@angular/material/chips';
 import {ConflictService} from './conflict.service';
+import { CsvImportComponent } from './csv-import/csv-import.component';
+import {MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious} from '@angular/material/stepper';
+import {MatProgressBar} from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -96,6 +99,7 @@ import {ConflictService} from './conflict.service';
     ProfessorViewScheduleComponent,
     ProposeRattrapageComponent,
     ProfessorViewScheduleComponent,
+    CsvImportComponent,
 
   ],
   imports: [
@@ -182,7 +186,13 @@ import {ConflictService} from './conflict.service';
     MatIconModule,
     MatDividerModule,
     HttpClientModule,
-    MatChipListbox
+    MatChipListbox,
+    MatStepper,
+    MatStep,
+    MatProgressBar,
+    MatStepperPrevious,
+    MatStepLabel,
+    MatStepperNext
 
   ],
   providers: [

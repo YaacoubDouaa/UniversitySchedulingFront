@@ -16,6 +16,7 @@ import {ProfessorSpaceComponent} from './professor-space/professor-space.compone
 import {ProfessorDashboardComponent} from './professor-dashboard/professor-dashboard.component';
 import {ProposeRattrapageComponent} from './propose-rattrapage/propose-rattrapage.component';
 import {ProfessorViewScheduleComponent} from './professor-view-schedule/professor-view-schedule.component';
+import {CsvImportComponent} from './csv-import/csv-import.component';
 
 const routes: Routes = [ { path: '', component: LoginComponent },
 
@@ -30,6 +31,8 @@ const routes: Routes = [ { path: '', component: LoginComponent },
   { path: 'global', component: GlobalScheduleComponent },
   { path: 'rattrapage', component: PropositionRattrapageComponent },
   { path: 'dashboard', component: DashboardComponent},
+  { path: 'profs', component: ProfessorsComponent},
+  { path: 'import', component: CsvImportComponent},
   {
     path: 'professor',
     component: ProfessorSpaceComponent,

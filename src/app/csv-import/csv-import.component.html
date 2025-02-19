@@ -1,0 +1,67 @@
+<mat-stepper #stepper>
+  <mat-step [stepControl]="uploadForm">
+    <ng-template matStepLabel>Upload CSV</ng-template>
+    <form [formGroup]="uploadForm">
+      <input type="file" (change)="onFileSelected($event)" accept=".csv" #fileInput style="display: none;">
+      <button mat-raised-button color="primary" (click)="fileInput.click()">Choose File</button>
+      <p *ngIf="file">Selected file: {{ file.name }}</p>
+      <div>
+        <button mat-button matStepperNext (click)="parseFile()" [disabled]="!file">Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="mappingForm">
+    <ng-template matStepLabel>Preview & Process</ng-template>
+    <div *ngIf="isProcessing">
+      <mat-progress-bar mode="determinate" [value]="processingProgress"></mat-progress-bar>
+      <p>Processing file... {{ processingProgress }}%</p>
+    </div>
+    <div *ngIf="!isProcessing && previewData.data.length > 0">
+      <h3>Preview</h3>
+      <mat-table [dataSource]="previewData">
+        <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
+          <mat-header-cell *matHeaderCellDef>{{ column }}</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element[column] }}</mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+
+      <form [formGroup]="mappingForm">
+        <h3>Map Fields</h3>
+        <div *ngFor="let column of displayedColumns">
+          <mat-form-field>
+            <mat-label>{{ column }}</mat-label>
+            <mat-select [formControlName]="column">
+              <mat-option value="">Ignore</mat-option>
+              <mat-option value="day">Day</mat-option>
+              <mat-option value="time">Time</mat-option>
+              <mat-option value="course">Course</mat-option>
+              <mat-option value="professor">Professor</mat-option>
+              <mat-option value="room">Room</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </form>
+
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext (click)="mapFields()">Next</button>
+      </div>
+    </div>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Save & Generate</ng-template>
+    <p>Your schedule has been processed and is ready to be saved.</p>
+    <div>
+      <button mat-raised-button color="primary" (click)="saveSchedule()">Save Schedule</button>
+      <button mat-raised-button color="accent" (click)="downloadJson()">Download JSON</button>
+    </div>
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button (click)="stepper.reset()">Reset</button>
+    </div>
+  </mat-step>
+</mat-stepper>

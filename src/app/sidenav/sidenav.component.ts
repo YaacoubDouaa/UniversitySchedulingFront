@@ -42,5 +42,9 @@ export class SidenavComponent {
   navigateToDashBoard() {
     this.router.navigate(['/professor']);
   }
+
+  importCSV() {
+    this.router.navigate(['/import']);
+  }
 }
 

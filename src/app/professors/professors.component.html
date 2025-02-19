@@ -24,20 +24,29 @@
   </div>
 </form>
 <div *ngIf="selectedTime !== '' && selectedDay !== ''">
-<div class="card-container" style="display: flex; flex-wrap: wrap; gap: 1rem;">
-  <div *ngFor="let name of Object.keys(profs)"
-       class="card"
-       style="width: 18rem; cursor: pointer;"
-       [style.backgroundColor]="getSalleColor(name, selectedDay, selectedTime, selectedType)">
+  <div class="card-container" style="display: flex; flex-wrap: wrap; gap: 1rem;">
+    <div *ngFor="let name of Object.keys(profs)"
+         class="card"
+         style="width: 18rem; cursor: pointer; padding: 1rem; border-radius: 8px;"
+         [style.backgroundColor]="getSalleColor(name, selectedDay, selectedTime, selectedType)">
 
-    <div class="card-body">
-      <h1 class="card-title">{{ name }}</h1>
+      <div class="card-body" style="display: flex; align-items: center; gap: 1rem;">
+        <!-- MatAvatar for Professor -->
+        <mat-icon matListAvatar style="font-size: 40px; background-color: #2196F3; color: white; border-radius: 50%; padding: 8px;">
+          person
+        </mat-icon>
 
-      <p class="card-disponibilité">{{ isProfAvailable(name, selectedDay, selectedTime) ? "Disponible" : "Occupée" }}</p>
+        <!-- Professor Name -->
+        <h2 class="card-title">{{ name }}</h2>
+      </div>
 
-      <div class="button-group">
+      <p class="card-disponibilité" style="text-align: center;">
+        {{ isProfAvailable(name, selectedDay, selectedTime) ? "Disponible" : "Occupée" }}
+      </p>
+
+      <div class="button-group" style="display: flex; justify-content: center; gap: 0.5rem;">
         <section *ngIf="isProfAvailable(name, selectedDay, selectedTime)">
-          <button mat-raised-button color="primary" (click)="openAddModal(selectedDay,selectedTime)">Assign a Session</button>
+          <button mat-raised-button color="primary" (click)="openAddModal(selectedDay, selectedTime)">Assign a Session</button>
         </section>
 
         <section>
@@ -51,42 +60,5 @@
         </section>
       </div>
     </div>
-  </div>
-</div>
-</div>
-
-<div *ngIf="selectedActivity" class="modal" (click)="closeModal($event)">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <h2>{{ selectedActivity.seance.id ? 'Edit Activity' : 'Add Activity' }}</h2>
-
-    <form class="form-container" *ngIf="showModal">
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>Activity Name</mat-label>
-          <input matInput [(ngModel)]="selectedActivity.seance.name" name="activityName" required />
-        </mat-form-field>
-      </div>
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>Professor</mat-label>
-          <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required />
-        </mat-form-field>
-      </div>
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>Type</mat-label>
-          <input matInput [(ngModel)]="selectedActivity.seance.type" name="type" />
-        </mat-form-field>
-      </div>
-      <div>
-        <div class="button-group">
-          <button mat-button (click)="closeModal(); $event.stopPropagation()">Close</button>
-          <button mat-raised-button color="primary"
-                  (click)="selectedActivity.seance.id ? saveEditChanges() : saveAddChanges(); $event.stopPropagation()">
-            Save
-          </button>
-        </div>
-      </div>
-    </form>
   </div>
 </div>
