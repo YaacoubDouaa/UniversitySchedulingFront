@@ -15,4 +15,17 @@ export interface Prof {
   heures: number;
   schedule: ProfSchedule;
 }
+export interface EnseignantDTO {
+  codeEnseignant: string;   // Unique code for the teacher
+  heures: number;           // Total teaching hours
+
+  // List of session IDs the teacher is responsible for
+  seanceIds: number[];
+
+  // List of proposed catch-up session IDs
+  propositionIds: number[];
+
+  // List of signal IDs
+  signalIds: number[];
+}
 

@@ -37,6 +37,7 @@ export class RoomScheduleComponent {
       this.salleSchedule = schedule;
     });
   }
+
   getClassDetails(day: string, time: string): any {
     return this.salleSchedule || null;
   }

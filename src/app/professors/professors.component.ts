@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import {Component, Injector} from '@angular/core';
 import {ProfList, ProfSchedule} from '../models/Professors';
 import {Router} from '@angular/router';
-import {SalleSchedule} from '../models/Salle';
+import {SalleList, SalleSchedule} from '../models/Salle';
 import {ScheduleService} from '../schedule-service.service';
 import {Seance} from '../models/Seance';
+import {RoomService} from '../rooms.service';
+import {ProfessorsService} from '../professors.service';
 
 @Component({
   selector: 'app-professors',
@@ -26,208 +28,7 @@ export class ProfessorsComponent {
     day: string;
     time: string;
   } | null = null;
-  profs: ProfList = {
-  'Omar NASRI': {
-    name: 'Omar NASRI',
-    codeEnseignant: 'P001',
-    heures: 2,
-    schedule: {
-      MARDI: {
-        '8:30-10:00': {
-          ING2_TIC: {
-            name: 'Ch-Réseaux Informatiques Avancés',
-            id: 20,
-            groupe: 'ING2_TIC',
-            room: 'B-12',
-            type: 'COURS',
-            professor: 'Omar NASRI',
-            biWeekly: false
-          }
-        }
-      }
-    }
-  },
-  'Hana CHAIEB': {
-    name: 'Hana CHAIEB',
-    codeEnseignant: 'P002',
-    heures: 2,
-    schedule: {
-      MARDI: {
-        '10:15-11:45': {
-          ING2_TIC: {
-            name: 'Ch-Sécurité des Systèmes',
-            id: 21,
-            groupe: 'ING2_TIC',
-            room: 'B-12',
-            type: 'COURS',
-            professor: 'Hana CHAIEB',
-            biWeekly: false
-          }
-        }
-      }
-    }
-  },
-  'Karim KHELIL': {
-    name: 'Karim KHELIL',
-    codeEnseignant: 'P003',
-    heures: 1,
-    schedule: {
-      VENDREDI: {
-        '12:00-13:30': {
-          ING2_TIC_TP: {
-            name: 'TP-Cryptographie Avancée',
-            id: 22,
-            groupe: 'ING2_TIC_TP',
-            room: 'B-12',
-            type: 'TP',
-            professor: 'Karim KHELIL',
-            biWeekly: true
-          }
-        }
-      }
-    }
-  },
-  'Fatma JEMAA': {
-    name: 'Fatma JEMAA',
-    codeEnseignant: 'P004',
-    heures: 2,
-    schedule: {
-      LUNDI: {
-        '8:30-10:00': {
-          ING1_SE: {
-            name: 'TP-Développement Web',
-            id: 23,
-            groupe: 'ING1_SE',
-            room: 'C-05',
-            type: 'TP',
-            professor: 'Fatma JEMAA',
-            biWeekly: false
-          }
-        }
-      }
-    }
-  },
-  'Ahmed BELHADJ': {
-    name: 'Ahmed BELHADJ',
-    codeEnseignant: 'P005',
-    heures: 2,
-    schedule: {
-      LUNDI: {
-        '13:00-14:30': {
-          ING1_SE: {
-            name: 'TP-Programmation Orientée Objet',
-            id: 24,
-            groupe: 'ING1_SE',
-            room: 'C-05',
-            type: 'TP',
-            professor: 'Ahmed BELHADJ',
-            biWeekly: false
-          }
-        }
-      }
-    }
-  },
-  'Nada FAKHFAKH': {
-    name: 'Nada FAKHFAKH',
-    codeEnseignant: 'P006',
-    heures: 1,
-    schedule: {
-      MERCREDI: {
-        '16:30-18:00': {
-          ING1_SE: {
-            name: 'TP-Bases de Données',
-            id: 25,
-            groupe: 'ING1_SE',
-            room: 'C-05',
-            type: 'TP',
-            professor: 'Nada FAKHFAKH',
-            biWeekly: true
-          }
-        }
-      }
-    }
-  },
-  'Zied ALOUANI': {
-    name: 'Zied ALOUANI',
-    codeEnseignant: 'P007',
-    heures: 2,
-    schedule: {
-      JEUDI: {
-        '10:15-11:45': {
-          ING3_EEA: {
-            name: 'Séminaire-Ingénierie des Systèmes Embarqués',
-            id: 26,
-            groupe: 'ING3_EEA',
-            room: 'D-20',
-            type: 'SEMINAIRE',
-            professor: 'Zied ALOUANI',
-            biWeekly: false
-          }
-        }
-      }
-    }
-  },
-  'Mouna KHEMIRI': {
-    name: 'Mouna KHEMIRI',
-    codeEnseignant: 'P008',
-    heures: 2,
-    schedule: {
-      JEUDI: {
-        '14:45-16:15': {
-          ING3_EEA: {
-            name: 'Séminaire-Internet des Objets',
-            id: 27,
-            groupe: 'ING3_EEA',
-            room: 'D-20',
-            type: 'SEMINAIRE',
-            professor: 'Mouna KHEMIRI',
-            biWeekly: false
-          }
-        }
-      }
-    }
-  },
-  'Leila KHARRAT': {
-    name: 'Leila KHARRAT',
-    codeEnseignant: 'P009',
-    heures: 2,
-    schedule: {
-      MARDI: {
-        '12:00-13:30': {
-          ING1_MATH: {
-            name: 'Ch-Analyse Mathématique',
-            id: 28,
-            groupe: 'ING1_MATH',
-            room: 'E-10',
-            type: 'COURS',
-            professor: 'Leila KHARRAT',
-            biWeekly: false
-          }
-        }
-      }
-    }
-  },
-  'Salma YAHYA': {
-    name: 'Salma YAHYA',
-    codeEnseignant: 'P010',
-    heures: 1,
-    schedule: {
-      SAMEDI: {
-        '8:30-10:00': {
-          ING1_MATH_TD: {
-            name: 'TD-Probabilités et Statistiques',
-            id: 29,
-            groupe: 'ING1_MATH_TD',
-            room: 'E-10',
-            type: 'TD',
-            professor: 'Salma YAHYA',
-            biWeekly: true
-          }
-        }
-      }
-    }
-  }
-};
+  profs: ProfList = {};
   profSchedule: SalleSchedule = {
     LUNDI: {},
     MARDI: {},
@@ -239,8 +40,16 @@ export class ProfessorsComponent {
   };
 
 
-constructor(private router: Router, private profScheduleService: ScheduleService) {}
-
+constructor(private router: Router, private profScheduleService: ScheduleService,private profService: ProfessorsService, private injector:Injector) {}
+  ngOnInit(): void {
+// Lazy injection of the service
+    this.profService = this.injector.get(ProfessorsService);
+    // Subscribe to get the latest schedule data
+    this.profService.getProfs().subscribe((profList:ProfList) => {
+      this.profs = profList;
+      console.log(this.profs); // Just to confirm it's working
+    });
+  }
   isProfAvailable(name: string, day: string, time: string): boolean {
     const disponibilite = this.profs[name].schedule;
 
