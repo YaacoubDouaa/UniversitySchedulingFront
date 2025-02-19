@@ -37,7 +37,7 @@ export class ProfessorsComponent {
           ING2_TIC: {
             name: 'Ch-Réseaux Informatiques Avancés',
             id: 20,
-            code: 'ING2_TIC',
+            groupe: 'ING2_TIC',
             room: 'B-12',
             type: 'COURS',
             professor: 'Omar NASRI',
@@ -57,7 +57,7 @@ export class ProfessorsComponent {
           ING2_TIC: {
             name: 'Ch-Sécurité des Systèmes',
             id: 21,
-            code: 'ING2_TIC',
+            groupe: 'ING2_TIC',
             room: 'B-12',
             type: 'COURS',
             professor: 'Hana CHAIEB',
@@ -77,7 +77,7 @@ export class ProfessorsComponent {
           ING2_TIC_TP: {
             name: 'TP-Cryptographie Avancée',
             id: 22,
-            code: 'ING2_TIC_TP',
+            groupe: 'ING2_TIC_TP',
             room: 'B-12',
             type: 'TP',
             professor: 'Karim KHELIL',
@@ -97,7 +97,7 @@ export class ProfessorsComponent {
           ING1_SE: {
             name: 'TP-Développement Web',
             id: 23,
-            code: 'ING1_SE',
+            groupe: 'ING1_SE',
             room: 'C-05',
             type: 'TP',
             professor: 'Fatma JEMAA',
@@ -117,7 +117,7 @@ export class ProfessorsComponent {
           ING1_SE: {
             name: 'TP-Programmation Orientée Objet',
             id: 24,
-            code: 'ING1_SE',
+            groupe: 'ING1_SE',
             room: 'C-05',
             type: 'TP',
             professor: 'Ahmed BELHADJ',
@@ -137,7 +137,7 @@ export class ProfessorsComponent {
           ING1_SE: {
             name: 'TP-Bases de Données',
             id: 25,
-            code: 'ING1_SE',
+            groupe: 'ING1_SE',
             room: 'C-05',
             type: 'TP',
             professor: 'Nada FAKHFAKH',
@@ -157,7 +157,7 @@ export class ProfessorsComponent {
           ING3_EEA: {
             name: 'Séminaire-Ingénierie des Systèmes Embarqués',
             id: 26,
-            code: 'ING3_EEA',
+            groupe: 'ING3_EEA',
             room: 'D-20',
             type: 'SEMINAIRE',
             professor: 'Zied ALOUANI',
@@ -177,7 +177,7 @@ export class ProfessorsComponent {
           ING3_EEA: {
             name: 'Séminaire-Internet des Objets',
             id: 27,
-            code: 'ING3_EEA',
+            groupe: 'ING3_EEA',
             room: 'D-20',
             type: 'SEMINAIRE',
             professor: 'Mouna KHEMIRI',
@@ -197,7 +197,7 @@ export class ProfessorsComponent {
           ING1_MATH: {
             name: 'Ch-Analyse Mathématique',
             id: 28,
-            code: 'ING1_MATH',
+            groupe: 'ING1_MATH',
             room: 'E-10',
             type: 'COURS',
             professor: 'Leila KHARRAT',
@@ -217,7 +217,7 @@ export class ProfessorsComponent {
           ING1_MATH_TD: {
             name: 'TD-Probabilités et Statistiques',
             id: 29,
-            code: 'ING1_MATH_TD',
+            groupe: 'ING1_MATH_TD',
             room: 'E-10',
             type: 'TD',
             professor: 'Salma YAHYA',
@@ -257,7 +257,7 @@ constructor(private router: Router, private profScheduleService: ScheduleService
 
   openAddModal(day: string, time: string): void {
     this.selectedActivity = {
-      seance: { name: '', id: 0, room: '', type: 'COURS', professor: '', code: '', biWeekly: this.selectedFrequency === 'biweekly' },
+      seance: { name: '', id: 0, room: '', type: 'COURS', professor: '', groupe: '', biWeekly: this.selectedFrequency === 'biweekly' },
       day,
       time
     };
@@ -271,7 +271,7 @@ constructor(private router: Router, private profScheduleService: ScheduleService
       if (!this.profSchedule[day]) this.profSchedule[day] = {};
       if (!this.profSchedule[day][time]) this.profSchedule[day][time] = {};
 
-      const niveau = seance.code || 'Default';
+      const niveau = seance.groupe || 'Default';
       this.profSchedule[day][time][niveau] = seance;
     }
     this.showModal = false;
@@ -279,7 +279,7 @@ constructor(private router: Router, private profScheduleService: ScheduleService
 
   openEditModal(seance: Seance | null, day: string, time: string) {
     this.selectedActivity = {
-      seance: seance ? { ...seance } : { name: '',id:0, room: '', type: 'COURS', professor: '', code: '',biWeekly: this.selectedFrequency==='biweekly' },
+      seance: seance ? { ...seance } : { name: '',id:0, room: '', type: 'COURS', professor: '', groupe: '',biWeekly: this.selectedFrequency==='biweekly' },
       day,
       time,
 
@@ -293,7 +293,7 @@ constructor(private router: Router, private profScheduleService: ScheduleService
       const { day, time, seance } = this.selectedActivity;
 
       if (this.profSchedule[day] && this.profSchedule[day][time]) {
-        const niveau = seance.code || 'Default';
+        const niveau = seance.groupe|| 'Default';
         this.profSchedule[day][time][niveau] = seance;
       }
     }

@@ -3,8 +3,6 @@ import {MatDialog} from '@angular/material/dialog';
 import {PropositionDeRattrapage} from '../models/Notifications';
 import {Seance} from '../models/Seance';
 import {RattrapageService} from '../rattrapage.service';
-
-import {RattrapageSchedule} from '../models/Schedule';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
 import {NotificationService} from '../notifications.service';
 import {Salle} from '../models/Salle';
@@ -87,7 +85,7 @@ export class PropositionRattrapageComponent implements OnInit {
         room: '',
         type: prop.type,
         professor: `Enseignant ${prop.enseignantId}`,
-        code: prop.niveau,
+        groupe: prop.niveau,
         biWeekly: false
       };
 

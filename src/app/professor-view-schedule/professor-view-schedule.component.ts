@@ -25,7 +25,7 @@ export class ProfessorViewScheduleComponent implements OnInit {
           room: 'A-101',
           type: 'COURS',
           professor: 'Dr. Smith',
-          code: 'MATH101',
+          groupe: 'ING_1',
           biWeekly: false
         }
       },
@@ -36,7 +36,7 @@ export class ProfessorViewScheduleComponent implements OnInit {
           room: 'B-203',
           type: 'COURS',
           professor: 'Dr. Smith',
-          code: 'PHYS202',
+          groupe: 'ING_1',
           biWeekly: false
         }
       }
@@ -49,7 +49,7 @@ export class ProfessorViewScheduleComponent implements OnInit {
           room: 'C-105',
           type: 'COURS',
           professor: 'Dr. Smith',
-          code: 'CHEM301',
+          groupe: 'ING_1',
           biWeekly: false
         }
       }
@@ -62,7 +62,7 @@ export class ProfessorViewScheduleComponent implements OnInit {
           room: 'D-201',
           type: 'COURS',
           professor: 'Dr. Smith',
-          code: 'BIO102',
+          groupe: 'ING_1',
           biWeekly: false
         }
       }
@@ -75,7 +75,7 @@ export class ProfessorViewScheduleComponent implements OnInit {
           room: 'E-302',
           type: 'COURS',
           professor: 'Dr. Smith',
-          code: 'CS201',
+          groupe: 'ING_1',
           biWeekly: false
         }
       }
@@ -88,7 +88,7 @@ export class ProfessorViewScheduleComponent implements OnInit {
           room: 'F-105',
           type: 'COURS',
           professor: 'Dr. Smith',
-          code: 'STAT301',
+          groupe: 'ING_1',
           biWeekly: false
         }
       }

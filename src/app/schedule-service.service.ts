@@ -1,7 +1,7 @@
 
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import {Schedule} from './models/Schedule';
+
 import {SalleSchedule} from './models/Salle';
 
 @Injectable({

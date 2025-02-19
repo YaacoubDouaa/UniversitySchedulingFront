@@ -6,7 +6,7 @@ export interface Seance {
   room: string;
   type: 'COURS' | 'TD' | 'TP'|string;
   professor: string;
-  code: string;
+  groupe: string;
   biWeekly?: boolean;
 }
 
@@ -14,5 +14,7 @@ export interface Seance {
 export interface SeanceConflict {
   seance1: Seance;
   seance2: Seance;
+  day:string;
+  time:string;
   conflictTypes: string[];
 }

@@ -81,7 +81,7 @@ export class ProfScheduleComponent {
 // 1️⃣ Open Add Modal
   openAddModal(day: string, time: string): void {
     this.selectedActivity = {
-      seance: { name: '', id: 0, room: '', type: 'COURS', professor: '', code: '', biWeekly: this.selectedFrequency === 'biweekly' },
+      seance: { name: '', id: 0, room: '', type: 'COURS', professor: '', groupe: '', biWeekly: this.selectedFrequency === 'biweekly' },
       day,
       time
     };
@@ -96,7 +96,7 @@ export class ProfScheduleComponent {
       if (!this.profSchedule[day]) this.profSchedule[day] = {};
       if (!this.profSchedule[day][time]) this.profSchedule[day][time] = {};
 
-      const niveau = seance.code || 'Default';
+      const niveau = seance.groupe || 'Default';
       this.profSchedule[day][time][niveau] = seance;
     }
     this.showAddModal = false; // Close the modal
@@ -106,7 +106,7 @@ export class ProfScheduleComponent {
   // 3️⃣ Open Edit Modal
   openEditModal(seance: Seance | null, day: string, time: string): void {
     this.selectedActivity = {
-      seance: seance ? { ...seance } : { name: '', id: 0, room: '', type: 'COURS', professor: '', code: '', biWeekly: this.selectedFrequency === 'biweekly' },
+      seance: seance ? { ...seance } : { name: '', id: 0, room: '', type: 'COURS', professor: '', groupe: '', biWeekly: this.selectedFrequency === 'biweekly' },
       day,
       time
     };
@@ -119,7 +119,7 @@ export class ProfScheduleComponent {
       const { day, time, seance } = this.selectedActivity;
 
       if (this.profSchedule[day] && this.profSchedule[day][time]) {
-        const niveau = seance.code || 'Default';
+        const niveau = seance.groupe || 'Default';
         this.profSchedule[day][time][niveau] = seance;
       }
     }

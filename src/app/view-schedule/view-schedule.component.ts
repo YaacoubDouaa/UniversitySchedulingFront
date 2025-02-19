@@ -26,7 +26,7 @@ export class ViewScheduleComponent {
         '8:30-10:00': [{
           name: 'Ch-Ingénierie et interprétabilité des systèmes informatiques',
           id: 1,
-          code: 'ING1_INFO',
+          groupe: 'ING1_INFO',
           room: 'A-8',
           type: 'COURS',
           professor: 'Sara MTIW',
@@ -37,7 +37,7 @@ export class ViewScheduleComponent {
         '10:15-11:45': [{
           name: 'TD-Algèbre certification 2',
           id: 2,
-          code: 'ING1_INFO_TD1',
+          groupe: 'ING1_INFO_TD1',
           room: 'A-32',
           type: 'TD',
           professor: 'Soumaya BEN AICHA',
@@ -46,7 +46,7 @@ export class ViewScheduleComponent {
         '13:00-14:30': [{
           name: 'TD-HDIG-Ingénierie et interprétabilité des systèmes informatiques',
           id: 3,
-          code: 'ING1_INFO_TD1',
+          groupe: 'ING1_INFO_TD1',
           room: 'A-32',
           type: 'TD',
           professor: 'Sara MTIW',
@@ -55,7 +55,7 @@ export class ViewScheduleComponent {
         '14:45-16:15': [{
           name: 'TD-HDIG-Preuve de programmes',
           id: 4,
-          code: 'ING1_INFO_TD1',
+          groupe: 'ING1_INFO_TD1',
           room: 'A-32',
           type: 'TD',
           professor: 'Lassâad HAMEL',
@@ -68,7 +68,7 @@ export class ViewScheduleComponent {
         '8:30-10:00': [{
           name: 'Ch-Optimisation combinatoire',
           id: 5,
-          code: 'ING1_INFO',
+          groupe: 'ING1_INFO',
           room: 'C-61',
           type: 'COURS',
           professor: 'Abir BEN DHIHA',
@@ -79,7 +79,7 @@ export class ViewScheduleComponent {
         '14:45-16:15': [{
           name: 'TD-Français - certification 2',
           id: 6,
-          code: 'ING1_INFO_TD1',
+          groupe: 'ING1_INFO_TD1',
           room: 'C-13',
           type: 'TD',
           professor: 'Hadda SMIDA',
@@ -92,7 +92,7 @@ export class ViewScheduleComponent {
         '14:45-16:15': [{
           name: 'Ch-Conception et analyse dalgorithmes',
           id: 7,
-          code: 'ING1_INFO',
+          groupe: 'ING1_INFO',
           room: 'A-8',
           type: 'COURS',
           professor: 'Abir GHNIMI',
@@ -103,7 +103,7 @@ export class ViewScheduleComponent {
         '8:30-10:00': [{
           name: 'TD-Optimisation combinatoire',
           id: 8,
-          code: 'ING1_INFO_TD1',
+          groupe: 'ING1_INFO_TD1',
           room: 'A-13',
           type: 'TD',
           professor: 'Abir BEN DHIHA',
@@ -112,7 +112,7 @@ export class ViewScheduleComponent {
         '10:15-11:45': [{
           name: 'TD-Conception et analyse dalgorithmes',
           id: 9,
-          code: 'ING1_INFO_TD1',
+          groupe: 'ING1_INFO_TD1',
           room: 'A-34',
           type: 'TD',
           professor: 'Mariem GUIS',
@@ -125,7 +125,7 @@ export class ViewScheduleComponent {
         '13:00-14:30': [{
           name: 'Ch-Intelligence Artificielle',
           id: 10,
-          code: 'ING1_INFO',
+          groupe: 'ING1_INFO',
           room: 'A-8',
           type: 'COURS',
           professor: 'Abir GHNIMI',
@@ -134,7 +134,7 @@ export class ViewScheduleComponent {
         '14:45-16:15': [{
           name: 'Ch-Types de données et preuve de programmes',
           id: 11,
-          code: 'ING1_INFO',
+          groupe: 'ING1_INFO',
           room: 'A-8',
           type: 'COURS',
           professor: 'Ali KANOUN',
@@ -143,7 +143,7 @@ export class ViewScheduleComponent {
         '16:30-18:00': [{
           name: 'CB-Preuve de programmes',
           id: 12,
-          code: 'ING1_INFO',
+          groupe: 'ING1_INFO',
           room: 'A-32',
           type: 'COURS',
           professor: 'Ali KANOUN'
@@ -153,7 +153,7 @@ export class ViewScheduleComponent {
         '10:15-11:45': [{
           name: 'TP-Techniques dapprentissage automatique',
           id: 13,
-          code: 'ING1_INFO_TD1',
+          groupe: 'ING1_INFO_TD1',
           room: 'A-13',
           type: 'TP',
           professor: 'Mariem GARA',
@@ -166,7 +166,7 @@ export class ViewScheduleComponent {
         '10:15-11:45': [{
           name: 'TD-Techniques de communication',
           id: 14,
-          code: 'ING1_INFO_TD1 || ING1_INFO_TD2',
+          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
           room: 'C-15',
           type: 'TD',
           professor: 'Abir BERIDA',
@@ -174,7 +174,7 @@ export class ViewScheduleComponent {
         }, {
           name: 'TD-Techniques de communication',
           id: 15,
-          code: 'ING1_INFO_TD1 || ING1_INFO_TD2',
+          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
           room: 'C-15',
           type: 'TD',
           professor: 'Abir BERIDA',
@@ -183,7 +183,7 @@ export class ViewScheduleComponent {
         '14:45-16:15': [{
           name: 'TP-3H00-3.15-Fondements de lintelligence Artificielle',
           id: 16,
-          code: 'ING1_INFO_TD1 || ING1_INFO_TD2',
+          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
           room: 'A-32',
           type: 'TP',
           professor: 'Manel MEJ',
@@ -192,7 +192,7 @@ export class ViewScheduleComponent {
         '16:30-18:00': [{
           name: 'TP-3H00-3.15-frama-C et la preuve de programmes',
           id: 17,
-          code: 'ING1_INFO_TD1 || ING1_INFO_TD2',
+          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
           room: 'A-32',
           type: 'TP',
           professor: 'Sara MEJ',
@@ -205,7 +205,7 @@ export class ViewScheduleComponent {
         '8:30-10:00': [{
           name: 'Ch-Processus stochastique',
           id: 18,
-          code: 'ING1_INFO',
+          groupe: 'ING1_INFO',
           room: 'C-61',
           type: 'COURS',
           professor: 'Sara MTIW'
@@ -215,7 +215,7 @@ export class ViewScheduleComponent {
         '14:45-16:15': [{
           name: 'TD-3H00-3.15-Processus stochastique',
           id: 19,
-          code: 'ING1_INFO_TD1 || ING1_INFO_TD2',
+          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
           room: 'A-32',
           type: 'TD',
           professor: 'Sara MEJ'
@@ -223,7 +223,7 @@ export class ViewScheduleComponent {
         '8:30-10:00': [{
           name: 'Ch-Processus stochastique',
           id: 20,
-          code: 'ING1_INFO',
+          groupe: 'ING1_INFO',
           room: 'C-61',
           type: 'TP',
           professor: 'Sara MTIW'

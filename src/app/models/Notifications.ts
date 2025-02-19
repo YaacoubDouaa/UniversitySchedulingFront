@@ -1,5 +1,5 @@
 // FichierExcel Interface
-import {Seance} from './Seance';
+
 
 export interface FichierExcel {
   id: number;

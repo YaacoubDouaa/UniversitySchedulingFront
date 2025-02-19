@@ -9,16 +9,22 @@ import {Seance} from './Seance';
 //
 //
 //
+export interface  SallesDispo{
+  [Day:string]:{[Day:string]:Salle[]}
+}
+
 export interface SalleList{
   [id: string]: Salle;
 }
+
 export interface SalleSchedule{
   [day: string]: {
-    [time: string]:{[niveau:string] : Seance;}
+    [time: string]:{[groupe:string] : Seance;}
   };
 }
 
 export interface Salle {
+  id: number;
   name: string;
   type: string;
   capacite: number;
