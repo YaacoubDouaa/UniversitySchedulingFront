@@ -30,14 +30,14 @@
               <mat-form-field appearance="outline">
                 <mat-label>Day</mat-label>
                 <input matInput [(ngModel)]="conflict.day"
-                       (ngModelChange)="onSeanceAttributeChange()">
+                       (ngModelChange)="onTimeOrDayChange(conflicts[i+1],i+1)">
               </mat-form-field>
             </mat-card-subtitle>
             <mat-card-subtitle>
               <mat-form-field appearance="outline">
                 <mat-label>Time</mat-label>
                 <input matInput [(ngModel)]="conflict.time"
-                       (ngModelChange)="onSeanceAttributeChange()">
+                       (ngModelChange)="onTimeOrDayChange(conflicts[i+1],i+1)">
               </mat-form-field>
             </mat-card-subtitle>
           </mat-card-header>
@@ -74,14 +74,14 @@
               <mat-form-field appearance="outline">
                 <mat-label>Day</mat-label>
                 <input matInput [(ngModel)]="conflict.day"
-                       (ngModelChange)="onSeanceAttributeChange()">
+                       (ngModelChange)="onTimeOrDayChange(conflicts[i+1],i+1)">
               </mat-form-field>
             </mat-card-subtitle>
             <mat-card-subtitle>
               <mat-form-field appearance="outline">
                 <mat-label>Time</mat-label>
                 <input matInput [(ngModel)]="conflict.time"
-                       (ngModelChange)="onSeanceAttributeChange()">
+                       (ngModelChange)="onTimeOrDayChange(conflicts[i+1],i+1)">
               </mat-form-field>
             </mat-card-subtitle>
           </mat-card-header>
@@ -108,6 +108,9 @@
         </mat-card>
       </div>
     </div>
+    <button mat-button color="primary" (click)="resolveConflict(i+1)">
+      Resolve
+    </button>
   </mat-expansion-panel>
 </mat-accordion>
 </div>

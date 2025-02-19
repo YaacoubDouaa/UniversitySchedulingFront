@@ -7,7 +7,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class ConflictDetectionService {
+export class ConflictService {
   private conflictsSubject: BehaviorSubject<SeanceConflict[]>;
   conflicts$: Observable<SeanceConflict[]>;
 

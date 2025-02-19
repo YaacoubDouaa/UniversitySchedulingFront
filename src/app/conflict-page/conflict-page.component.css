@@ -122,10 +122,11 @@ mat-card {
 }
 
 .vs-icon {
-  font-size: 18px;
+  font-size: 27px; /* Increased size */
   color: #f44336;
   align-self: center;
 }
+
 
 /* Responsive styles */
 @media (max-width: 600px) {

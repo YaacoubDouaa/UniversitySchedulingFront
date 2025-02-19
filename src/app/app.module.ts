@@ -29,7 +29,7 @@ import {
 } from '@angular/material/expansion';
 import { HttpClientModule } from '@angular/common/http';
 import { ConflictPageComponent } from './conflict-page/conflict-page.component';
-import {ConflictDetectionService} from './conflict.service';
+
 import { RoomsComponent } from './rooms/rooms.component';
 import {ViewScheduleComponent} from './view-schedule/view-schedule.component';
 import {MatCheckbox} from '@angular/material/checkbox';
@@ -71,7 +71,8 @@ import {
   MatDatepickerToggle
 } from '@angular/material/datepicker';
 import {MatGridList, MatGridListModule, MatGridTile} from '@angular/material/grid-list';
-import {MatChip,MatChipsModule} from '@angular/material/chips';
+import {MatChip, MatChipListbox, MatChipsModule} from '@angular/material/chips';
+import {ConflictService} from './conflict.service';
 
 @NgModule({
   declarations: [
@@ -180,11 +181,12 @@ import {MatChip,MatChipsModule} from '@angular/material/chips';
     MatChipsModule,
     MatIconModule,
     MatDividerModule,
-    HttpClientModule
+    HttpClientModule,
+    MatChipListbox
 
   ],
   providers: [
-    provideAnimationsAsync(),ConflictDetectionService
+    provideAnimationsAsync(),ConflictService
   ],
 
   bootstrap: [AppComponent]

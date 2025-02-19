@@ -5,6 +5,9 @@ import {RoomService} from '../rooms.service';
 import {SalleList, SallesDispo} from '../models/Salle';
 import {FormControl} from '@angular/forms';
 import {map, Observable, startWith, Subject, takeUntil} from 'rxjs';
+import {ConflictService} from '../conflict.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
+
 
 @Component({
   selector: 'app-conflict-page',
@@ -22,53 +25,10 @@ export class ConflictPageComponent {
   filteredRooms1: Observable<string[]>;
   filteredRooms2: Observable<string[]>;
 
-  conflicts: SeanceConflict[] = [
-    {
-      seance1: {
-        name: 'Mathematics 101',
-        id: 1,
-        room: 'A101',
-        type: 'COURS',
-        professor: 'Dr. Smith',
-        groupe: 'MATH101'
-      },
-      seance2: {
-        name: 'Physics 201',
-        id: 2,
-        room: 'A101',
-        type: 'TD',
-        professor: 'Dr. Johnson',
-        groupe: 'PHYS201'
-      },
-      day:'LUNDI',
-      time:'8:30-10:00',
-      conflictTypes: ['Room Conflict', 'Time Conflict']
-    },
-    {
-      seance1: {
-        name: 'Chemistry 301',
-        id: 3,
-        room: 'B201',
-        type: 'TP',
-        professor: 'Dr. Brown',
-        groupe: 'CHEM301'
-      },
-      seance2: {
-        name: 'Biology 202',
-        id: 4,
-        room: 'B202',
-        type: 'COURS',
-        professor: 'Dr. Brown',
-        groupe: 'BIO202'
-      },
-      day:'MARDI',
-      time:'8:30-10:00',
-      conflictTypes: ['Professor Conflict']
-    }
-  ];
+  conflicts: SeanceConflict[] = []
   salles:SalleList={}
 
-  constructor(private roomService: RoomService,private injector: Injector) {
+  constructor(private roomService: RoomService,private conflictService:ConflictService,private injector: Injector,private snackBar: MatSnackBar) {
     // Initialize the filtered rooms observables
     this.filteredRooms1 = this.roomControl1.valueChanges.pipe(
       startWith(''),
@@ -86,6 +46,13 @@ export class ConflictPageComponent {
     return this.rooms.filter(room => room.toLowerCase().includes(filterValue));
   }
   ngOnInit(): void {
+    // Lazy injection of ConflictDetectionService
+    this.conflictService = this.injector.get(ConflictService);
+    // Subscribe to get the latest conflicts  data
+    this.conflictService.getConflicts().subscribe((conflictList:SeanceConflict[]) => {
+      this.conflicts = conflictList;
+      console.log(this.conflicts); // Just to confirm it's working
+    });
 // Lazy injection of the service
     this.roomService = this.injector.get(RoomService);
     // Subscribe to get the latest schedule data
@@ -152,5 +119,13 @@ export class ConflictPageComponent {
     }
   }
 
-}
+
+  resolveConflict(index: number): void {
+    if (this.conflictService.isConflictResolved(this.conflicts[index])) {
+      this.conflictService.removeConflict(index);
+      this.snackBar.open('Conflict resolved successfully!', 'Close', { duration: 3000 });
+    } else {
+      this.snackBar.open('Conflict not resolved! Please make necessary changes.', 'Close', { duration: 3000 });
+    }
+}}
 
