@@ -29,20 +29,23 @@
             <mat-card-subtitle>
               <mat-form-field appearance="outline">
                 <mat-label>Day</mat-label>
-                <input matInput [(ngModel)]="conflict.day">
+                <input matInput [(ngModel)]="conflict.day"
+                       (ngModelChange)="onSeanceAttributeChange()">
               </mat-form-field>
             </mat-card-subtitle>
             <mat-card-subtitle>
               <mat-form-field appearance="outline">
                 <mat-label>Time</mat-label>
-                <input matInput [(ngModel)]="conflict.time">
+                <input matInput [(ngModel)]="conflict.time"
+                       (ngModelChange)="onSeanceAttributeChange()">
               </mat-form-field>
             </mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
             <mat-form-field appearance="outline">
               <mat-label>Professor</mat-label>
-              <input matInput [(ngModel)]="conflict.seance1.professor">
+              <input matInput [(ngModel)]="conflict.seance1.professor"
+                     (ngModelChange)="onSeanceAttributeChange()">
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Room</mat-label>
@@ -50,7 +53,8 @@
                      matInput
                      [formControl]="roomControl1"
                      [matAutocomplete]="auto1"
-                     [(ngModel)]="conflict.seance1.room">
+                     [(ngModel)]="conflict.seance1.room"
+                     (ngModelChange)="onSeanceAttributeChange()">
               <mat-autocomplete #auto1="matAutocomplete">
                 <mat-option *ngFor="let room of availableRooms[i]" [value]="room">
                   {{room}}
@@ -69,20 +73,23 @@
             <mat-card-subtitle>
               <mat-form-field appearance="outline">
                 <mat-label>Day</mat-label>
-                <input matInput [(ngModel)]="conflict.day">
+                <input matInput [(ngModel)]="conflict.day"
+                       (ngModelChange)="onSeanceAttributeChange()">
               </mat-form-field>
             </mat-card-subtitle>
             <mat-card-subtitle>
               <mat-form-field appearance="outline">
                 <mat-label>Time</mat-label>
-                <input matInput [(ngModel)]="conflict.time">
+                <input matInput [(ngModel)]="conflict.time"
+                       (ngModelChange)="onSeanceAttributeChange()">
               </mat-form-field>
             </mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
             <mat-form-field appearance="outline">
               <mat-label>Professor</mat-label>
-              <input matInput [(ngModel)]="conflict.seance2.professor">
+              <input matInput [(ngModel)]="conflict.seance2.professor"
+                     (ngModelChange)="onSeanceAttributeChange()">
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Room</mat-label>
@@ -91,7 +98,7 @@
                      [formControl]="roomControl2"
                      [matAutocomplete]="auto2"
                      [(ngModel)]="conflict.seance2.room">
-              <mat-autocomplete #auto2="matAutocomplete">
+              <mat-autocomplete #auto2="matAutocomplete" (change)="onSeanceAttributeChange()">
                 <mat-option *ngFor="let room of availableRooms[i]" [value]="room">
                   {{room}}
                 </mat-option>

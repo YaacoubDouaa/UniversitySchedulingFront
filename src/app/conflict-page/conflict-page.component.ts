@@ -117,6 +117,24 @@ export class ConflictPageComponent {
     this.loadAvailableRoomsForConflict(conflict.day, conflict.time, index);
   }
 
+  // Handler for any attribute change
+  onSeanceAttributeChange(): void {
+    // Create a new reference to trigger change detection
+    this.conflicts = [...this.conflicts];
+    console.log('Conflicts updated:', this.conflicts);
+    this.saveChanges(); // Optional: Save changes to backend
+  }
+
+
+  // Optional: Save changes to backend
+  private saveChanges(): void {
+    // Implement your save logic here
+    // For example:
+    // this.conflictService.updateConflicts(this.conflicts).subscribe(
+    //   response => console.log('Changes saved successfully'),
+    //   error => console.error('Error saving changes:', error)
+    // );
+  }
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
