@@ -1,42 +1,43 @@
 <div class="dashboard-container">
-  <h1>Welcome, Professor</h1>
+  <h1 class="dashboard-title">Welcome, Professor</h1>
 
-  <mat-grid-list cols="2" rowHeight="2:1">
-    <mat-grid-tile>
-      <mat-card class="dashboard-card">
-        <mat-card-header>
-          <mat-card-title>Upcoming Classes</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <mat-list>
-            <mat-list-item *ngFor="let class of upcomingClasses">
-              <mat-icon matListIcon>class</mat-icon>
+  <div class="dashboard-grid">
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-title>Upcoming Classes</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let class of upcomingClasses" class="list-item">
+            <mat-icon class="list-icon">class</mat-icon>
+            <div class="list-content">
               <h3 matLine>{{ class.name }}</h3>
               <p matLine>
                 <span>{{ class.time }} | Room {{ class.room }}</span>
               </p>
-            </mat-list-item>
-          </mat-list>
-        </mat-card-content>
-      </mat-card>
-    </mat-grid-tile>
-    <mat-grid-tile>
-      <mat-card class="dashboard-card">
-        <mat-card-header>
-          <mat-card-title>Pending Make-up Proposals</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <mat-list>
-            <mat-list-item *ngFor="let proposal of pendingProposals">
-              <mat-icon matListIcon>schedule</mat-icon>
+            </div>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-title>Pending Make-up Proposals</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let proposal of pendingProposals" class="list-item">
+            <mat-icon class="list-icon">schedule</mat-icon>
+            <div class="list-content">
               <h3 matLine>{{ proposal.name }}</h3>
               <p matLine>
                 <span>{{ proposal.date | date }} | {{ proposal.status }}</span>
               </p>
-            </mat-list-item>
-          </mat-list>
-        </mat-card-content>
-      </mat-card>
-    </mat-grid-tile>
-  </mat-grid-list>
+            </div>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </div>
