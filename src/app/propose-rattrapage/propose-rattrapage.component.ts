@@ -30,7 +30,15 @@ export class ProposeRattrapageComponent implements OnInit {
     if (this.proposeForm.valid) {
       // Here you would typically send the form data to a service
       console.log(this.proposeForm.value);
-      this.notificationService.addNotification('Make-up session proposal submitted successfully', 'success');
+      // Assuming recepteurId and expediteurId are known or fetched from some service
+      const recepteurId = 101; // Example recepteurId
+      const expediteurId = 202; // Example expediteurId
+      this.notificationService.addNotification(
+        'Make-up session proposal submitted successfully',
+        'success',
+        recepteurId,
+        expediteurId
+      );
       this.proposeForm.reset();
     }
   }

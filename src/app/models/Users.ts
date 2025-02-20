@@ -6,6 +6,8 @@ export interface Personne {
   email: string;
   tel: string;
   adresse: string;
+  // List of signal IDs
+  signalIds: number[];
 }
 
 // Administrateur Interface

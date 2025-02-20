@@ -18,6 +18,19 @@ export class ProfessorDashboardComponent implements OnInit {
   ];
 
   constructor() { }
+  showNotifications = false;
+  notifications = [
+    { title: "Class Rescheduled", message: "Your class at 10 AM has been moved to 11 AM." },
+    { title: "New Assignment", message: "A new assignment has been posted for your course." },
+    { title: "Meeting Reminder", message: "Faculty meeting at 3 PM in Room A-01." }
+  ];
 
+  toggleNotifications() {
+    this.showNotifications = !this.showNotifications;
+  }
+
+  clearNotifications() {
+    this.notifications = [];
+  }
   ngOnInit(): void { }
 }

@@ -51,7 +51,7 @@ export class PropositionRattrapageComponent implements OnInit {
   ngOnInit() {
     // You can load propositions from a service here if needed
     this.propositions.forEach(prop => {
-      this.notificationService.addNotification(`New make-up session proposal: ${prop.name} on ${prop.date}`, 'info');
+      this.notificationService.addNotification(`New make-up session proposal: ${prop.name} on ${prop.date}`, 'info', prop.enseignantId, 0);
     });
   }
 
@@ -91,7 +91,7 @@ export class PropositionRattrapageComponent implements OnInit {
 
       this.rattrapageService.addRattrapageSeance(day, time, seance);
     }
-    this.notificationService.addNotification(`Make-up session confirmed: ${prop.name} on ${prop.date}`, 'success');
+    this.notificationService.addNotification(`Make-up session confirmed: ${prop.name} on ${prop.date}`, 'success', prop.enseignantId, 0);
 
   }
 
@@ -101,7 +101,7 @@ export class PropositionRattrapageComponent implements OnInit {
     );
     const refusedProp = this.propositions.find(prop => prop.id === id);
     if (refusedProp) {
-      this.notificationService.addNotification(`Make-up session rejected: ${refusedProp.name} on ${refusedProp.date}`, 'error');
+      this.notificationService.addNotification(`Make-up session rejected: ${refusedProp.name} on ${refusedProp.date}`, 'error', refusedProp.enseignantId, 0);
     }
   }
 
@@ -119,7 +119,7 @@ export class PropositionRattrapageComponent implements OnInit {
     const scheduleInfo = this.rattrapageScheduleMap.get(propId);
 
     if (!scheduleInfo) {
-      this.notificationService.addNotification('Cannot update salle: session mapping not found', 'error');
+      this.notificationService.addNotification('Cannot update salle: session mapping not found', 'error', 0, 0);
       return;
     }
 
@@ -139,15 +139,10 @@ export class PropositionRattrapageComponent implements OnInit {
         prop.id === propId ? { ...prop, salle: newSalle } : prop
       );
 
-      this.notificationService.addNotification(
-        `Salle updated to ${newSalle}`,
-        'success'
-      );
+      this.notificationService.addNotification(`Salle updated to ${newSalle}`, 'success', 0, 0);
+
     } else {
-      this.notificationService.addNotification(
-        'Failed to update salle',
-        'error'
-      );
+      this.notificationService.addNotification('Failed to update salle', 'error', 0, 0);
     }
   }
 

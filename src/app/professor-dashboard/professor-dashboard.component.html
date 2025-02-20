@@ -1,6 +1,36 @@
 <div class="dashboard-container">
-  <h1 class="dashboard-title">Welcome, Professor</h1>
+  <!-- Notification Bell with Dropdown -->
+  <div class="notification-container">
+    <mat-icon class="notification-icon" (click)="toggleNotifications()">notifications</mat-icon>
+    <span *ngIf="notifications.length > 0" class="notification-badge">{{ notifications.length }}</span>
 
+    <!-- Expansion Panel for Notifications -->
+    <mat-expansion-panel *ngIf="showNotifications" class="notifications-panel" [expanded]="showNotifications">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Notifications</mat-panel-title>
+        <mat-panel-description>
+          <mat-icon (click)="clearNotifications()">clear_all</mat-icon>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <mat-list *ngIf="notifications.length > 0; else noNotifications">
+        <mat-list-item *ngFor="let notification of notifications" class="notification-item">
+          <mat-icon class="list-icon">info</mat-icon>
+          <div class="list-content">
+            <h3 matLine>{{ notification.title }}</h3>
+            <p matLine>{{ notification.message }}</p>
+          </div>
+        </mat-list-item>
+      </mat-list>
+
+      <ng-template #noNotifications>
+        <p class="no-notifications">No new notifications</p>
+      </ng-template>
+    </mat-expansion-panel>
+  </div>
+
+  <!-- Dashboard Content -->
+  <h1 class="dashboard-title">Welcome, Professor</h1>
   <div class="dashboard-grid">
     <mat-card class="dashboard-card">
       <mat-card-header>

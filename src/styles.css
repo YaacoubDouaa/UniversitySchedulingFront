@@ -6,11 +6,11 @@
   --border-color: #cccccc;
   --hover-color: #e6e6e6;
 }
-
+div{color: #002244;}
 body {
   font-family: 'Arial', sans-serif;
   background-color: var(--background-color);
-  color: var(--text-color);
+  color: #002244;
   line-height: 1.6;
 }
 

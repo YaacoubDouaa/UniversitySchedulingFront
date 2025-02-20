@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import {Personne} from './models/Users';
 
 export interface Notification {
   id: number;
   message: string;
-  type: 'info' | 'warning' | 'success' | 'error';
+  date: string; // ISO Date Format
+  type: string;
   read: boolean;
-  timestamp: Date;
+  recepteurId: number;
+  expediteurId: number;
 }
 
 @Injectable({
@@ -22,13 +25,15 @@ export class NotificationService {
     return this.notificationsSubject.asObservable();
   }
 
-  addNotification(message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') {
+  addNotification(message: string, type: 'info' | 'warning' | 'success' | 'error', recepteurId: number, expediteurId: number) {
     const newNotification: Notification = {
       id: this.notifications.length + 1,
       message,
+      date: new Date().toISOString(),
       type,
       read: false,
-      timestamp: new Date()
+      recepteurId,
+      expediteurId
     };
     this.notifications.unshift(newNotification);
     this.notificationsSubject.next(this.notifications);
@@ -60,4 +65,13 @@ export class NotificationService {
       });
     });
   }
-}
+
+  sendNotificationToUser(message: string, type: 'info' | 'warning' | 'success' | 'error', recepteurId: number, expediteurId: number) {
+    this.addNotification(message, type, recepteurId, expediteurId);
+  }
+
+  sendNotificationToPersonneById(message: string, type: 'info' | 'warning' | 'success' | 'error', personne: Personne, expediteurId: number) {
+    personne.signalIds.forEach(id => {
+      this.addNotification(message, type, id, expediteurId);
+    });
+  }}
