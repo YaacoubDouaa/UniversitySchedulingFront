@@ -5,7 +5,7 @@
     <!-- Sidebar header -->
     <div class="h-16 flex items-center justify-between px-4 bg-gray-900">
       <div class="flex items-center" *ngIf="isOpen">
-        <img src="assets/logo-white.svg" alt="Logo" class="h-8 w-8">
+        <img ngSrc="assets/logo-white.svg" alt="Logo" class="h-8 w-8">
         <span class="ml-2 text-white font-semibold">Admin</span>
       </div>
       <button (click)="toggleSidebar()"

@@ -8,14 +8,17 @@
           <div class="flex justify-between items-center py-4">
             <h1 class="text-3xl font-bold text-gray-900">Tableau de Bord</h1>
             <div class="flex items-center space-x-4">
-              <select [(ngModel)]="selectedNiveau" class="block w-40 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                <option value="ALL">Tous les niveaux</option>
-                <option value="L1">L1</option>
-                <option value="L2">L2</option>
-                <option value="L3">L3</option>
-                <option value="M1">M1</option>
-                <option value="M2">M2</option>
-              </select>
+              <mat-form-field appearance="outline" >
+                <mat-label>Niveau</mat-label>
+                <mat-select [(ngModel)]="selectedNiveau" class="w-full">
+                  <mat-option value="ALL">Tous les niveaux</mat-option>
+                  <mat-option value="L1">L1</mat-option>
+                  <mat-option value="L2">L2</mat-option>
+                  <mat-option value="L3">L3</mat-option>
+                  <mat-option value="M1">M1</mat-option>
+                  <mat-option value="M2">M2</mat-option>
+                </mat-select>
+              </mat-form-field>
             </div>
           </div>
         </div>

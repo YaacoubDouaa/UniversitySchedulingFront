@@ -1,16 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import {RattrapageSchedule, Schedule} from '../models/Schedule';
-import {SeanceConflict} from '../models/Seance';
-import {ScheduleService} from '../schedule-service.service';
-import {ConflictService} from '../conflict.service';
-import {RattrapageService} from '../rattrapage.service';
-
+import { Component, Injector, OnInit } from '@angular/core';
+import { RattrapageSchedule, Schedule } from '../models/Schedule';
+import { SeanceConflict } from '../models/Seance';
+import { ScheduleService } from '../schedule-service.service';
+import { ConflictService } from '../conflict.service';
+import { RattrapageService } from '../rattrapage.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   standalone: false,
-
 })
 export class DashboardComponent implements OnInit {
   isSidebarOpen = true;
@@ -24,9 +22,9 @@ export class DashboardComponent implements OnInit {
     '08:30-10:00', '10:15-11:45', '12:00-13:30',
     '13:45-15:15', '15:30-17:00', '17:15-18:45'
   ];
-  appJson: String="aaaa";
+  appJson: String = "aaaa";
 
-  constructor(private scheduleService: ScheduleService,private conflictService :ConflictService,private rattrapageService: RattrapageService) {
+  constructor(private injector: Injector) {
     this.currentDay = this.getCurrentDay();
   }
 
@@ -42,20 +40,33 @@ export class DashboardComponent implements OnInit {
   }
 
   private loadSchedule(): void {
-    this.scheduleService.getGlobalSchedule().subscribe(
-      (data) => this.schedule = data
-    );
+    // Lazy injection of the ScheduleService
+    const scheduleService = this.injector.get(ScheduleService);
+    scheduleService.getGlobalSchedule().subscribe((schedule: Schedule) => {
+      this.schedule = schedule;
+      console.log(this.schedule); // Just to confirm it's working
+    });
   }
 
   private loadConflicts(): void {
-    this.conflictService.getConflicts().subscribe(
-      (data) => this.conflicts = data
+    // Lazy injection of the ConflictService
+    const conflictService = this.injector.get(ConflictService);
+    conflictService.getConflicts().subscribe(
+      (data) => {
+        this.conflicts = data;
+        console.log(this.conflicts); // Just to confirm it's working
+      }
     );
   }
 
   private loadRattrapageSchedule(): void {
-    this.rattrapageService.getRattrapageSchedule().subscribe(
-      (data) => this.rattrapageSchedule = data
+    // Lazy injection of the RattrapageService
+    const rattrapageService = this.injector.get(RattrapageService);
+    rattrapageService.getRattrapageSchedule().subscribe(
+      (data) => {
+        this.rattrapageSchedule = data;
+        console.log(this.rattrapageSchedule); // Just to confirm it's working
+      }
     );
   }
 
@@ -77,6 +88,7 @@ export class DashboardComponent implements OnInit {
     }
     return 'bg-gray-50 border-gray-200 text-gray-700';
   }
+
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
   }

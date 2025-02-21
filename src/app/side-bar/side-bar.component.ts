@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import {RouterLink, RouterLinkActive} from '@angular/router';
 import {FeatherModule} from 'angular-feather';
-import {NgForOf, NgIf} from '@angular/common';
+import {NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
 
 interface NavItem {
   icon: string;
@@ -17,7 +17,8 @@ interface NavItem {
     RouterLinkActive,
     FeatherModule,
     NgIf,
-    NgForOf
+    NgForOf,
+    NgOptimizedImage
   ],
   templateUrl: './side-bar.component.html'
 })

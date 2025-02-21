@@ -7,7 +7,40 @@ import { Seance } from './models/Seance';
   providedIn: 'root'
 })
 export class RattrapageService {
-  private rattrapageSchedule: RattrapageSchedule = {};
+  private rattrapageSchedule: RattrapageSchedule = {
+    'Lundi': {
+      '08:30-10:00': [
+        {
+          id: 1, name: 'Maths', room: '101', professor: 'Dr. Smith', groupe: 'Group A',
+          type: ''
+        },
+        {
+          id: 2, name: 'Physics', room: '102', professor: 'Prof. Johnson', groupe: 'Group B',
+          type: ''
+        },
+      ],
+      '10:15-11:45': [
+        {
+          id: 3, name: 'Chemistry', room: '103', professor: 'Dr. Williams', groupe: 'Group C',
+          type: ''
+        },
+      ],
+    },
+    'Mardi': {
+      '12:00-13:30': [
+        {
+          id: 4, name: 'Biology', room: '104', professor: 'Prof. Davis', groupe: 'Group D',
+          type: ''
+        },
+      ],
+      '13:45-15:15': [
+        {
+          id: 5, name: 'Computer Science', room: '105', professor: 'Dr. Brown', groupe: 'Group E',
+          type: ''
+        },
+      ],
+    }
+  };
   private rattrapageScheduleSubject = new BehaviorSubject<RattrapageSchedule>(this.rattrapageSchedule);
 
   constructor() {}
