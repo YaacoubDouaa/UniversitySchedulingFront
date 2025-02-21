@@ -76,6 +76,10 @@ import {ConflictService} from './conflict.service';
 import { CsvImportComponent } from './csv-import/csv-import.component';
 import {MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious} from '@angular/material/stepper';
 import {MatProgressBar} from '@angular/material/progress-bar';
+import {SidebarComponent} from './side-bar/side-bar.component';
+import {NavbarComponent} from './nav-bar/nav-bar.component';
+import {FeatherModule} from 'angular-feather';
+import {allIcons} from 'angular-feather/icons';
 
 @NgModule({
   declarations: [
@@ -100,6 +104,7 @@ import {MatProgressBar} from '@angular/material/progress-bar';
     ProposeRattrapageComponent,
     ProfessorViewScheduleComponent,
     CsvImportComponent,
+    DashboardComponent
 
   ],
   imports: [
@@ -192,9 +197,18 @@ import {MatProgressBar} from '@angular/material/progress-bar';
     MatProgressBar,
     MatStepperPrevious,
     MatStepLabel,
-    MatStepperNext
-
+    MatStepperNext,
+    NavbarComponent,
+    NavbarComponent,
+    RouterModule.forRoot([
+      {path: '', component: DashboardComponent}
+    ]),
+    FeatherModule.pick(allIcons),
+    NavbarComponent,
+    SidebarComponent,
+    NavbarComponent
   ],
+
   providers: [
     provideAnimationsAsync(),ConflictService
   ],

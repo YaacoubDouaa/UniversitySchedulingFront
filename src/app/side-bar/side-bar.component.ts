@@ -1,0 +1,40 @@
+import { Component, Input } from '@angular/core';
+import {RouterLink, RouterLinkActive} from '@angular/router';
+import {FeatherModule} from 'angular-feather';
+import {NgForOf, NgIf} from '@angular/common';
+
+interface NavItem {
+  icon: string;
+  label: string;
+  route: string;
+  active?: boolean;
+}
+
+@Component({
+  selector: 'app-sidebar',
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    FeatherModule,
+    NgIf,
+    NgForOf
+  ],
+  templateUrl: './side-bar.component.html'
+})
+export class SidebarComponent {
+  @Input() isOpen = true;
+
+  navItems: NavItem[] = [
+    { icon: 'grid', label: 'Tableau de Bord', route: '/', active: true },
+    { icon: 'calendar', label: 'Emploi du Temps', route: '/schedule' },
+    { icon: 'alert-triangle', label: 'Conflits', route: '/conflicts' },
+    { icon: 'refresh-cw', label: 'Rattrapages', route: '/makeup' },
+    { icon: 'users', label: 'Professeurs', route: '/professors' },
+    { icon: 'book', label: 'Cours', route: '/courses' },
+    { icon: 'map-pin', label: 'Salles', route: '/rooms' }
+  ];
+
+  toggleSidebar(): void {
+    this.isOpen = !this.isOpen;
+  }
+}

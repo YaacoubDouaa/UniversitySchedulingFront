@@ -1,130 +1,211 @@
 .dashboard-container {
-  padding: 20px;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  background: #f4f6f9;
-  min-height: 100vh;
-}
 
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-}
+  .dashboard-header {
+    .header-spacer {
+      flex: 1 1 auto;
+    }
 
-.dashboard-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
-}
+    mat-form-field {
+      margin-right: 16px;
+      width: 120px;
+      font-size: 14px;
+    }
+  }
 
-.notification-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
+  .dashboard-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 20px;
+    padding: 20px;
+    height: calc(100vh - 64px);
+    overflow: auto;
 
-.notification-icon {
-  font-size: 28px;
-  cursor: pointer;
-  color: #1976d2;
-  transition: color 0.3s;
+    .schedule-card {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+    }
 
-  &:hover {
-    color: #1565c0;
+    .conflicts-card {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .rattrapage-card {
+      grid-column: 2;
+      grid-row: 2;
+    }
   }
 }
 
-.notification-badge {
-  background: red;
-  color: white;
-  font-size: 12px;
-  border-radius: 50%;
-  padding: 4px 8px;
-  position: absolute;
-  top: -5px;
-  right: -10px;
-}
-
-.notifications-panel {
-  position: absolute;
-  top: 40px;
-  right: 0;
-  background: white;
-  width: 300px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-}
-
-.notifications-card {
-  max-height: 250px;
-  overflow-y: auto;
-}
-
-.no-notifications {
-  text-align: center;
-  padding: 10px;
-  color: #888;
-}
-
-.dashboard-grid {
+.schedule-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 20px;
-  width: 100%;
-  max-width: 1200px;
-}
+  grid-template-columns: auto 1fr;
+  gap: 1px;
+  background-color: rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.12);
 
-.dashboard-card {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
+  .time-slots {
+    .time-header {
+      height: 50px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      background-color: #f5f5f5;
+      font-weight: 500;
+    }
 
-  &:hover {
-    transform: translateY(-5px);
+    .time-slot {
+      height: 100px;
+      padding: 8px;
+      background-color: #f5f5f5;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    }
   }
 
-  mat-card-header {
-    background: #1976d2;
-    color: white;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-  }
+  .sessions-container {
+    display: grid;
+    grid-template-rows: repeat(auto-fill, 100px);
 
-  mat-card-content {
-    padding: 10px;
-    max-height: 250px;
-    overflow-y: auto;
+    .session-slot {
+      padding: 4px;
+      background-color: white;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+      .session-card {
+        height: 100%;
+        padding: 8px;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+
+        &.cours-session { background-color: #e3f2fd; }
+        &.td-session { background-color: #e8f5e9; }
+        &.tp-session { background-color: #fff3e0; }
+
+        .session-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 4px;
+
+          .session-type {
+            font-weight: 500;
+            font-size: 12px;
+          }
+
+          .session-group {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.6);
+          }
+        }
+
+        .session-name {
+          font-weight: 500;
+          margin-bottom: 4px;
+        }
+
+        .session-details {
+          display: flex;
+          justify-content: space-between;
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.6);
+        }
+
+        .bi-weekly-indicator {
+          font-size: 11px;
+          color: rgba(0, 0, 0, 0.6);
+          font-style: italic;
+          margin-top: auto;
+        }
+      }
+    }
   }
 }
 
-.list-item {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 10px;
-  border-bottom: 1px solid #e0e0e0;
-  transition: background 0.3s;
+.conflicts-list {
+  .conflict-content {
+    width: 100%;
 
-  &:hover {
-    background: rgba(25, 118, 210, 0.1);
-    border-radius: 5px;
+    .conflict-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+
+      .conflict-time {
+        font-weight: 500;
+      }
+    }
+
+    .conflict-details {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .conflict-seance {
+        flex: 1;
+        font-size: 14px;
+      }
+
+      mat-icon {
+        color: #f44336;
+      }
+    }
+  }
+
+  .severe-conflict { background-color: #ffebee; }
+  .major-conflict { background-color: #fff3e0; }
+  .minor-conflict { background-color: #f5f5f5; }
+}
+
+.rattrapage-list {
+  .rattrapage-item {
+    width: 100%;
+
+    .rattrapage-time {
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .rattrapage-sessions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .rattrapage-session {
+        padding: 8px;
+        background-color: #e3f2fd;
+        border-radius: 4px;
+
+        .session-name {
+          font-weight: 500;
+          margin-bottom: 4px;
+        }
+
+        .session-details {
+          display: flex;
+          justify-content: space-between;
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.6);
+        }
+      }
+    }
   }
 }
 
-.list-icon {
-  color: #1976d2;
-  font-size: 24px;
-}
+@media (max-width: 1024px) {
+  .dashboard-content {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
 
-.list-content {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
+    .schedule-card,
+    .conflicts-card,
+    .rattrapage-card {
+      grid-column: 1 !important;
+      grid-row: auto !important;
+    }
+  }
 }

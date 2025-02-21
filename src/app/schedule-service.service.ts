@@ -1,13 +1,11 @@
-
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { SalleSchedule } from './models/Salle';
+import { FichierExcel } from './models/FichierExcel';
+import { HttpClient } from '@angular/common/http';
+import { Schedule } from './models/Schedule';
 
-import {SalleSchedule} from './models/Salle';
-import {FichierExcel} from './models/FichierExcel';
-import {HttpClient} from '@angular/common/http';
-
-class ScheduleRow {
-}
+class ScheduleRow {}
 
 @Injectable({
   providedIn: 'root'
@@ -15,14 +13,20 @@ class ScheduleRow {
 export class ScheduleService {
   private scheduleSource = new BehaviorSubject<SalleSchedule | null>(null);
   currentDisponibilite = this.scheduleSource.asObservable();
+  private globalScheduleSource = new BehaviorSubject<Schedule | null>(null);
+  currentGlobalSchedule = this.globalScheduleSource.asObservable(); // Expose current global schedule
 
-
-  changeSchedule(salleSchedule: SalleSchedule) {
-    this.scheduleSource.next(salleSchedule);
-  }
   private importedFiles: FichierExcel[] = []; // Store imported files metadata
 
   constructor(private http: HttpClient) {}
+
+  /**
+   * Change the current schedule
+   * @param salleSchedule - SalleSchedule object to set
+   */
+  changeSchedule(salleSchedule: SalleSchedule) {
+    this.scheduleSource.next(salleSchedule);
+  }
 
   /**
    * Add imported file metadata to the list
@@ -64,8 +68,27 @@ export class ScheduleService {
     return this.http.post('/api/save-schedule', this.importedFiles);
   }
 
+  /**
+   * Fetch the global schedule from the backend
+   */
+  getGlobalSchedule(): Observable<Schedule> {
+    return this.http.get<Schedule>('/api/global-schedule');
+  }
 
+  /**
+   * Update the global schedule and notify subscribers
+   */
+  updateGlobalSchedule(): void {
+    this.getGlobalSchedule().subscribe((schedule: Schedule) => {
+      this.globalScheduleSource.next(schedule);
+    });
+  }
+
+  /**
+   * Set schedule data
+   * @param mappedData - Array of ScheduleRow objects
+   */
   setScheduleData(mappedData: ScheduleRow[]) {
-
+    // Implement functionality to handle mapped data if necessary
   }
 }
