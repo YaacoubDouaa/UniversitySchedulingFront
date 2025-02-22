@@ -4,12 +4,25 @@ import { SeanceConflict } from '../models/Seance';
 import { ScheduleService } from '../schedule-service.service';
 import { ConflictService } from '../conflict.service';
 import { RattrapageService } from '../rattrapage.service';
+import {animate, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   standalone: false,
+  animations: [
+    trigger('fadeOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ opacity: 0, transform: 'translateY(-10px)' }))
+      ])
+    ])
+  ]
 })
+
 export class DashboardComponent implements OnInit {
   displayText = '';
   fullText = 'Welcome to Schedule Manager';

@@ -6,11 +6,24 @@ import {Seance} from '../models/Seance';
 import {RattrapageSchedule, Schedule} from '../models/Schedule';
 import {RattrapageService} from '../rattrapage.service';
 import { Injector } from '@angular/core';
+import {animate, style, transition, trigger} from '@angular/animations';
 @Component({
   selector: 'app-schedule',
   standalone: false,
   templateUrl: './schedule.component.html',
-  styleUrls: ['./schedule.component.css']
+  styleUrls: ['./schedule.component.css'],
+  animations: [
+    trigger('fadeOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ opacity: 0, transform: 'translateY(-10px)' }))
+      ])
+    ])
+  ]
+
 })
 export class ScheduleComponent implements OnInit {
 

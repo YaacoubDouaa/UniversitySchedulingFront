@@ -47,4 +47,54 @@ table {
   .mat-icon {
     font-size: 18px;
   }
+  @keyframes pulse {
+    0% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(2);
+      opacity: 0;
+    }
+  }
+}
+/* Add to your styles.css or component's CSS */
+::ng-deep .mat-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1.25em;
+}
+
+::ng-deep .mat-datepicker-toggle {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+::ng-deep .dark .mat-datepicker-toggle {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Custom styles for the date picker container */
+.date-filter-container {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode support */
+.dark .date-filter-container {
+  background: #1f2937;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .filter-container {
+    flex-direction: column;
+  }
+
+  .mat-form-field {
+    width: 100%;
+  }
 }

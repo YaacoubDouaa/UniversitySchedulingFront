@@ -6,14 +6,37 @@ import {RattrapageService} from '../rattrapage.service';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
 import {NotificationService} from '../notifications.service';
 import {Salle} from '../models/Salle';
+import {FormControl} from '@angular/forms';
+import {animate, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-proposition-rattrapage',
   templateUrl: './proposition-rattrapage.component.html',
   styleUrls: ['./proposition-rattrapage.component.css'],
-  standalone: false
+  standalone: false,
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('200ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(10px)' }))
+      ])
+    ]),
+    trigger('slideIn', [
+      transition(':enter', [
+        style({ transform: 'translateX(-100%)' }),
+        animate('200ms ease-out', style({ transform: 'translateX(0)' }))
+      ])
+    ])
+  ]
 })
 export class PropositionRattrapageComponent implements OnInit {
+  searchControl = new FormControl('');
+  sortControl = new FormControl('date');
+  filterStatus = new FormControl('all');
+  isDarkMode = false;
   propositions: PropositionDeRattrapage[] = [
     {
       id: 1,
@@ -40,14 +63,31 @@ export class PropositionRattrapageComponent implements OnInit {
   displayedColumns: string[] = ['id', 'date', 'reason', 'status', 'enseignantId', 'type', 'niveau', 'actions'];
   sallesList: Salle[] = [];
   private rattrapageScheduleMap = new Map<number, { day: string, time: string, seanceId: number }>();
+  // Form controls
+  startDate = new FormControl<Date | null>(null);
+  endDate = new FormControl<Date | null>(null);
 
   constructor(
     private rattrapageService: RattrapageService,
     private notificationService: NotificationService,
     private dialog: MatDialog
-  ) {
+  ) { // Initialize with current date range
+    // Initialize with default dates
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+
+    this.startDate.setValue(thirtyDaysAgo);
+    this.endDate.setValue(today);
   }
 
+  availableRooms = [
+    'Room A101',
+    'Room B202',
+    'Room C303',
+    'Room D404',
+    'Room E505',
+  ];
   ngOnInit() {
     // You can load propositions from a service here if needed
     this.propositions.forEach(prop => {
@@ -64,15 +104,15 @@ export class PropositionRattrapageComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         if (action === 'confirm') {
-          this.confirmer(prop);
+          this.confirmRattrapage(prop);
         } else if (action === 'reject') {
-          this.refuser(prop.id);
+          this.rejectRattrapage(prop.id);
         }
       }
     });
   }
 
-  confirmer(prop: PropositionDeRattrapage) {
+  confirmRattrapage(prop: PropositionDeRattrapage) {
     if (prop && prop.status === 'En attente') {
       prop.status = 'Confirmé';
       const dateObj = new Date(prop.date);
@@ -94,8 +134,11 @@ export class PropositionRattrapageComponent implements OnInit {
     this.notificationService.addNotification(`Make-up session confirmed: ${prop.name} on ${prop.date}`, 'success', prop.enseignantId, 0);
 
   }
-
-  refuser(id: number) {
+  changeRoom(proposition: any) {
+    proposition.salle = null;
+    // Add your room change logic here
+  }
+  rejectRattrapage(id: number) {
     this.propositions = this.propositions.map(prop =>
       prop.id === id ? {...prop, status: 'Refusé'} : prop
     );
@@ -111,7 +154,7 @@ export class PropositionRattrapageComponent implements OnInit {
     );
   }
 
-  updateSalle(event: Event, propId: number) {
+  assignRoom(event: Event, propId: number) {
     const target = event.target as HTMLInputElement;
     const newSalle = target.value;
 
@@ -145,5 +188,111 @@ export class PropositionRattrapageComponent implements OnInit {
       this.notificationService.addNotification('Failed to update salle', 'error', 0, 0);
     }
   }
+  toggleDarkMode() {
+    this.isDarkMode = !this.isDarkMode;
+    document.documentElement.classList.toggle('dark');
+  }
+// Add this method to filter by date range
+  applyDateFilter() {
+    const start = this.startDate.value ? new Date(this.startDate.value) : null;
+    const end = this.endDate.value ? new Date(this.endDate.value) : null;
+    const status = this.filterStatus.value;
 
+    this.propositions = this.propositions.filter(prop => {
+      const propDate = new Date(prop.date);
+      const matchesDate = (!start || propDate >= start) && (!end || propDate <= end);
+      const matchesStatus = status === 'all' || prop.status === status;
+      return matchesDate && matchesStatus;
+    });
+  }
+
+  // Update reset filters method
+  ngOnInit() {
+    // Update time every second
+    this.updateDateTime();
+    this.timeInterval = setInterval(() => this.updateDateTime(), 1000);
+  }
+
+  ngOnDestroy() {
+    if (this.timeInterval) {
+      clearInterval(this.timeInterval);
+    }
+  }
+
+  private updateDateTime() {
+    const now = new Date();
+    this.currentDateTime = now.toISOString()
+      .replace('T', ' ')
+      .slice(0, 19);
+  }
+
+
+
+  applyFilters() {
+    const filters = {
+      startDate: this.startDate.value,
+      endDate: this.endDate.value,
+      status: this.filterStatus.value
+    };
+
+    // Implement your filter logic here
+    console.log('Applying filters:', filters);
+  }
+
+  resetFilters() {
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+
+    this.startDate.setValue(thirtyDaysAgo);
+    this.endDate.setValue(today);
+    this.filterStatus.setValue('all');
+  }
+
+
+  private loadPropositions() {
+
+  }
+
+//design
+  getStatusColor(status: string): string {
+    switch (status.toLowerCase()) {
+      case 'En attente': return 'bg-orange-100 text-orange-700';
+      case 'Confirmé': return 'bg-green-100 text-green-700';
+      case 'Refuseé': return 'bg-red-100 text-red-700';
+      default: return 'bg-gray-100 text-gray-700';
+    }
+  }
+  getStatusIcon(status: string): string {
+    switch (status.toLowerCase()) {
+      case 'En attente': return 'clock';
+      case 'Confirmé': return 'check-circle';
+      case 'Refusé': return 'x-circle';
+      default: return 'help-circle';
+    }
+  }
+
+  getPendingCount(): number {
+    return this.propositions.filter(p => p.status === 'En attente').length;
+  }
+
+  getConfirmedCount(): number {
+    return this.propositions.filter(p => p.status === 'Confirmé').length;
+  }
+
+  getRefusedCount(): number {
+    return this.propositions.filter(p => p.status === 'Refusé').length;
+  }
+
+  applyFilters() {
+
+  }
+
+  onStatusChange() {
+
+  }
+
+  onDateChange() {
+
+  }
 }
