@@ -209,6 +209,19 @@
     }
   }
 }
+.animated-text {
+  transform: translateY(20px);
+  opacity: 0;
+  animation: slideUp 1s forwards;
+}
+
+@keyframes slideUp {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 ::ng-deep {
   .mat-form-field-wrapper {
     margin-bottom: -1.34375em;

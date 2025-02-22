@@ -270,6 +270,8 @@ export class ScheduleComponent implements OnInit {
   selectedFrequency:string='';
   // Initialize rattrapageSchedule as an empty object instead of null
   rattrapageSchedule: RattrapageSchedule = {};
+  private fullText='Schedule Manager';
+  protected displayText='';
 
 
   constructor(private router: Router,private rattrapageService: RattrapageService, private injector:Injector) {
@@ -297,6 +299,18 @@ export class ScheduleComponent implements OnInit {
     );
 
   }
+  private animateText() {
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+      if (currentIndex < this.fullText.length) {
+        this.displayText = this.fullText.slice(0, currentIndex + 1);
+        currentIndex++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 100);
+  }
+
   ngOnInit(): void {
 // Lazy injection of the service
     this.rattrapageService = this.injector.get(RattrapageService);
@@ -305,6 +319,7 @@ export class ScheduleComponent implements OnInit {
       this.rattrapageSchedule = schedule;
       console.log(this.rattrapageSchedule); // Just to confirm it's working
     });
+    this.animateText();
   }
 
   private _filter(value: string | null, options: string[]): string[] {

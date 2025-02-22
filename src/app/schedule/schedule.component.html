@@ -5,7 +5,7 @@
       <div class="flex justify-between h-16">
         <div class="flex items-center space-x-3">
           <i-feather name="calendar" class="h-6 w-6 text-gray-600 dark:text-gray-400"></i-feather>
-          <h1 class="text-xl font-semibold text-gray-900 dark:text-white">Schedule Manager</h1>
+          <h1 class="text-xl font-semibold text-gray-900 dark:text-white" [innerText]="displayText"></h1>
         </div>
         <div class="flex items-center space-x-4">
           <button  (click)="navigateToView()" mat-button class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors" >

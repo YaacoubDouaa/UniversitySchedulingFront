@@ -15,6 +15,8 @@ import {RattrapageService} from '../rattrapage.service';
 })
 export class ViewScheduleComponent {
   days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+  fullText = 'Schedule Manager';
+  displayText = '';
 
   timeSlots = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
   showTD = true;
@@ -236,6 +238,17 @@ export class ViewScheduleComponent {
   constructor(private router: Router,private rattrapageService: RattrapageService,private injector: Injector) {
 
   }
+  private animateText() {
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+      if (currentIndex < this.fullText.length) {
+        this.displayText = this.fullText.slice(0, currentIndex + 1);
+        currentIndex++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 100);
+  }
   ngOnInit(): void {
 // Lazy injection of the service
     this.rattrapageService = this.injector.get(RattrapageService);
@@ -244,6 +257,7 @@ export class ViewScheduleComponent {
       this.rattrapageSchedule = schedule;
       console.log(this.rattrapageSchedule); // Just to confirm it's working
     });
+    this.animateText();
   }
   private _filter(value: string | null, options: string[]): string[] {
     const filterValue = value ? value.toLowerCase() : '';

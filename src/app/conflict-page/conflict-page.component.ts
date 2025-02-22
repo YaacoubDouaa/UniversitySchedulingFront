@@ -1,4 +1,4 @@
-import {Component, Injector} from '@angular/core';
+import {Component, Injector, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {SeanceConflict} from '../models/Seance';
 import {RoomService} from '../rooms.service';
@@ -7,16 +7,16 @@ import {FormControl} from '@angular/forms';
 import {map, Observable, startWith, Subject, takeUntil} from 'rxjs';
 import {ConflictService} from '../conflict.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {animate, style, transition, trigger} from '@angular/animations';
 
 
 @Component({
   selector: 'app-conflict-page',
   standalone: false,
-
   templateUrl: './conflict-page.component.html',
   styleUrl: './conflict-page.component.css'
 })
-export class ConflictPageComponent {
+export class ConflictPageComponent implements OnInit{
   // FormControls for autocomplete
   roomControl1 = new FormControl('');
   roomControl2 = new FormControl('');
@@ -24,9 +24,11 @@ export class ConflictPageComponent {
   rooms: string[] = [];
   filteredRooms1: Observable<string[]>;
   filteredRooms2: Observable<string[]>;
-
+  // Optional: Save changes to backend
+  displayText="Conflicts";
   conflicts: SeanceConflict[] = []
   salles:SalleList={}
+  fullText='';
 
   constructor(private roomService: RoomService,private conflictService:ConflictService,private injector: Injector,private snackBar: MatSnackBar) {
     // Initialize the filtered rooms observables
@@ -40,6 +42,7 @@ export class ConflictPageComponent {
       map(value => this._filterRooms(value || ''))
     );
   }
+
   private destroy$ = new Subject<void>();
   private _filterRooms(value: string): string[] {
     const filterValue = value.toLowerCase();
@@ -64,6 +67,7 @@ export class ConflictPageComponent {
     this.conflicts.forEach((conflict, index) => {
       this.loadAvailableRoomsForConflict(conflict.day, conflict.time, index);
     });
+    this.animateText()
   }
   loadAvailableRoomsForConflict(day: string, time: string, conflictIndex: number): void {
     this.roomService.getAvailableRooms(day, time)
@@ -91,9 +95,20 @@ export class ConflictPageComponent {
     console.log('Conflicts updated:', this.conflicts);
     this.saveChanges(); // Optional: Save changes to backend
   }
+  private animateText() {
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+      if (currentIndex < this.fullText.length) {
+        this.displayText = this.fullText.slice(0, currentIndex + 1);
+        currentIndex++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 100);
+  }
 
 
-  // Optional: Save changes to backend
+
   private saveChanges(): void {
     // Implement your save logic here
     // For example:

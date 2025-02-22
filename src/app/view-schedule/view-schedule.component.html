@@ -3,11 +3,13 @@
   <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
-        <div class="flex items-center">
-          <h1 class="text-xl font-semibold text-gray-900 dark:text-white">Schedule Manager</h1>
+        <div class="flex items-center space-x-3">
+          <i-feather name="calendar" class="h-6 w-6 text-gray-600 dark:text-gray-400"></i-feather>
+          <h1 class="text-xl font-semibold text-gray-900 dark:text-white" [innerText]="displayText"></h1>
+
         </div>
         <div class="flex items-center space-x-4">
-          <button   mat-button class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors" >
+          <button  (click)="navigateToSchedule()" mat-button class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors" >
             <mat-icon>visibility</mat-icon>
             <span>View Schedule</span>
           </button>
@@ -53,94 +55,112 @@
         </div>
       </div>
     </div>
+    <!-- Add this section between the controls and schedule table -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-8">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <mat-icon class="text-gray-500 dark:text-gray-400">date_range</mat-icon>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Current Week</h2>
+        </div>
 
-    <!-- Schedule Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead>
-          <tr class="bg-[#2b2d42] text-white">
-            <th class="px-6 py-4 text-left text-lg font-bold uppercase tracking-wider">
-              Time
-            </th>
-            <th *ngFor="let time of timeSlots" class="px-6 py-4 text-left text-lg font-bold uppercase tracking-wider">
-              {{ time }}
-            </th>
-          </tr>
-          </thead>
-          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-          <tr *ngFor="let day of days">
-            <td class="px-6 py-4 whitespace-nowrap text-xl font-semibold text-gray-900 dark:text-white">
-              {{ day }}
-            </td>
-            <td *ngFor="let time of timeSlots" class="px-6 py-4 whitespace-nowrap">
-              <ng-container *ngIf="getFilteredSchedule()[day] && getFilteredSchedule()[day][time]">
-                <div *ngFor="let seance of getFilteredSchedule()[day][time]"
-                     class="rounded-lg p-4 transition-all duration-200 hover:shadow-lg cursor-pointer"
-                     [ngStyle]="{'background-color': getActivityColor(seance.biWeekly)}"
-                     >
-                  <div class="flex flex-col space-y-2">
-                    <div class="flex items-center justify-between">
-                      <h3 class="font-medium text-gray-900 dark:text-white">{{ seance.name }}</h3>
-                      <span class="px-4 py-3 text-base rounded-full"
-                            [ngClass]="{
+
+
+        <div class="flex items-center space-x-2">
+          <mat-icon class="text-primary-600">calendar_today</mat-icon>
+          <span class="text-lg font-medium text-gray-900 dark:text-white">
+
+        </span>
+        </div>
+
+      </div>
+
+      <!-- Schedule Table -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead>
+            <tr class="bg-[#2b2d42] text-white">
+              <th class="px-6 py-4 text-left text-lg font-bold uppercase tracking-wider">
+                Time
+              </th>
+              <th *ngFor="let time of timeSlots" class="px-6 py-4 text-left text-lg font-bold uppercase tracking-wider">
+                {{ time }}
+              </th>
+            </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tr *ngFor="let day of days">
+              <td class="px-6 py-4 whitespace-nowrap text-xl font-semibold text-gray-900 dark:text-white">
+                {{ day }}
+              </td>
+              <td *ngFor="let time of timeSlots" class="px-6 py-4 whitespace-nowrap">
+                <ng-container *ngIf="getFilteredSchedule()[day] && getFilteredSchedule()[day][time]">
+                  <div *ngFor="let seance of getFilteredSchedule()[day][time]"
+                       class="rounded-lg p-4 transition-all duration-200 hover:shadow-lg cursor-pointer"
+                       [ngStyle]="{'background-color': getActivityColor(seance.biWeekly)}"
+                       >
+                    <div class="flex flex-col space-y-2">
+                      <div class="flex items-center justify-between">
+                        <h3 class="font-medium text-gray-900 dark:text-white">{{ seance.name }}</h3>
+                        <span class="px-4 py-3 text-base rounded-full"
+                              [ngClass]="{
         'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200': seance.type === 'COURS',
         'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': seance.type === 'TD',
         'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200': seance.type === 'TP'
       }">
   {{ seance.type }}
 </span>
-                    </div>
+                      </div>
 
-                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                      <mat-icon class="h-4 w-4 mr-1">room</mat-icon>
-                      {{ seance.room }}
-                    </div>
+                      <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <mat-icon class="h-4 w-4 mr-1">room</mat-icon>
+                        {{ seance.room }}
+                      </div>
 
-                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                      <mat-icon class="h-4 w-4 mr-1">person</mat-icon>
-                      {{ seance.professor }}
-                    </div>
+                      <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <mat-icon class="h-4 w-4 mr-1">person</mat-icon>
+                        {{ seance.professor }}
+                      </div>
 
-                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                      <mat-icon class="h-4 w-4 mr-1">group</mat-icon>
-                      {{ seance.groupe }}
-                    </div>
-                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                      <mat-icon class="h-5 w-5 mr-2 text-current">repeat</mat-icon>
-                      <span class="font-medium">
+                      <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <mat-icon class="h-4 w-4 mr-1">group</mat-icon>
+                        {{ seance.groupe }}
+                      </div>
+                      <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <mat-icon class="h-5 w-5 mr-2 text-current">repeat</mat-icon>
+                        <span class="font-medium">
     {{ seance.biWeekly ? "BiWeekly" : "Weekly" }}
   </span>
-                    </div>
+                      </div>
 
-                    <div class="flex justify-end space-x-2 mt-2">
-                      <button *ngIf="seance.biWeekly"
-                              mat-icon-button
+                      <div class="flex justify-end space-x-2 mt-2">
+                        <button *ngIf="seance.biWeekly"
+                                mat-icon-button
 
-                              class="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300">
-                        <mat-icon>add_circle</mat-icon>
-                      </button>
+                                class="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300">
+                          <mat-icon>add_circle</mat-icon>
+                        </button>
 
-                      <button mat-icon-button
+                        <button mat-icon-button
 
-                              class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
-                        <mat-icon>delete</mat-icon>
-                      </button>
+                                class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </div>
                     </div>
                   </div>
+                </ng-container>
+
+                <div *ngIf="!getFilteredSchedule()[day][time]"
+                     class="h-full flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-4 cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+                 >
+                  <span class="text-sm text-gray-500 dark:text-gray-400">Add Session</span>
                 </div>
-              </ng-container>
-
-              <div *ngIf="!getFilteredSchedule()[day][time]"
-                   class="h-full flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-4 cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
-                  >
-                <span class="text-sm text-gray-500 dark:text-gray-400">Add Session</span>
-              </div>
-            </td>
-          </tr>
-          </tbody>
-        </table>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
 
-  </div></div>
+    </div></div></div>
