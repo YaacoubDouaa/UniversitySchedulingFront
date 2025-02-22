@@ -78,8 +78,7 @@ export class DashboardComponent implements OnInit {
       default: return 'bg-gray-100 border-gray-300 text-gray-800';
     }
   }
-
-  getConflictSeverityStyle(conflict: SeanceConflict): string {
+   getConflictSeverityStyle(conflict: SeanceConflict): string {
     if (conflict.conflictTypes.includes('ROOM')) {
       return 'bg-red-50 border-red-200 text-red-700';
     }
@@ -92,4 +91,5 @@ export class DashboardComponent implements OnInit {
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
+
 }

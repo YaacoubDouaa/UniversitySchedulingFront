@@ -5,7 +5,7 @@
     <!-- Sidebar header -->
     <div class="h-16 flex items-center justify-between px-4 bg-gray-900">
       <div class="flex items-center" *ngIf="isOpen">
-        <img ngSrc="assets/logo-white.svg" alt="Logo" class="h-8 w-8">
+        <img src="assets/logo-white.svg" alt="Logo" class="h-8 w-8">
         <span class="ml-2 text-white font-semibold">Admin</span>
       </div>
       <button (click)="toggleSidebar()"
@@ -34,7 +34,7 @@
     <!-- Bottom section -->
     <div class="p-4 border-t border-gray-700" *ngIf="isOpen">
       <div class="flex items-center">
-        <img src="assets/avatar.jpg" alt="" class="h-8 w-8 rounded-full">
+        <img ngSrc="assets/avatar.jpg" alt="" class="h-8 w-8 rounded-full">
         <div class="ml-3">
           <p class="text-sm font-medium text-white">John Doe</p>
           <p class="text-xs text-gray-400">Administrateur</p>

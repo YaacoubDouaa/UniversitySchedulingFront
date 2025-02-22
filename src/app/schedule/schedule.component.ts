@@ -537,6 +537,33 @@ export class ScheduleComponent implements OnInit {
 
     return filteredSchedule;
   }
+  getTypeClass(type: string): string {
+    switch (type.toLowerCase()) {
+      case 'cours':
+        return 'session-type-cours';
+      case 'td':
+        return 'session-type-td';
+      case 'tp':
+        return 'session-type-tp';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  }
+  get sessionName(): string {
+    return this.selectedActivity?.seance?.name || '';
+  }
+  get sessionId(): number | undefined {
+    return this.selectedActivity?.seance?.id;
+  }
+  getSelectedActivityName(): string {
+    return this.selectedActivity && this.selectedActivity.seance ? this.selectedActivity.seance.name : '';
+  }
+
+  setSelectedActivityName(name: string): void {
+    if (this.selectedActivity && this.selectedActivity.seance) {
+      this.selectedActivity.seance.name = name;
+    }
+  }
 
 }
 

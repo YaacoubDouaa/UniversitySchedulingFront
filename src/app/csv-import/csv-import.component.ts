@@ -95,7 +95,7 @@ export class CsvImportComponent implements OnInit {
       });
       return mappedRow;
     });
-    this.scheduleService.setScheduleData(mappedData);
+    // this.scheduleService.setScheduleData(mappedData);
     this.stepper.next();
   }
 

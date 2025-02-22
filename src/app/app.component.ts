@@ -8,5 +8,8 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'UniversitySchedulingFront';
-
+  isSidebarOpen = true;
+  toggleSidebar(): void {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
 }

@@ -28,8 +28,8 @@ export class SidebarComponent {
   navItems: NavItem[] = [
     { icon: 'grid', label: 'Tableau de Bord', route: '/', active: true },
     { icon: 'calendar', label: 'Emploi du Temps', route: '/schedule' },
-    { icon: 'alert-triangle', label: 'Conflits', route: '/conflicts' },
-    { icon: 'refresh-cw', label: 'Rattrapages', route: '/makeup' },
+    { icon: 'alert-triangle', label: 'Conflits', route: '/conflict' },
+    { icon: 'refresh-cw', label: 'Rattrapages', route: '/rattrapage' },
     { icon: 'users', label: 'Professeurs', route: '/professors' },
     { icon: 'book', label: 'Cours', route: '/courses' },
     { icon: 'map-pin', label: 'Salles', route: '/rooms' }

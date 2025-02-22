@@ -18,10 +18,7 @@ import {ProposeRattrapageComponent} from './propose-rattrapage/propose-rattrapag
 import {ProfessorViewScheduleComponent} from './professor-view-schedule/professor-view-schedule.component';
 import {CsvImportComponent} from './csv-import/csv-import.component';
 
-const routes: Routes = [ { path: '', component: LoginComponent },
-
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: 'home', component: SidenavComponent },
+const routes: Routes = [ { path: '', component: DashboardComponent },
   { path: 'login', component: LoginComponent },
   { path: 'conflict', component: ConflictPageComponent },
   { path: 'rooms', component: RoomsComponent },

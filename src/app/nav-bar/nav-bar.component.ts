@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
+import {MatIcon} from '@angular/material/icon';
 
 
 @Component({
@@ -9,7 +10,8 @@ import {NgClass, NgForOf, NgIf} from '@angular/common';
   imports: [
     NgClass,
     NgIf,
-    NgForOf
+    NgForOf,
+
   ],
 
   styleUrl: './nav-bar.component.css'
