@@ -97,4 +97,21 @@ table {
   .mat-form-field {
     width: 100%;
   }
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 3s linear infinite;
+  }
+
+  /* Optional: Pause animation on hover */
+  .animate-spin-slow:hover {
+    animation-play-state: paused;
+  }
 }

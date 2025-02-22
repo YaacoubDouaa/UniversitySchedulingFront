@@ -4,33 +4,18 @@
   <nav class="sticky top-0 z-50 bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg shadow-lg border-b border-gray-200 dark:border-gray-700 transition-all duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
-        <!-- Logo and Title with Enhanced Animation -->
         <div class="flex items-center space-x-4">
           <div class="flex items-center space-x-3 group">
-            <!-- Pulsing Room Icon -->
-            <div class="relative">
-              <!-- Pulse Effect Background -->
-              <div class="absolute inset-0 bg-primary/20 rounded-lg pulse-ring"></div>
-
-              <!-- Icon Container -->
-              <div class="relative p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-all duration-300">
-                <svg
-                  class="h-6 w-6 text-primary transform transition-all duration-300 group-hover:scale-110"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-              </div>
+            <!-- Bouncing Location Icon -->
+            <div class="relative p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-all duration-300">
+              <i-feather
+                name="map-pin"
+                class="h-6 w-6 text-primary animate-bounce"
+              ></i-feather>
             </div>
 
-            <!-- Enhanced Gradient Title -->
-            <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary/60 animate-gradient">
+            <!-- Visible Title -->
+            <h1 class="text-xl font-bold text-primary dark:text-white">
               Rooms Manager
             </h1>
           </div>
@@ -38,6 +23,7 @@
       </div>
     </div>
   </nav>
+
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
 
 

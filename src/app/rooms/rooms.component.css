@@ -141,5 +141,21 @@
     filter: drop-shadow(0 0 8px rgba(var(--border-color), 0.3));
   }
 
+  @keyframes custom-bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
 
+  .animate-bounce {
+    animation: custom-bounce 2s infinite;
+  }
+
+  /* Optional: Pause animation on hover */
+  .animate-bounce:hover {
+    animation-play-state: paused;
+  }
 }
