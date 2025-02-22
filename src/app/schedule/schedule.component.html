@@ -1,15 +1,42 @@
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-  <!-- Top Navigation Bar -->
-  <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+  <!-- Enhanced Top Navigation Bar -->
+  <nav class="sticky top-0 z-50 bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg shadow-lg border-b border-gray-200 dark:border-gray-700">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
-        <div class="flex items-center space-x-3">
-          <i-feather name="calendar" class="h-6 w-6 text-gray-600 dark:text-gray-400"></i-feather>
-          <h1 class="text-xl font-semibold text-gray-900 dark:text-white" [innerText]="displayText"></h1>
-        </div>
         <div class="flex items-center space-x-4">
-          <button  (click)="navigateToView()" mat-button class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors" >
-            <mat-icon>visibility</mat-icon>
+          <!-- Logo and Title with Animation -->
+          <div class="flex items-center space-x-3 group">
+            <div class="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-all duration-300">
+              <i-feather
+                name="calendar"
+                class="h-6 w-6 text-primary animate-bounce"
+              ></i-feather>
+            </div>
+            <h1 class="text-xl font-semibold text-gray-900 dark:text-white" [innerText]="displayText"></h1>
+          </div>
+
+          <!-- Time and User Info -->
+          <div class="hidden md:flex items-center space-x-4 ml-8">
+            <div class="flex items-center space-x-2 bg-gray-50 dark:bg-gray-700/50 rounded-full px-4 py-1.5">
+              <i-feather name="clock" class="h-4 w-4 text-primary"></i-feather>
+              <span class="text-sm font-mono text-gray-600 dark:text-gray-300">
+                2025-02-22 23:46:18
+              </span>
+            </div>
+            <div class="flex items-center space-x-2 bg-gray-50 dark:bg-gray-700/50 rounded-full px-4 py-1.5">
+              <i-feather name="user" class="h-4 w-4 text-primary"></i-feather>
+              <span class="text-sm text-gray-600 dark:text-gray-300">
+                YaacoubDouaa
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enhanced View Schedule Button -->
+        <div class="flex items-center">
+          <button (click)="navigateToView()"
+                  class="flex items-center space-x-2 px-6 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl">
+            <i-feather name="eye" class="h-5 w-5"></i-feather>
             <span>View Schedule</span>
           </button>
         </div>
@@ -17,19 +44,23 @@
     </div>
   </nav>
 
-
-<!-- Main Content -->
+  <!-- Main Content with Enhanced Styling -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Controls Section -->
+    <!-- Enhanced Controls Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <!-- Group Selection Card -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <!-- Enhanced Group Selection Card -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 transform hover:scale-[1.02] transition-all duration-300">
         <div class="flex items-center space-x-3 mb-4">
-          <mat-icon class="text-gray-500 dark:text-gray-400">group</mat-icon>
+          <i-feather name="users" class="h-5 w-5 text-primary"></i-feather>
           <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Group Selection</h2>
         </div>
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Select Group</mat-label>
+          <mat-label>
+            <div class="flex items-center space-x-2">
+              <i-feather name="layers" class="h-4 w-4"></i-feather>
+              <span>Select Group</span>
+            </div>
+          </mat-label>
           <mat-select [(ngModel)]="selectedGroup" name="group" class="w-full">
             <mat-option *ngFor="let group of groupOptions" [value]="group">
               {{ group }}
@@ -38,122 +69,133 @@
         </mat-form-field>
       </div>
 
-      <!-- View Options Card -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <!-- Enhanced View Options Card -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 transform hover:scale-[1.02] transition-all duration-300">
         <div class="flex items-center space-x-3 mb-4">
-          <mat-icon class="text-gray-500 dark:text-gray-400">tune</mat-icon>
+          <i-feather name="sliders" class="h-5 w-5 text-primary"></i-feather>
           <h2 class="text-lg font-semibold text-gray-900 dark:text-white">View Options</h2>
         </div>
         <div class="flex flex-col space-y-4">
           <mat-checkbox [(ngModel)]="showTD" class="text-gray-700 dark:text-gray-300">
-            Show TD Sessions
+            <div class="flex items-center space-x-2">
+              <i-feather name="book-open" class="h-4 w-4"></i-feather>
+              <span>Show TD Sessions</span>
+            </div>
           </mat-checkbox>
           <mat-checkbox [(ngModel)]="showTP" class="text-gray-700 dark:text-gray-300">
-            Show TP Sessions
+            <div class="flex items-center space-x-2">
+              <i-feather name="monitor" class="h-4 w-4"></i-feather>
+              <span>Show TP Sessions</span>
+            </div>
           </mat-checkbox>
         </div>
       </div>
     </div>
-    <!-- Add this section between the controls and schedule table -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-8">
+
+    <!-- Enhanced Current Week Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-3">
-          <mat-icon class="text-gray-500 dark:text-gray-400">date_range</mat-icon>
+          <i-feather name="calendar" class="h-5 w-5 text-primary"></i-feather>
           <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Current Week</h2>
         </div>
 
-
-
-          <div class="flex items-center space-x-2">
-            <mat-icon class="text-primary-600">calendar_today</mat-icon>
-            <span class="text-lg font-medium text-gray-900 dark:text-white">
-
-        </span>
-          </div>
-
-    </div>
-
-    <!-- Schedule Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <!-- Enhanced Schedule Table -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <!-- Enhanced Header -->
           <thead>
-          <tr class="bg-[#2b2d42] text-white">
-            <th class="px-6 py-4 text-left text-lg font-bold uppercase tracking-wider">
-              Time
+          <tr class="bg-[#2b2d42]">
+            <th class="px-6 py-4 text-left">
+              <div class="flex items-center space-x-2 text-white">
+                <i-feather name="clock" class="h-5 w-5"></i-feather>
+                <span class="text-lg font-bold uppercase tracking-wider">Time</span>
+              </div>
             </th>
-            <th *ngFor="let time of timeSlots" class="px-6 py-4 text-left text-lg font-bold uppercase tracking-wider">
-              {{ time }}
+            <th *ngFor="let time of timeSlots" class="px-6 py-4 text-left">
+              <div class="flex items-center space-x-2 text-white">
+                <i-feather name="clock" class="h-5 w-5"></i-feather>
+                <span class="text-lg font-bold uppercase tracking-wider">{{ time }}</span>
+              </div>
             </th>
           </tr>
           </thead>
+
+          <!-- Enhanced Body -->
           <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <tr *ngFor="let day of days">
-            <td class="px-6 py-4 whitespace-nowrap text-xl font-semibold text-gray-900 dark:text-white">
-              {{ day }}
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center space-x-2">
+                <i-feather name="calendar" class="h-5 w-5 text-primary"></i-feather>
+                <span class="text-xl font-semibold text-gray-900 dark:text-white">{{ day }}</span>
+              </div>
             </td>
+
             <td *ngFor="let time of timeSlots" class="px-6 py-4 whitespace-nowrap">
+              <!-- Session Card -->
               <ng-container *ngIf="getFilteredSchedule()[day] && getFilteredSchedule()[day][time]">
                 <div *ngFor="let seance of getFilteredSchedule()[day][time]"
-                     class="rounded-lg p-4 transition-all duration-200 hover:shadow-lg cursor-pointer"
+                     class="rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer group"
                      [ngStyle]="{'background-color': getActivityColor(seance.biWeekly)}"
                      (click)="openEditModal(seance, day, time)">
-                  <div class="flex flex-col space-y-2">
+
+                  <div class="flex flex-col space-y-3">
+                    <!-- Session Header -->
                     <div class="flex items-center justify-between">
                       <h3 class="font-medium text-gray-900 dark:text-white">{{ seance.name }}</h3>
-                      <span class="px-4 py-3 text-base rounded-full"
-                            [ngClass]="{
-        'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200': seance.type === 'COURS',
-        'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': seance.type === 'TD',
-        'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200': seance.type === 'TP'
-      }">
-  {{ seance.type }}
-</span>
+                      <span class="px-3 py-1 text-sm rounded-full"
+                            [ngClass]="{'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200': seance.type === 'COURS',
+                                        'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200': seance.type === 'TD',
+                                        'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200': seance.type === 'TP'}">
+                          {{ seance.type }}
+                        </span>
                     </div>
 
-                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                      <mat-icon class="h-4 w-4 mr-1">room</mat-icon>
-                      {{ seance.room }}
+                    <!-- Session Details -->
+                    <div class="grid grid-cols-2 gap-2">
+                      <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                        <i-feather name="map-pin" class="h-4 w-4"></i-feather>
+                        <span>{{ seance.room }}</span>
+                      </div>
+                      <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                        <i-feather name="user" class="h-4 w-4"></i-feather>
+                        <span>{{ seance.professor }}</span>
+                      </div>
+                      <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                        <i-feather name="users" class="h-4 w-4"></i-feather>
+                        <span>{{ seance.groupe }}</span>
+                      </div>
+                      <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                        <i-feather name="repeat" class="h-4 w-4"></i-feather>
+                        <span>{{ seance.biWeekly ? "BiWeekly" : "Weekly" }}</span>
+                      </div>
                     </div>
 
-                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                      <mat-icon class="h-4 w-4 mr-1">person</mat-icon>
-                      {{ seance.professor }}
-                    </div>
-
-                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                      <mat-icon class="h-4 w-4 mr-1">group</mat-icon>
-                      {{ seance.groupe }}
-                    </div>
-                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                      <mat-icon class="h-5 w-5 mr-2 text-current">repeat</mat-icon>
-                      <span class="font-medium">
-    {{ seance.biWeekly ? "BiWeekly" : "Weekly" }}
-  </span>
-                    </div>
-
-                    <div class="flex justify-end space-x-2 mt-2">
+                    <!-- Action Buttons -->
+                    <div class="flex justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button *ngIf="seance.biWeekly"
-                              mat-icon-button
-                              (click)="openAddModal(day,time); $event.stopPropagation()"
-                              class="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300">
-                        <mat-icon>add_circle</mat-icon>
+                              class="p-1.5 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
+                              (click)="openAddModal(day,time); $event.stopPropagation()">
+                        <i-feather name="plus-circle" class="h-4 w-4"></i-feather>
                       </button>
-
-                      <button mat-icon-button
-                              (click)="openDeleteModal(seance.id,day,selectedGroup,time); $event.stopPropagation()"
-                              class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
-                        <mat-icon>delete</mat-icon>
+                      <button class="p-1.5 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                              (click)="openDeleteModal(seance.id,day,selectedGroup,time); $event.stopPropagation()">
+                        <i-feather name="trash-2" class="h-4 w-4"></i-feather>
                       </button>
                     </div>
                   </div>
                 </div>
               </ng-container>
 
+              <!-- Empty Slot -->
               <div *ngIf="!getFilteredSchedule()[day][time]"
-                   class="h-full flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-4 cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+                   class="h-32 flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary cursor-pointer group transition-all duration-300"
                    (click)="openAddModal(day, time)">
-                <span class="text-sm text-gray-500 dark:text-gray-400">Add Session</span>
+                <div class="text-center group-hover:scale-110 transition-transform duration-300">
+                  <i-feather name="plus-circle" class="h-6 w-6 text-gray-400 dark:text-gray-500 mx-auto mb-2"></i-feather>
+                  <span class="text-sm text-gray-500 dark:text-gray-400">Add Session</span>
+                </div>
               </div>
             </td>
           </tr>
@@ -163,61 +205,108 @@
     </div>
 
 
-    <!-- Modal Templates -->
-<ng-template  #editModal>
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-        {{ selectedActivity && selectedActivity.seance && selectedActivity.seance.id !== 0 ? 'Edit Session' : 'Add Session' }}
-      </h2>
+        <!-- Edit/Add Modal -->
+        <div *ngIf="selectedActivity"
+             class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+             (click)="closeModal($event)">
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full m-4 p-6"
+               (click)="$event.stopPropagation()">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
+                <i-feather [name]="selectedActivity.seance.id ? 'edit' : 'plus-circle'" class="h-5 w-5"></i-feather>
+                <span>{{ selectedActivity.seance.id ? 'Edit Activity' : 'Add Activity' }}</span>
+              </h2>
+              <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                      (click)="closeModal()">
+                <i-feather name="x" class="h-5 w-5"></i-feather>
+              </button>
+            </div>
 
-      <form class="space-y-6">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Session Name</mat-label>
+            <form class="space-y-4">
+              <div>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>
+                    <div class="flex items-center space-x-2">
+                      <i-feather name="bookmark" class="h-4 w-4"></i-feather>
+                      <span>Activity Name</span>
+                    </div>
+                  </mat-label>
+                  <input matInput [(ngModel)]="selectedActivity.seance.name" name="activityName" required />
+                </mat-form-field>
+              </div>
 
-          <mat-autocomplete #autoName="matAutocomplete">
-            <mat-option *ngFor="let option of filteredNames | async" [value]="option">
-              {{option}}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
+              <div>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>
+                    <div class="flex items-center space-x-2">
+                      <i-feather name="user" class="h-4 w-4"></i-feather>
+                      <span>Professor</span>
+                    </div>
+                  </mat-label>
+                  <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required />
+                </mat-form-field>
+              </div>
 
-        <!-- Similar styling for other form fields -->
+              <div>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>
+                    <div class="flex items-center space-x-2">
+                      <i-feather name="tag" class="h-4 w-4"></i-feather>
+                      <span>Type</span>
+                    </div>
+                  </mat-label>
+                  <input matInput [(ngModel)]="selectedActivity.seance.type" name="type" />
+                </mat-form-field>
+              </div>
 
-        <div class="flex justify-end space-x-4 mt-8">
-          <button mat-button (click)="closeModal()"
-                  class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-            Cancel
-          </button>
-          <button mat-raised-button color="primary"
-                  (click)="selectedActivity?.seance?.id ? saveChanges() : saveAddChanges()"
-                  class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-            Save
-          </button>
+              <div class="flex justify-end space-x-3 pt-4">
+                <button mat-button
+                        class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                        (click)="closeModal()">
+                  <i-feather name="x" class="h-4 w-4"></i-feather>
+                  <span>Cancel</span>
+                </button>
+                <button mat-raised-button color="primary"
+                        class="flex items-center space-x-2"
+                        (click)="selectedActivity.seance.id ? saveEditChanges() : saveAddChanges()">
+                  <i-feather name="save" class="h-4 w-4"></i-feather>
+                  <span>Save</span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </form>
-    </div>
-  </div>
-</ng-template>
 
-<ng-template #deleteModal>
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-sm w-full p-6">
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Confirm Deletion</h2>
-      <p class="text-gray-600 dark:text-gray-400 mb-6">Are you sure you want to delete this session?</p>
+        <!-- Delete Confirmation Modal -->
+        <div *ngIf="showDeleteModal"
+             class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+             (click)="closeModal($event)">
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full m-4 p-6"
+               (click)="$event.stopPropagation()">
+            <div class="text-center">
+              <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+                <i-feather name="alert-triangle" class="h-6 w-6 text-red-600"></i-feather>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Confirm Deletion</h3>
+              <p class="text-gray-500 dark:text-gray-400">Are you sure you want to delete this session? This action cannot be undone.</p>
 
-      <div class="flex justify-end space-x-4">
-        <button mat-button (click)="closeDeleteModal()"
-                class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-          Cancel
-        </button>
-        <button mat-raised-button color="warn" (click)="confirmDelete()"
-                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-          Delete
-        </button>
-      </div>
-    </div>
+              <div class="mt-6 flex justify-end space-x-3">
+                <button mat-button
+                        class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                        (click)="closeModal()">
+                  <i-feather name="x" class="h-4 w-4"></i-feather>
+                  <span>Cancel</span>
+                </button>
+                <button mat-raised-button color="warn"
+                        class="flex items-center space-x-2"
+                        (click)="confirmDelete()">
+                  <i-feather name="trash-2" class="h-4 w-4"></i-feather>
+                  <span>Delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
   </div>
-</ng-template>
-  </div></div>
 </div>
+  </div></div>

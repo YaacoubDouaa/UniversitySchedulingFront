@@ -591,6 +591,10 @@ export class ScheduleComponent implements OnInit {
         return 'rgb(107, 114, 128)'; // Gray
     }
   }
+
+  saveEditChanges() {
+
+  }
 }
 
 
