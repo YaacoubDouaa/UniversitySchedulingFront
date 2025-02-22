@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Injector, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {PropositionDeRattrapage} from '../models/Notifications';
 import {Seance} from '../models/Seance';
@@ -8,7 +8,11 @@ import {NotificationService} from '../notifications.service';
 import {Salle} from '../models/Salle';
 import {FormControl} from '@angular/forms';
 import {animate, style, transition, trigger} from '@angular/animations';
-
+interface StatusIcon {
+  icon: string;
+  color: string;
+  bgColor: string;
+}
 @Component({
   selector: 'app-proposition-rattrapage',
   templateUrl: './proposition-rattrapage.component.html',
@@ -70,7 +74,7 @@ export class PropositionRattrapageComponent implements OnInit {
   constructor(
     private rattrapageService: RattrapageService,
     private notificationService: NotificationService,
-    private dialog: MatDialog
+    private dialog: MatDialog,injector:Injector
   ) { // Initialize with current date range
     // Initialize with default dates
     const today = new Date();
@@ -128,7 +132,7 @@ export class PropositionRattrapageComponent implements OnInit {
         groupe: prop.niveau,
         biWeekly: false
       };
-
+prop.status = 'Confirmé'
       this.rattrapageService.addRattrapageSeance(day, time, seance);
     }
     this.notificationService.addNotification(`Make-up session confirmed: ${prop.name} on ${prop.date}`, 'success', prop.enseignantId, 0);
@@ -144,6 +148,7 @@ export class PropositionRattrapageComponent implements OnInit {
     );
     const refusedProp = this.propositions.find(prop => prop.id === id);
     if (refusedProp) {
+      refusedProp.status = 'Refusé'
       this.notificationService.addNotification(`Make-up session rejected: ${refusedProp.name} on ${refusedProp.date}`, 'error', refusedProp.enseignantId, 0);
     }
   }
@@ -205,49 +210,45 @@ export class PropositionRattrapageComponent implements OnInit {
       return matchesDate && matchesStatus;
     });
   }
+  // Get propositions for a specific date range
+  getPropositionsInDateRange(startDate: Date, endDate: Date): PropositionDeRattrapage[] {
+    return this.propositions.filter(prop => {
+      const propDate = new Date(prop.date);
+      return propDate >= startDate && propDate <= endDate;
+    });
+  }
 
+  // updateStatus(id: number, newStatus: string): void {
+  //   this.propositions = this.propositions.map(prop =>
+  //     prop.id === id ? { ...prop, status: newStatus } : prop
+  //   );
+  //
+  //   // Get the updated proposition
+  //   const updatedProp = this.propositions.find(prop => prop.id === id);
+  //
+  //   if (updatedProp) {
+  //     // Determine notification type based on status
+  //     const notificationType = newStatus === 'Confirmé' ? 'success' :
+  //       newStatus === 'Refusé' ? 'error' : 'info';
+  //
+  //     // Create appropriate notification message
+  //     const message = `Proposition ${updatedProp.name} ${
+  //       newStatus === 'Confirmé' ? 'acceptée' :
+  //         newStatus === 'Refusé' ? 'refusée' :
+  //           'remise en attente'
+  //     }`;
+  //
+  //     // Send notification
+  //     this.notificationService.addNotification(
+  //       message,
+  //       notificationType,
+  //       updatedProp.enseignantId,
+  //       0
+  //     );
+  //   }
+  // }
   // Update reset filters method
-  ngOnInit() {
-    // Update time every second
-    this.updateDateTime();
-    this.timeInterval = setInterval(() => this.updateDateTime(), 1000);
-  }
 
-  ngOnDestroy() {
-    if (this.timeInterval) {
-      clearInterval(this.timeInterval);
-    }
-  }
-
-  private updateDateTime() {
-    const now = new Date();
-    this.currentDateTime = now.toISOString()
-      .replace('T', ' ')
-      .slice(0, 19);
-  }
-
-
-
-  applyFilters() {
-    const filters = {
-      startDate: this.startDate.value,
-      endDate: this.endDate.value,
-      status: this.filterStatus.value
-    };
-
-    // Implement your filter logic here
-    console.log('Applying filters:', filters);
-  }
-
-  resetFilters() {
-    const today = new Date();
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(today.getDate() - 30);
-
-    this.startDate.setValue(thirtyDaysAgo);
-    this.endDate.setValue(today);
-    this.filterStatus.setValue('all');
-  }
 
 
   private loadPropositions() {
@@ -255,6 +256,7 @@ export class PropositionRattrapageComponent implements OnInit {
   }
 
 //design
+
   getStatusColor(status: string): string {
     switch (status.toLowerCase()) {
       case 'En attente': return 'bg-orange-100 text-orange-700';
@@ -295,4 +297,73 @@ export class PropositionRattrapageComponent implements OnInit {
   onDateChange() {
 
   }
+
+  resetFilters() {
+
+  }
+
+  // Status icon mapping
+  private statusIcons: { [key: string]: StatusIcon } = {
+    'En attente': {
+      icon: 'clock',
+      color: 'text-orange-700',
+      bgColor: 'bg-orange-100'
+    },
+    'Confirmé': {
+      icon: 'check-circle',
+      color: 'text-green-700',
+      bgColor: 'bg-green-100'
+    },
+    'Refusé': {
+      icon: 'x-circle',
+      color: 'text-red-700',
+      bgColor: 'bg-red-100'
+    }
+  };
+
+
+  getStatusClasses(status: string): string {
+    const statusIcon = this.statusIcons[status];
+    return statusIcon ? `${statusIcon.color} ${statusIcon.bgColor}` : 'text-gray-700 bg-gray-100';
+  }
+
+  // Updated updateStatus function
+  updateStatus(id: number, currentStatus: string): void {
+    // Cycle through statuses: En attente -> Confirmé -> Refusé -> En attente
+    const statusOrder = ['En attente', 'Confirmé', 'Refusé'];
+    const currentIndex = statusOrder.indexOf(currentStatus);
+    const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
+
+    this.propositions = this.propositions.map(prop =>
+      prop.id === id ? { ...prop, status: nextStatus } : prop
+    );
+
+    const updatedProp = this.propositions.find(prop => prop.id === id);
+    if (updatedProp) {
+      // Get icon for notification
+      const statusIcon = this.getStatusIcon(nextStatus);
+
+      // Create notification message with icon
+      const message = `${updatedProp.name} - Status updated to ${nextStatus}`;
+
+      // Determine notification type
+      const notificationType = nextStatus === 'Confirmé' ? 'success' :
+        nextStatus === 'Refusé' ? 'error' : 'info';
+
+      this.notificationService.addNotification(
+        message,
+        notificationType,
+        updatedProp.enseignantId,
+        0
+      );
+    }
+  }
+
+  // Helper function to get the next status
+  getNextStatus(currentStatus: string): string {
+    const statusOrder = ['En attente', 'Confirmé', 'Refusé'];
+    const currentIndex = statusOrder.indexOf(currentStatus);
+    return statusOrder[(currentIndex + 1) % statusOrder.length];
+  }
+
 }

@@ -65,4 +65,81 @@
   .filter-form {
     flex-direction: column;
   }
+  /* rooms.component.css */
+  :host {
+    @apply block min-h-screen bg-gray-50 dark:bg-gray-900;
+  }
+
+  .mat-card {
+    @apply transition-all duration-300;
+  }
+
+  .mat-card:hover {
+    @apply shadow-lg;
+  }
+
+  .mat-form-field {
+    @apply w-full;
+  }
+
+  .status-icon {
+    @apply transition-transform duration-200;
+  }
+
+  .status-icon:hover {
+    @apply transform scale-110;
+  }
+
+  /* Dark mode enhancements */
+  :host-context(.dark) .mat-card {
+    @apply bg-gray-800 text-white;
+  }
+
+  :host-context(.dark) .mat-form-field {
+    @apply text-gray-300;
+  }
+
+  /* Animation for the modal */
+  @keyframes modalFade {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .modal-overlay {
+    animation: modalFade 0.3s ease-out;
+  }
+  /* Add to your component's CSS */
+  .suggestion-card {
+    @apply transform transition-all duration-300 hover:scale-105;
+  }
+
+  .suggestion-icon {
+    @apply transition-all duration-300;
+  }
+
+  .suggestion-card:hover .suggestion-icon {
+    @apply transform rotate-12;
+  }
+
+  /* Gradient background for dark mode */
+  :host-context(.dark) .suggestion-section {
+    background: linear-gradient(to bottom right, rgba(17, 24, 39, 0.8), rgba(31, 41, 55, 0.8));
+  }
+
+  /* Smooth transitions */
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Glow effect for icons */
+  .icon-glow {
+    filter: drop-shadow(0 0 8px rgba(var(--border-color), 0.3));
+  }
+
+
 }

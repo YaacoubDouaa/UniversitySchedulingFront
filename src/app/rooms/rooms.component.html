@@ -1,28 +1,82 @@
 
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+  <!-- Top Navigation Bar with subtle animation -->
+  <nav class="sticky top-0 z-50 bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg shadow-lg border-b border-gray-200 dark:border-gray-700 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <!-- Logo and Title with Enhanced Animation -->
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-3 group">
+            <!-- Pulsing Room Icon -->
+            <div class="relative">
+              <!-- Pulse Effect Background -->
+              <div class="absolute inset-0 bg-primary/20 rounded-lg pulse-ring"></div>
 
-<div class="rooms-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Room Availability</mat-card-title>
+              <!-- Icon Container -->
+              <div class="relative p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-all duration-300">
+                <svg
+                  class="h-6 w-6 text-primary transform transition-all duration-300 group-hover:scale-110"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Enhanced Gradient Title -->
+            <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary/60 animate-gradient">
+              Rooms Manager
+            </h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+
+
+  <!-- Filter Card -->
+  <mat-card class="bg-white dark:bg-gray-800 shadow-sm mb-6">
+    <mat-card-header class="border-b border-gray-200 dark:border-gray-700 p-4">
+      <div class="flex items-center">
+        <i-feather name="filter" class="h-5 w-5 text-primary mr-2"></i-feather>
+        <mat-card-title class="text-lg font-semibold">Room Availability</mat-card-title>
+      </div>
     </mat-card-header>
-    <mat-card-content>
-      <form class="filter-form">
-        <mat-form-field appearance="outline">
-          <mat-label>Day</mat-label>
+
+    <mat-card-content class="p-4">
+      <form class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>
+            <i-feather name="calendar" class="h-4 w-4 inline-block mr-2"></i-feather>
+            Day
+          </mat-label>
           <mat-select [(ngModel)]="selectedDay" name="day">
             <mat-option *ngFor="let day of days" [value]="day">{{ day }}</mat-option>
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Time</mat-label>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>
+            <i-feather name="clock" class="h-4 w-4 inline-block mr-2"></i-feather>
+            Time
+          </mat-label>
           <mat-select [(ngModel)]="selectedTime" name="time">
             <mat-option *ngFor="let time of times" [value]="time">{{ time }}</mat-option>
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Type</mat-label>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>
+            <i-feather name="tag" class="h-4 w-4 inline-block mr-2"></i-feather>
+            Type
+          </mat-label>
           <mat-select [(ngModel)]="selectedType" name="type">
             <mat-option value="">All</mat-option>
             <mat-option *ngFor="let type of types" [value]="type">{{ type }}</mat-option>
@@ -32,61 +86,174 @@
     </mat-card-content>
   </mat-card>
 
-  <div *ngIf="selectedTime !== '' && selectedDay !== ''" class="rooms-grid">
-    <mat-card *ngFor="let salle of Object.keys(salles)" class="room-card"
-              [ngClass]="{'available': isSalleAvailable(salle, selectedDay, selectedTime), 'occupied': !isSalleAvailable(salle, selectedDay, selectedTime)}"
-              [style.display]="shouldDisplaySalle(salles[salle]) ? 'block' : 'none'">
-      <mat-card-header>
-        <mat-card-title>{{ salle }}</mat-card-title>
-        <mat-card-subtitle>{{ salles[salle].type }} - Capacity: {{ salles[salle].capacite }}</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <p class="availability">
-          {{ isSalleAvailable(salle, selectedDay, selectedTime) ? "Available" : "Occupied" }}
-        </p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-button color="primary" *ngIf="isSalleAvailable(salle, selectedDay, selectedTime)"
-                (click)="openAddModal(selectedDay, selectedTime)">Add Session</button>
-        <button mat-button color="primary" (click)="onSelectSalle(salles[salle].schedule)">View Schedule</button>
-        <button mat-button color="primary" *ngIf="!isSalleAvailable(salle, selectedDay, selectedTime)"
-                (click)="openViewModal(salle, selectedDay, selectedTime)">View Session</button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
-</div>
+  <!-- Suggestions Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Suggestion 1 -->
+    <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 hover:transform hover:scale-105 transition-transform duration-300">
+      <div class="flex items-start space-x-4">
+        <div class="rounded-full bg-green-100 dark:bg-green-900/30 p-3">
+          <i-feather name="clock" class="h-6 w-6 text-green-500"></i-feather>
+        </div>
+        <div>
+          <h5 class="font-medium text-gray-900 dark:text-gray-100 mb-2">
+            Check Different Times
+          </h5>
+          <p class="text-gray-500 dark:text-gray-400">
+            Try selecting different time slots throughout the day
+          </p>
+        </div>
+      </div>
+    </div>
 
-<ng-container *ngIf="selectedActivity">
-  <div class="modal-overlay" (click)="closeModal($event)">
-    <mat-card class="modal-card" (click)="$event.stopPropagation()">
-      <mat-card-header>
-        <mat-card-title>{{ selectedActivity.seance.id ? 'Edit Session' : 'Add Session' }}</mat-card-title>
+    <!-- Suggestion 2 -->
+    <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 hover:transform hover:scale-105 transition-transform duration-300">
+      <div class="flex items-start space-x-4">
+        <div class="rounded-full bg-blue-100 dark:bg-blue-900/30 p-3">
+          <i-feather name="filter" class="h-6 w-6 text-blue-500"></i-feather>
+        </div>
+        <div>
+          <h5 class="font-medium text-gray-900 dark:text-gray-100 mb-2">
+            Clear Filters
+          </h5>
+          <p class="text-gray-500 dark:text-gray-400">
+            Reset type filters to view all available rooms
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suggestion 3 -->
+    <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 hover:transform hover:scale-105 transition-transform duration-300">
+      <div class="flex items-start space-x-4">
+        <div class="rounded-full bg-purple-100 dark:bg-purple-900/30 p-3">
+          <i-feather name="calendar" class="h-6 w-6 text-purple-500"></i-feather>
+        </div>
+        <div>
+          <h5 class="font-medium text-gray-900 dark:text-gray-100 mb-2">
+            Browse Different Days
+          </h5>
+          <p class="text-gray-500 dark:text-gray-400">
+            Check availability across different days of the week
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rooms Grid -->
+  <div *ngIf="selectedTime !== '' && selectedDay !== ''"
+       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <mat-card *ngFor="let salle of Object.keys(salles)"
+              class="transform transition-all duration-300 hover:scale-105"
+              [ngClass]="{
+                'border-l-4 border-green-500 bg-green-50': isSalleAvailable(salle, selectedDay, selectedTime),
+                'border-l-4 border-red-500 bg-red-50': !isSalleAvailable(salle, selectedDay, selectedTime)
+              }"
+              [style.display]="shouldDisplaySalle(salles[salle]) ? 'block' : 'none'">
+
+      <mat-card-header class="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between w-full">
+          <div>
+            <mat-card-title class="text-lg font-semibold">{{ salle }}</mat-card-title>
+            <mat-card-subtitle class="flex items-center mt-1">
+              <i-feather name="info" class="h-4 w-4 mr-2"></i-feather>
+              {{ salles[salle].type }} - Capacity: {{ salles[salle].capacite }}
+            </mat-card-subtitle>
+          </div>
+          <div class="rounded-full p-2"
+               [ngClass]="{
+                 'bg-green-100 text-green-600': isSalleAvailable(salle, selectedDay, selectedTime),
+                 'bg-red-100 text-red-600': !isSalleAvailable(salle, selectedDay, selectedTime)
+               }">
+            <i-feather [name]="isSalleAvailable(salle, selectedDay, selectedTime) ? 'check-circle' : 'x-circle'"
+                       class="h-6 w-6"></i-feather>
+          </div>
+        </div>
       </mat-card-header>
-      <mat-card-content>
-        <form class="session-form">
-          <mat-form-field appearance="outline">
-            <mat-label>Session Name</mat-label>
-            <input matInput [(ngModel)]="selectedActivity.seance.name" name="name" required>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Professor</mat-label>
-            <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Type</mat-label>
-            <mat-select [(ngModel)]="selectedActivity.seance.type" name="type" required>
-              <mat-option *ngFor="let type of types" [value]="type">{{ type }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </form>
+
+      <mat-card-content class="p-4">
+        <div class="flex items-center space-x-2 mb-4">
+          <i-feather [name]="isSalleAvailable(salle, selectedDay, selectedTime) ? 'unlock' : 'lock'"
+                     class="h-5 w-5"
+                     [ngClass]="{
+                      'text-green-500': isSalleAvailable(salle, selectedDay, selectedTime),
+                      'text-red-500': !isSalleAvailable(salle, selectedDay, selectedTime)
+                    }"></i-feather>
+          <span class="font-medium"
+                [ngClass]="{
+                  'text-green-600': isSalleAvailable(salle, selectedDay, selectedTime),
+                  'text-red-600': !isSalleAvailable(salle, selectedDay, selectedTime)
+                }">
+            {{ isSalleAvailable(salle, selectedDay, selectedTime) ? "Available" : "Occupied" }}
+          </span>
+        </div>
       </mat-card-content>
-      <mat-card-actions align="end">
-        <button mat-button (click)="closeModal()">Cancel</button>
-        <button mat-raised-button color="primary"
-                (click)="selectedActivity.seance.id ? saveEditChanges() : saveAddChanges()">
-          Save
+
+      <mat-card-actions class="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-2">
+        <button mat-button
+                class="flex items-center space-x-1"
+                *ngIf="isSalleAvailable(salle, selectedDay, selectedTime)"
+                (click)="openAddModal(selectedDay, selectedTime)">
+          <i-feather name="plus-circle" class="h-4 w-4"></i-feather>
+          <span>Add Session</span>
+        </button>
+        <button mat-button
+                class="flex items-center space-x-1"
+                (click)="onSelectSalle(salles[salle].schedule)">
+          <i-feather name="calendar" class="h-4 w-4"></i-feather>
+          <span>View Schedule</span>
+        </button>
+        <button mat-button
+                class="flex items-center space-x-1"
+                *ngIf="!isSalleAvailable(salle, selectedDay, selectedTime)"
+                (click)="openViewModal(salle, selectedDay, selectedTime)">
+          <i-feather name="eye" class="h-4 w-4"></i-feather>
+          <span>View Session</span>
         </button>
       </mat-card-actions>
     </mat-card>
   </div>
-</ng-container>
+
+  <!-- Modal -->
+  <ng-container *ngIf="selectedActivity">
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+         (click)="closeModal($event)">
+      <mat-card class="w-full max-w-lg bg-white dark:bg-gray-800 shadow-xl"
+                (click)="$event.stopPropagation()">
+        <mat-card-header class="border-b border-gray-200 dark:border-gray-700 p-4">
+          <div class="flex items-center justify-between w-full">
+            <mat-card-title class="text-lg font-semibold flex items-center">
+              <i-feather [name]="selectedActivity.seance.id ? 'edit' : 'plus-circle'"
+                         class="h-5 w-5 mr-2"></i-feather>
+              {{ selectedActivity.seance.id ? 'Edit Session' : 'Add Session' }}
+            </mat-card-title>
+            <button mat-icon-button (click)="closeModal()">
+              <i-feather name="x" class="h-5 w-5"></i-feather>
+            </button>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content class="p-4">
+          <form class="space-y-4">
+            <!-- Form fields... -->
+          </form>
+        </mat-card-content>
+
+        <mat-card-actions class="border-t border-gray-200 dark:border-gray-700 p-4 flex justify-end space-x-2">
+          <button mat-button class="flex items-center space-x-1" (click)="closeModal()">
+            <i-feather name="x" class="h-4 w-4"></i-feather>
+            <span>Cancel</span>
+          </button>
+          <button mat-raised-button
+                  color="primary"
+                  class="flex items-center space-x-1"
+                  (click)="selectedActivity.seance.id ? saveEditChanges() : saveAddChanges()">
+            <i-feather name="save" class="h-4 w-4"></i-feather>
+            <span>Save</span>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </ng-container>
+
+</div></div>
