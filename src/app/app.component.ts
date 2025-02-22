@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {Schedule} from './models/Schedule';
 
 @Component({
   selector: 'app-root',
@@ -12,4 +13,6 @@ export class AppComponent {
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
+
+
 }

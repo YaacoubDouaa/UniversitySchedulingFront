@@ -3,7 +3,8 @@
   <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
-        <div class="flex items-center">
+        <div class="flex items-center space-x-3">
+          <i-feather name="calendar" class="h-6 w-6 text-gray-600 dark:text-gray-400"></i-feather>
           <h1 class="text-xl font-semibold text-gray-900 dark:text-white">Schedule Manager</h1>
         </div>
         <div class="flex items-center space-x-4">
@@ -52,6 +53,24 @@
           </mat-checkbox>
         </div>
       </div>
+    </div>
+    <!-- Add this section between the controls and schedule table -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-8">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <mat-icon class="text-gray-500 dark:text-gray-400">date_range</mat-icon>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Current Week</h2>
+        </div>
+
+
+
+          <div class="flex items-center space-x-2">
+            <mat-icon class="text-primary-600">calendar_today</mat-icon>
+            <span class="text-lg font-medium text-gray-900 dark:text-white">
+
+        </span>
+          </div>
+
     </div>
 
     <!-- Schedule Table -->
@@ -200,3 +219,4 @@
     </div>
   </div>
 </ng-template>
+  </div></div>

@@ -11,6 +11,8 @@ import { RattrapageService } from '../rattrapage.service';
   standalone: false,
 })
 export class DashboardComponent implements OnInit {
+  displayText = '';
+  fullText = 'Welcome to Schedule Manager';
   isSidebarOpen = true;
   schedule: Schedule = {};
   conflicts: SeanceConflict[] = [];
@@ -32,8 +34,19 @@ export class DashboardComponent implements OnInit {
     this.loadSchedule();
     this.loadConflicts();
     this.loadRattrapageSchedule();
+    this.animateText();
   }
-
+  private animateText() {
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+      if (currentIndex < this.fullText.length) {
+        this.displayText = this.fullText.slice(0, currentIndex + 1);
+        currentIndex++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 100);
+  }
   private getCurrentDay(): string {
     const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
     return days[new Date().getDay()];

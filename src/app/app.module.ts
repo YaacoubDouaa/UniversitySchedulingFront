@@ -80,6 +80,7 @@ import {SidebarComponent} from './side-bar/side-bar.component';
 import {NavbarComponent} from './nav-bar/nav-bar.component';
 import {FeatherModule} from 'angular-feather';
 import {allIcons} from 'angular-feather/icons';
+import {Calendar, Clock, User} from 'lucide-angular';
 
 @NgModule({
   declarations: [
@@ -206,7 +207,9 @@ import {allIcons} from 'angular-feather/icons';
     FeatherModule.pick(allIcons),
     NavbarComponent,
     SidebarComponent,
-    NavbarComponent
+    NavbarComponent,
+
+
   ],
 
   providers: [
