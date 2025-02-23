@@ -147,5 +147,5 @@ export class AppComponent implements OnInit, OnDestroy {
   dismissNotification(event: Event): void {
     event.stopPropagation();
     this.showMessageNotification = false;
-  }hhh
+  }
 }
