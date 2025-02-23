@@ -81,6 +81,7 @@ import {NavbarComponent} from './nav-bar/nav-bar.component';
 import {FeatherModule} from 'angular-feather';
 import {allIcons} from 'angular-feather/icons';
 import {Calendar, Clock, User} from 'lucide-angular';
+import { MessagingComponent } from './messaging/messaging.component';
 
 @NgModule({
   declarations: [
@@ -105,7 +106,8 @@ import {Calendar, Clock, User} from 'lucide-angular';
     ProposeRattrapageComponent,
     ProfessorViewScheduleComponent,
     CsvImportComponent,
-    DashboardComponent
+    DashboardComponent,
+    MessagingComponent
 
   ],
   imports: [

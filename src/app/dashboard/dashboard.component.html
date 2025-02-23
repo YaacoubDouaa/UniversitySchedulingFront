@@ -1,127 +1,178 @@
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <header class="bg-white shadow-md rounded-lg mb-6">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex justify-between items-center py-4">
-            <!-- Typewriter Effect Header -->
-            <div class="text-center mb-12">
-              <h1 class="text-4xl font-bold tracking-tight">
-                <span>{{ displayText }}</span>
-                <span class="animate-pulse">|</span>
-              </h1>
-              <p class="text-gray-600 mt-4 animated-text">Manage and organize your academic schedule</p>
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <header class="bg-white shadow-md rounded-lg mb-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <!-- Typewriter Effect Header -->
+        <div class="text-center mb-12">
+          <h1 class="text-4xl font-bold tracking-tight">
+            <span>{{ displayText }}</span>
+            <span class="animate-pulse">|</span>
+          </h1>
+          <p class="text-gray-600 mt-4 animated-text">Manage and organize your academic schedule</p>
 
-            </div>
-            <div class="flex items-center space-x-4">
-              <mat-form-field appearance="outline" >
-                <mat-label>Niveau</mat-label>
-                <mat-select [(ngModel)]="selectedNiveau" class="w-full">
-                  <mat-option value="ALL">Tous les niveaux</mat-option>
-                  <mat-option value="L1">ING1_INFO</mat-option>
-                  <mat-option value="L2">L2</mat-option>
-                  <mat-option value="L3">L3</mat-option>
-                  <mat-option value="M1">M1</mat-option>
-                  <mat-option value="M2">M2</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-          </div>
         </div>
+      </div></div>
 
-      </header>
+  </header>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Schedule Section -->
-        <div class="lg:col-span-2 space-y-6">
-          <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div class="px-4 py-5 sm:p-6">
-              <h2 class="text-xl font-semibold text-gray-900 mb-4">Emploi du temps - {{ currentDay }}</h2>
-              <div class="overflow-x-auto">
-                <div class="inline-block min-w-full align-middle">
-                  <div class="overflow-hidden border border-gray-200 rounded-lg">
-                    <div class="grid grid-cols-[auto,1fr]">
-                      <!-- Time slots -->
-                      <div class="bg-gray-50 border-r border-gray-200">
-                        <div class="h-12 border-b border-gray-200 px-4 flex items-center">
-                          <span class="text-sm font-semibold text-gray-600">Horaire</span>
-                        </div>
-                        <div *ngFor="let time of timeSlots" class="h-32 border-b border-gray-200 px-4 flex items-center">
-                          <span class="text-sm text-gray-500">{{ time }}</span>
-                        </div>
-                      </div>
-
-                      <!-- Sessions -->
-                      <div class="divide-y divide-gray-200">
-                        <div class="h-12 bg-gray-50 border-b border-gray-200"></div>
-                        <div *ngFor="let time of timeSlots" class="min-h-[8rem] grid grid-cols-1 gap-2 p-2">
-                          <ng-container *ngIf="schedule[currentDay]?.[selectedNiveau]?.[time]">
-                            <div *ngFor="let seance of schedule[currentDay][selectedNiveau][time]"
-                                 [ngClass]="getSeanceTypeStyle(seance.type)"
-                                 class="p-3 rounded-lg border shadow-md bg-gray-50 transition duration-150 ease-in-out hover:shadow-lg">
-                              <div class="flex justify-between items-start mb-1">
-                                <span class="text-xs font-medium">{{ seance.type }}</span>
-                                <span class="text-xs">{{ seance.groupe }}</span>
-                              </div>
-                              <h3 class="text-sm font-semibold mb-1">{{ seance.name }}</h3>
-                              <div class="flex justify-between text-xs">
-                                <span>{{ seance.room }}</span>
-                                <span>{{ seance.professor }}</span>
-                              </div>
-                              <div *ngIf="seance.biWeekly" class="text-xs italic mt-1 text-gray-500">Bi-hebdomadaire</div>
-                            </div>
-                          </ng-container>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="space-y-6">
-          <!-- Conflicts -->
-          <div class="bg-white rounded-lg shadow-lg">
-            <div class="px-4 py-5 sm:p-6">
-              <h2 class="text-xl font-semibold text-gray-900 mb-4">Conflits Détectés</h2>
-              <div class="space-y-3">
-                <div *ngFor="let conflict of conflicts" [ngClass]="getConflictSeverityStyle(conflict)" class="p-4 rounded-lg border bg-gray-100 transition duration-150 ease-in-out hover:shadow-md">
-                  <div class="flex justify-between items-start mb-2">
-                    <span class="text-sm font-medium">{{ conflict.day }} - {{ conflict.time }}</span>
-                    <div class="flex gap-1">
-                      <span *ngFor="let type of conflict.conflictTypes" class="px-2 py-1 text-xs rounded-full bg-white">{{ type }}</span>
-                    </div>
-                  </div>
-                  <div class="space-y-2 text-sm">
-                    <div>{{ conflict.seance1.name }} ({{ conflict.seance1.professor }})</div>
-                    <div class="flex justify-center text-red-500">⚠️</div>
-                    <div>{{ conflict.seance2.name }} ({{ conflict.seance2.professor }})</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Schedule Section -->
+    <div class="lg:col-span-2">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div class="p-6">
+          <!-- Schedule Header -->
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+              <i-feather name="calendar" class="h-5 w-5 text-purple-600 mr-2"></i-feather>
+              Schedule - {{currentDay}}
+            </h2>
           </div>
 
-          <!-- Rattrapage Schedule -->
-          <div class="bg-white rounded-lg shadow-lg">
-            <div class="px-4 py-5 sm:p-6">
-              <h2 class="text-xl font-semibold text-gray-900 mb-4">Sessions de Rattrapage</h2>
-              <div class="space-y-4">
-                <div *ngFor="let day of rattrapageSchedule | keyvalue">
-                  <h3 class="text-sm font-medium text-gray-700 mb-2">{{ day.key }}</h3>
+          <!-- Loading State -->
+          <div *ngIf="isLoading" class="flex items-center justify-center p-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="error" class="text-red-500 text-center p-8">
+            {{error}}
+          </div>
+
+          <!-- Schedule Table -->
+          <div *ngIf="!isLoading && !error" class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-20">
+                  Time
+                </th>
+                <th *ngFor="let niveau of getNiveauxForCurrentDay()"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  {{niveau}}
+                </th>
+              </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tr *ngFor="let time of timeSlots">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700">
+                  {{time}}
+                </td>
+                <td *ngFor="let niveau of getNiveauxForCurrentDay()"
+                    class="px-6 py-4 align-top border-l border-gray-200 dark:border-gray-700">
                   <div class="space-y-2">
-                    <div *ngFor="let timeSlot of day.value | keyvalue" class="space-y-2">
-                      <div class="text-xs text-gray-500">{{ timeSlot.key }}</div>
-                      <div *ngFor="let seance of timeSlot.value" class="p-3 bg-blue-50 border border-blue-200 rounded-lg transition duration-150 ease-in-out hover:bg-blue-100">
-                        <div class="text-sm font-medium text-blue-900 mb-1">{{ seance.name }}</div>
-                        <div class="flex justify-between text-xs text-blue-700">
-                          <span>{{ seance.professor }}</span>
-                          <span>{{ seance.room }}</span>
-                          <span>{{ seance.groupe }}</span>
+                    <ng-container *ngIf="schedule[currentDay]?.[niveau]?.[time]">
+                      <div *ngFor="let seance of schedule[currentDay][niveau][time]"
+                           [ngClass]="getSeanceTypeStyle(seance.type)"
+                           class="p-3 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
+                        <div class="flex justify-between items-start mb-1">
+                        <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200">
+                          {{seance.type}}
+                        </span>
+                          <span class="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+                          {{seance.groupe}}
+                        </span>
+                        </div>
+                        <h3 class="text-sm font-medium mb-1 text-gray-900 dark:text-white">{{seance.name}}</h3>
+                        <div class="flex flex-col space-y-1 text-xs text-gray-500 dark:text-gray-400">
+                        <span class="flex items-center">
+                          <i-feather name="map-pin" class="h-3 w-3 mr-1"></i-feather>
+                          {{seance.room}}
+                        </span>
+                          <span class="flex items-center">
+                          <i-feather name="user" class="h-3 w-3 mr-1"></i-feather>
+                            {{seance.professor}}
+                        </span>
+                        </div>
+                        <div *ngIf="seance.biWeekly"
+                             class="mt-1 text-xs text-purple-600 dark:text-purple-400 italic flex items-center">
+                          <i-feather name="repeat" class="h-3 w-3 mr-1"></i-feather>
+                          Bi-weekly
                         </div>
                       </div>
+                    </ng-container>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="!isLoading && !error && getNiveauxForCurrentDay().length === 0"
+               class="text-center p-8 text-gray-500 dark:text-gray-400">
+            No schedule data available for {{currentDay}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="space-y-6">
+      <!-- Conflicts -->
+      <!-- Update the Conflicts Section -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border-2 border-red-500/50">
+        <div class="p-6">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+            <i-feather name="alert-triangle"
+                       class="h-5 w-5 text-red-500 mr-2 animate-bounce"></i-feather>
+            <span class="text-red-500">Conflicts</span>
+          </h2>
+          <div class="space-y-3">
+            <div *ngFor="let conflict of conflicts"
+                 class="p-4 rounded-lg border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10
+                  transition-all duration-300 hover:shadow-md">
+              <div class="flex justify-between items-start mb-2">
+          <span class="text-sm font-medium text-red-800 dark:text-red-200">
+            {{ conflict.day }} - {{ conflict.time }}
+          </span>
+                <div class="flex gap-1">
+            <span *ngFor="let type of conflict.conflictTypes"
+                  class="px-2 py-1 text-xs rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200">
+              {{ type }}
+            </span>
+                </div>
+              </div>
+              <div class="space-y-2 text-sm">
+                <div class="text-red-700 dark:text-red-300">
+                  {{ conflict.seance1.name }} ({{ conflict.seance1.professor }})
+                </div>
+                <div class="flex justify-center">
+                  <i-feather name="alert-triangle"
+                             class="h-5 w-5 text-red-500 animate-bounce"></i-feather>
+                </div>
+                <div class="text-red-700 dark:text-red-300">
+                  {{ conflict.seance2.name }} ({{ conflict.seance2.professor }})
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rattrapage Schedule -->
+      <div class="bg-white rounded-lg shadow-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <!-- Rotating Icon -->
+          <div class="relative p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-all duration-300">
+            <i-feather
+              name="refresh-cw"
+              class="h-6 w-6 text-primary animate-spin-slow"
+            ></i-feather>
+          </div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Sessions de Rattrapage</h2>
+          <div class="space-y-4">
+            <div *ngFor="let day of rattrapageSchedule | keyvalue">
+              <h3 class="text-sm font-medium text-gray-700 mb-2">{{ day.key }}</h3>
+              <div class="space-y-2">
+                <div *ngFor="let timeSlot of day.value | keyvalue" class="space-y-2">
+                  <div class="text-xs text-gray-500">{{ timeSlot.key }}</div>
+                  <div *ngFor="let seance of timeSlot.value" class="p-3 bg-blue-50 border border-blue-200 rounded-lg transition duration-150 ease-in-out hover:bg-blue-100">
+                    <div class="text-sm font-medium text-blue-900 mb-1">{{ seance.name }}</div>
+                    <div class="flex justify-between text-xs text-blue-700">
+                      <span>{{ seance.professor }}</span>
+                      <span>{{ seance.room }}</span>
+                      <span>{{ seance.groupe }}</span>
                     </div>
                   </div>
                 </div>
@@ -130,5 +181,6 @@
           </div>
         </div>
       </div>
-    </main>
-
+    </div>
+  </div>
+</main>

@@ -32,7 +32,9 @@ export class SidebarComponent {
     { icon: 'refresh-cw', label: 'Rattrapages', route: '/rattrapage' },
     { icon: 'users', label: 'Professeurs', route: '/profs' },
     { icon: 'book', label: 'Cours', route: '/courses' },
-    { icon: 'map-pin', label: 'Salles', route: '/rooms' }
+    { icon: 'map-pin', label: 'Salles', route: '/rooms' },
+    { icon: 'message-circle', label: 'Messages', route: '/messages' }, // Added messaging
+
   ];
 
   toggleSidebar(): void {

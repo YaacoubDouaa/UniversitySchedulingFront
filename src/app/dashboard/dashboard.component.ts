@@ -32,7 +32,7 @@ export class DashboardComponent implements OnInit {
   rattrapageSchedule: RattrapageSchedule = {};
   selectedNiveau: string = 'ALL';
   currentDay: string;
-
+  groupOptions: string[] = ['ING1_INFO','ING1_INFO_TD1', 'ING1_INFO_TD2','ING1_INFO_TD1 || ING1_INFO_TD2'];
   timeSlots: string[] = [
     '08:30-10:00', '10:15-11:45', '12:00-13:30',
     '13:45-15:15', '15:30-17:00', '17:15-18:45'
@@ -65,13 +65,38 @@ export class DashboardComponent implements OnInit {
     return days[new Date().getDay()];
   }
 
+  isLoading: boolean = true;
+  error: string | null = null;
+
   private loadSchedule(): void {
-    // Lazy injection of the ScheduleService
+    this.isLoading = true;
     const scheduleService = this.injector.get(ScheduleService);
-    scheduleService.getGlobalSchedule().subscribe((schedule: Schedule) => {
-      this.schedule = schedule;
-      console.log(this.schedule); // Just to confirm it's working
+    scheduleService.getGlobalSchedule().subscribe({
+      next: (schedule: Schedule) => {
+        this.schedule = schedule;
+        this.isLoading = false;
+        // Debug logs
+        console.log('Current Day:', this.currentDay);
+        console.log('Full Schedule:', this.schedule);
+        if (this.schedule[this.currentDay]) {
+          Object.keys(this.schedule[this.currentDay]).forEach(niveau => {
+            console.log(`Seances for ${niveau}:`, this.schedule[this.currentDay][niveau]);
+          });
+        }
+      },
+      error: (err) => {
+        this.error = 'Failed to load schedule';
+        this.isLoading = false;
+        console.error('Error loading schedule:', err);
+      }
     });
+  }
+  // Add helper method to get available niveaux
+  getNiveauxForCurrentDay(): string[] {
+    if (this.schedule && this.schedule[this.currentDay]) {
+      return Object.keys(this.schedule[this.currentDay]);
+    }
+    return [];
   }
 
   private loadConflicts(): void {
@@ -118,4 +143,5 @@ export class DashboardComponent implements OnInit {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
 
+  protected readonly Object = Object;
 }

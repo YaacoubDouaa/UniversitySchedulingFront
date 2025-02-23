@@ -226,7 +226,36 @@ export class ScheduleService {
         professor: 'Sara MTIW'
       }]
     }
-  }
+  },Dimanche: {
+      ING1_INFO: {
+        '8:30-10:00': [{
+          name: 'Ch-Processus stochastique',
+          id: 18,
+          groupe: 'ING1_INFO',
+          room: 'C-61',
+          type: 'COURS',
+          professor: 'Sara MTIW'
+        }]
+      },
+      ING1_INFO_TD1: {
+        '14:45-16:15': [{
+          name: 'TD-3H00-3.15-Processus stochastique',
+          id: 19,
+          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
+          room: 'A-32',
+          type: 'TD',
+          professor: 'Sara MEJ'
+        }],
+        '8:30-10:00': [{
+          name: 'Ch-Processus stochastique',
+          id: 20,
+          groupe: 'ING1_INFO',
+          room: 'C-61',
+          type: 'TP',
+          professor: 'Sara MTIW'
+        }]
+      }
+    }
 };
   private globalScheduleSource = new BehaviorSubject<Schedule>(this.schedule); // Initialize with a default schedule
 
