@@ -1,31 +1,137 @@
-<mat-sidenav-container class="professor-container">
-  <mat-sidenav #sidenav mode="side" opened class="professor-sidenav">
-    <mat-nav-list>
-      <a mat-list-item routerLink="./dashboard" routerLinkActive="active">
-        <mat-icon matListIcon>dashboard</mat-icon>
-        <span matLine>Dashboard</span>
-      </a>
-      <a mat-list-item routerLink="./schedule" routerLinkActive="active">
-        <mat-icon matListIcon>calendar_today</mat-icon>
-        <span matLine>Schedule</span>
-      </a>
-      <a mat-list-item routerLink="./propose-rattrapage" routerLinkActive="active">
-        <mat-icon matListIcon>add_circle</mat-icon>
-        <span matLine>Propose Make-up Session</span>
-      </a>
-    </mat-nav-list>
-  </mat-sidenav>
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <!-- Sidebar -->
+  <aside [class.w-64]="isOpen"
+         [class.w-20]="!isOpen"
+         class="fixed left-0 top-0 bottom-0 z-40 transition-all duration-300 ease-in-out bg-gray-800 hidden sm:block">
+    <div class="h-full flex flex-col">
+      <!-- Sidebar header -->
+      <div class="h-16 flex items-center justify-between px-4 bg-gray-900">
+        <div class="flex items-center" *ngIf="isOpen">
+          <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+            <span class="text-white font-bold">{{currentUser[0]}}</span>
+          </div>
+          <span class="ml-2 text-white font-semibold">Professor</span>
+        </div>
+        <button (click)="toggleSidebar()"
+                class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
+          <i-feather [name]="isOpen ? 'chevron-left' : 'chevron-right'" class="h-5 w-5"></i-feather>
+        </button>
+      </div>
 
-  <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      <button mat-icon-button (click)="sidenav.toggle()">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <span>Professor Space</span>
-    </mat-toolbar>
+      <!-- Navigation -->
+      <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+        <a *ngFor="let item of navItems"
+           [routerLink]="item.route"
+           routerLinkActive="bg-gray-900 text-white"
+           [class.justify-center]="!isOpen"
+           class="flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200 group">
+          <i-feather [name]="item.icon" class="h-5 w-5"></i-feather>
+          <span *ngIf="isOpen" class="ml-3">{{item.label}}</span>
+          <!-- Tooltip for collapsed state -->
+          <div *ngIf="!isOpen"
+               class="absolute left-20 bg-gray-900 text-white px-2 py-1 rounded text-sm whitespace-nowrap scale-0 group-hover:scale-100 transition-transform origin-left">
+            {{item.label}}
+          </div>
+        </a>
+      </nav>
 
-    <div class="professor-content">
+      <!-- Bottom section -->
+      <div class="border-t border-gray-700">
+        <!-- DateTime -->
+        <div class="px-4 py-2 text-gray-400 text-sm" [class.text-center]="!isOpen">
+          <i-feather name="clock" class="h-4 w-4 inline-block" [class.mr-2]="isOpen"></i-feather>
+          <span *ngIf="isOpen">{{currentDateTime}}</span>
+        </div>
+
+        <!-- User Profile -->
+        <div class="p-4" *ngIf="isOpen">
+          <div class="flex items-center">
+            <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+              <span class="text-white font-bold text-sm">{{currentUser[0]}}</span>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-white">{{currentUser}}</p>
+              <p class="text-xs text-gray-400">Professor</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logout Button -->
+        <button (click)="logout()"
+                [class.justify-center]="!isOpen"
+                class="w-full flex items-center px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-gray-700 transition-colors">
+          <i-feather name="log-out" class="h-5 w-5"></i-feather>
+          <span *ngIf="isOpen" class="ml-3">Logout</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Menu Button -->
+  <div class="sm:hidden fixed top-4 left-4 z-50">
+    <button (click)="toggleMobileMenu()"
+            class="p-2 rounded-md text-gray-400 hover:text-gray-200 hover:bg-gray-700 focus:outline-none">
+      <i-feather [name]="isMobileMenuOpen ? 'x' : 'menu'" class="h-6 w-6"></i-feather>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div *ngIf="isMobileMenuOpen"
+       class="sm:hidden fixed inset-0 z-40">
+    <!-- Overlay -->
+    <div class="fixed inset-0 bg-black bg-opacity-50" (click)="toggleMobileMenu()"></div>
+
+    <!-- Mobile Sidebar -->
+    <div class="fixed inset-y-0 left-0 w-64 bg-gray-800">
+      <div class="h-full flex flex-col">
+        <!-- Mobile Header -->
+        <div class="h-16 flex items-center justify-between px-4 bg-gray-900">
+          <div class="flex items-center">
+            <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+              <span class="text-white font-bold">{{currentUser[0]}}</span>
+            </div>
+            <span class="ml-2 text-white font-semibold">Professor</span>
+          </div>
+          <button (click)="toggleMobileMenu()"
+                  class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
+            <i-feather name="x" class="h-5 w-5"></i-feather>
+          </button>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+          <a *ngFor="let item of navItems"
+             [routerLink]="item.route"
+             routerLinkActive="bg-gray-900 text-white"
+             (click)="toggleMobileMenu()"
+             class="flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200">
+            <i-feather [name]="item.icon" class="h-5 w-5"></i-feather>
+            <span class="ml-3">{{item.label}}</span>
+          </a>
+        </nav>
+
+        <!-- Mobile Bottom Section -->
+        <div class="border-t border-gray-700 p-4">
+          <div class="text-gray-400 text-sm mb-4">
+            <i-feather name="clock" class="h-4 w-4 inline-block mr-2"></i-feather>
+            <span>{{currentDateTime}}</span>
+          </div>
+          <button (click)="logout()"
+                  class="w-full flex items-center px-2 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-gray-700 rounded-md transition-colors">
+            <i-feather name="log-out" class="h-5 w-5"></i-feather>
+            <span class="ml-3">Logout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div [class.sm:ml-64]="isOpen"
+       [class.sm:ml-20]="!isOpen"
+       class="transition-all duration-300">
+    <div class="p-6">
       <router-outlet></router-outlet>
     </div>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </div>
+</div>

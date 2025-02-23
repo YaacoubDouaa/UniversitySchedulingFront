@@ -1,73 +1,190 @@
-<div class="dashboard-container">
-  <!-- Notification Bell with Dropdown -->
-  <div class="notification-container">
-    <mat-icon class="notification-icon" (click)="toggleNotifications()">notifications</mat-icon>
-    <span *ngIf="notifications.length > 0" class="notification-badge">{{ notifications.length }}</span>
-
-    <!-- Expansion Panel for Notifications -->
-    <mat-expansion-panel *ngIf="showNotifications" class="notifications-panel" [expanded]="showNotifications">
-      <mat-expansion-panel-header>
-        <mat-panel-title>Notifications</mat-panel-title>
-        <mat-panel-description>
-          <mat-icon (click)="clearNotifications()">clear_all</mat-icon>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-
-      <mat-list *ngIf="notifications.length > 0; else noNotifications">
-        <mat-list-item *ngFor="let notification of notifications" class="notification-item">
-          <mat-icon class="list-icon">info</mat-icon>
-          <div class="list-content">
-            <h3 matLine>{{ notification.title }}</h3>
-            <p matLine>{{ notification.message }}</p>
-          </div>
-        </mat-list-item>
-      </mat-list>
-
-      <ng-template #noNotifications>
-        <p class="no-notifications">No new notifications</p>
-      </ng-template>
-    </mat-expansion-panel>
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex items-center justify-center min-h-screen">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
   </div>
 
-  <!-- Dashboard Content -->
-  <h1 class="dashboard-title">Welcome, Professor</h1>
-  <div class="dashboard-grid">
-    <mat-card class="dashboard-card">
-      <mat-card-header>
-        <mat-card-title>Upcoming Classes</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-list>
-          <mat-list-item *ngFor="let class of upcomingClasses" class="list-item">
-            <mat-icon class="list-icon">class</mat-icon>
-            <div class="list-content">
-              <h3 matLine>{{ class.name }}</h3>
-              <p matLine>
-                <span>{{ class.time }} | Room {{ class.room }}</span>
-              </p>
-            </div>
-          </mat-list-item>
-        </mat-list>
-      </mat-card-content>
-    </mat-card>
+  <!-- Error State -->
+  <div *ngIf="error" class="flex items-center justify-center min-h-screen">
+    <div class="text-red-500 dark:text-red-400 text-center">
+      <i-feather name="alert-circle" class="h-12 w-12 mx-auto mb-4"></i-feather>
+      <p>{{error}}</p>
+      <button (click)="refreshData()"
+              class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+        Try Again
+      </button>
+    </div>
+  </div>
 
-    <mat-card class="dashboard-card">
-      <mat-card-header>
-        <mat-card-title>Pending Make-up Proposals</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-list>
-          <mat-list-item *ngFor="let proposal of pendingProposals" class="list-item">
-            <mat-icon class="list-icon">schedule</mat-icon>
-            <div class="list-content">
-              <h3 matLine>{{ proposal.name }}</h3>
-              <p matLine>
-                <span>{{ proposal.date | date }} | {{ proposal.status }}</span>
-              </p>
+  <!-- Main Content -->
+  <div *ngIf="!loading && !error && professorData" class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white dark:bg-gray-800 shadow-lg flex flex-col">
+      <div class="p-6 flex-1">
+        <!-- Professor Info -->
+        <div class="flex items-center space-x-3 mb-8">
+          <div class="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center">
+            <span class="text-white text-xl font-bold">
+              {{professorData.name[0]}}
+            </span>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+              {{professorData.name}}
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Code: {{professorData.codeEnseignant}}
+            </p>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="space-y-2">
+          <button (click)="selectedView = 'schedule'"
+                  [class.bg-blue-50]="selectedView === 'schedule'"
+                  [class.text-blue-600]="selectedView === 'schedule'"
+                  class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <i-feather name="calendar" class="h-5 w-5"></i-feather>
+            <span>Schedule</span>
+          </button>
+          <button (click)="selectedView = 'stats'"
+                  [class.bg-blue-50]="selectedView === 'stats'"
+                  [class.text-blue-600]="selectedView === 'stats'"
+                  class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <i-feather name="bar-chart-2" class="h-5 w-5"></i-feather>
+            <span>Statistics</span>
+          </button>
+          <button (click)="selectedView = 'settings'"
+                  [class.bg-blue-50]="selectedView === 'settings'"
+                  [class.text-blue-600]="selectedView === 'settings'"
+                  class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <i-feather name="settings" class="h-5 w-5"></i-feather>
+            <span>Settings</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Current Time -->
+      <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div class="text-sm text-gray-500 dark:text-gray-400 flex items-center space-x-2">
+          <i-feather name="clock" class="h-4 w-4"></i-feather>
+          <span>{{currentDate}}</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-8 overflow-auto">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+          {{selectedView === 'schedule' ? 'My Schedule' :
+          selectedView === 'stats' ? 'Statistics' : 'Settings'}}
+        </h1>
+        <button (click)="refreshData()"
+                class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <i-feather name="refresh-cw" class="h-5 w-5"></i-feather>
+        </button>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+          <div class="flex items-center space-x-3">
+            <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <i-feather name="clock" class="h-6 w-6 text-blue-600 dark:text-blue-300"></i-feather>
             </div>
-          </mat-list-item>
-        </mat-list>
-      </mat-card-content>
-    </mat-card>
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Total Hours</p>
+              <h3 class="text-2xl font-semibold text-gray-900 dark:text-white">
+                {{getTotalHours()}}
+              </h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+          <div class="flex items-center space-x-3">
+            <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+              <i-feather name="calendar" class="h-6 w-6 text-green-600 dark:text-green-300"></i-feather>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Weekly Sessions</p>
+              <h3 class="text-2xl font-semibold text-gray-900 dark:text-white">
+                {{getCurrentWeekSessions()}}
+              </h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+          <div class="flex items-center space-x-3">
+            <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+              <i-feather name="users" class="h-6 w-6 text-purple-600 dark:text-purple-300"></i-feather>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Groups</p>
+              <h3 class="text-2xl font-semibold text-gray-900 dark:text-white">
+                {{professorData.heures}}
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule Table -->
+      <div *ngIf="selectedView === 'schedule'" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead>
+            <tr>
+              <th class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky left-0">
+                Time
+              </th>
+              <th *ngFor="let day of days"
+                  class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                {{day}}
+              </th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tr *ngFor="let timeSlot of timeSlots">
+              <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white sticky left-0 bg-white dark:bg-gray-800">
+                {{timeSlot}}
+              </td>
+              <td *ngFor="let day of days" class="px-4 py-4">
+                <div *ngFor="let session of getSessionsForSlot(day, timeSlot)"
+                     class="mb-2 p-3 rounded-lg"
+                     [class]="getSessionTypeClass(session.type)">
+                  <div class="font-medium mb-1">{{session.name}}</div>
+                  <div class="text-sm opacity-75">
+                    {{session.room}} • {{session.niveau}}
+                  </div>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Statistics View -->
+      <div *ngIf="selectedView === 'stats'" class="space-y-6">
+        <!-- Add your statistics content here -->
+      </div>
+
+      <!-- Settings View -->
+      <div *ngIf="selectedView === 'settings'" class="space-y-6">
+        <!-- Add your settings content here -->
+      </div>
+    </main>
+  </div>
+
+  <!-- No Data State -->
+  <div *ngIf="!loading && !error && !professorData" class="flex items-center justify-center min-h-screen">
+    <div class="text-gray-500 dark:text-gray-400 text-center">
+      <i-feather name="user-x" class="h-12 w-12 mx-auto mb-4"></i-feather>
+      <p>No professor data found.</p>
+    </div>
   </div>
 </div>

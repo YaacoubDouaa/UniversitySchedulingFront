@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -44,4 +45,6 @@ export class NavbarComponent {
     this.isNotificationOpen = !this.isNotificationOpen;
     this.isProfileMenuOpen = false;
   }
+
+
 }

@@ -9,12 +9,7 @@ export interface ProfSchedule{
   };
 }
 
-export interface Prof {
-  name: string;
-  codeEnseignant: string;
-  heures: number;
-  schedule: ProfSchedule;
-}
+
 export interface EnseignantDTO {
   codeEnseignant: string;   // Unique code for the teacher
   heures: number;           // Total teaching hours
@@ -27,5 +22,16 @@ export interface EnseignantDTO {
 
   // List of signal IDs
   signalIds: number[];
+}
+
+// Professor interface
+export interface Prof {
+  name: string;
+  codeEnseignant: string;
+  heures: number;
+  schedule: ProfSchedule;
+  totalScheduledHours?: number;
+  currentWeekSessions?: Seance[];
+  upcomingSessions?: Array<Seance & { day: string; time: string }>;
 }
 

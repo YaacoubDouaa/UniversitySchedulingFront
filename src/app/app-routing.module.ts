@@ -32,17 +32,16 @@ const routes: Routes = [ { path: '', component: DashboardComponent },
   { path: 'profs', component: ProfessorsComponent},
   { path: 'import', component: CsvImportComponent},
   { path: 'messages', component: MessagingComponent},
+
   {
     path: 'professor',
-    component: ProfessorSpaceComponent,
-    children: [
+    component: ProfessorSpaceComponent},
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: ProfessorDashboardComponent },
-      { path: 'schedule', component: ProfessorViewScheduleComponent },
+      { path: 'profdashboard', component: ProfessorDashboardComponent },
+      { path: 'profschedule', component: ProfessorViewScheduleComponent },
       { path: 'propose-rattrapage', component: ProposeRattrapageComponent }
-    ]
-  }
-  // Add more routes as needed
+
+
 ];
 
 @NgModule({
