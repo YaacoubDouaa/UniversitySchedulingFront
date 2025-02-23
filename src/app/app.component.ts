@@ -130,7 +130,7 @@ export class AppComponent implements OnInit, OnDestroy {
       return date.toLocaleDateString('fr-FR');
     }
   }
-
+//hhhhh
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
