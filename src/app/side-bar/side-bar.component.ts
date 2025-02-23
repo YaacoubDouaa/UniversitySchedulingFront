@@ -31,7 +31,7 @@ export class SidebarComponent {
     { icon: 'alert-triangle', label: 'Conflits', route: '/conflict' },
     { icon: 'refresh-cw', label: 'Rattrapages', route: '/rattrapage' },
     { icon: 'users', label: 'Professeurs', route: '/profs' },
-    { icon: 'book', label: 'Cours', route: '/courses' },
+    { icon: 'book', label: 'Cours', route: '/global' },
     { icon: 'map-pin', label: 'Salles', route: '/rooms' },
     { icon: 'message-circle', label: 'Messages', route: '/messages' }, // Added messaging
 
