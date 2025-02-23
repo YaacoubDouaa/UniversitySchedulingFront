@@ -4,6 +4,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {Subscription} from 'rxjs';
 import {MessagingService} from '../messaging.service';
+import {User} from '../models/Users';
 export interface Signal {
   id: number;
   message: string;
@@ -68,7 +69,8 @@ export class MessagingComponent implements OnInit {
   signals: Signal[] = [];
   newMessage: string = '';
   searchQuery: string = '';
-
+  availableUsers: User[] = [];
+  showNewConversationModal = false;
   private subscriptions = new Subscription();
 
   constructor(private messagingService: MessagingService) {}
@@ -79,6 +81,7 @@ export class MessagingComponent implements OnInit {
         conversations => this.conversations = conversations
       )
     );
+    this.availableUsers = this.messagingService.getAvailableUsers();
 
     this.subscriptions.add(
       this.messagingService.selectedConversation$.subscribe(
@@ -92,7 +95,15 @@ export class MessagingComponent implements OnInit {
       )
     );
   }
+  openNewConversationModal(): void {
+    this.showNewConversationModal = true;
+    this.availableUsers = this.messagingService.getAvailableUsers();
+  }
 
+  startNewConversation(userId: number): void {
+    this.messagingService.createNewConversation(userId);
+    this.showNewConversationModal = false;
+  }
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
