@@ -1,0 +1,50 @@
+/* messaging.component.scss */
+:host {
+  display: block;
+  height: 100%;
+}
+
+.message-list-container {
+  height: calc(100vh - 200px);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+/* Add to your component's styles */
+.floating-panel {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.time-display {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Gradient border animation */
+@keyframes borderGlow {
+  0%, 100% {
+    border-color: rgba(147, 51, 234, 0.5);
+  }
+  50% {
+    border-color: rgba(147, 51, 234, 1);
+  }
+}
+
+.animate-border {
+  animation: borderGlow 2s ease-in-out infinite;
+}

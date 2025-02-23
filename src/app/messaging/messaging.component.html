@@ -1,0 +1,176 @@
+<!-- messaging.component.html -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
+    <!-- Conversations Sidebar -->
+    <div class="w-80 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+      <!-- Search Bar -->
+      <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div class="relative">
+          <input type="text"
+                 [(ngModel)]="searchQuery"
+                 placeholder="Rechercher une conversation..."
+                 class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white text-sm">
+          <i-feather name="search"
+                     class="absolute left-3 top-2.5 h-4 w-4 text-gray-400"></i-feather>
+        </div>
+      </div>
+
+      <!-- Conversations List -->
+      <div class="flex-1 overflow-y-auto">
+        <div *ngFor="let conversation of getFilteredConversations()"
+             (click)="selectConversation(conversation)"
+             [class.bg-purple-50]="selectedConversation?.id === conversation.id"
+             [class.dark:bg-purple-90020]="selectedConversation?.id === conversation.id"
+        class="p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors duration-200">
+        <div class="flex items-center space-x-3">
+          <!-- Avatar with Status -->
+          <div class="relative">
+            <div class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                <span class="text-lg font-medium text-purple-600 dark:text-purple-400">
+                  {{conversation.name.charAt(0)}}
+                </span>
+            </div>
+            <div [class]="getStatusColor(conversation.status) + ' absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-gray-800'"></div>
+          </div>
+
+          <!-- Conversation Details -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                {{conversation.name}}
+              </h3>
+              <span class="text-xs text-gray-500 dark:text-gray-400">
+                  {{formatDate(conversation.lastMessage.date)}}
+                </span>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
+              {{conversation.lastMessage.message}}
+            </p>
+
+            <!-- Unread Badge -->
+            <div *ngIf="conversation.unreadCount > 0"
+                 class="mt-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+              {{conversation.unreadCount}} non lu{{conversation.unreadCount > 1 ? 's' : ''}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="flex-1 flex flex-col" *ngIf="selectedConversation">
+    <!-- Chat Header -->
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+              <span class="text-lg font-medium text-purple-600 dark:text-purple-400">
+                {{selectedConversation.name.charAt(0)}}
+              </span>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+              {{selectedConversation.name}}
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{selectedConversation.status === 'online' ? 'En ligne' :
+              selectedConversation.status === 'away' ? 'Absent' : 'Hors ligne'}}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="flex-1 p-4 h-[500px] overflow-y-auto message-container">
+      <div class="space-y-4">
+        <!-- Messages -->
+        <div *ngFor="let notification of selectedConversation.notifications"
+             [@messageAnimation]
+             [class.justify-end]="isMessageFromCurrentUser(notification)"
+             class="flex">
+          <div [class.bg-purple-50]="!isMessageFromCurrentUser(notification)"
+               [class.bg-blue-50]="isMessageFromCurrentUser(notification)"
+               [class.dark:bg-purple-90020]="!isMessageFromCurrentUser(notification)"
+          [class.dark:bg-blue-90020]="isMessageFromCurrentUser(notification)"
+          [class.ml-auto]="isMessageFromCurrentUser(notification)"
+          class="max-w-[80%] rounded-lg px-4 py-2 shadow-sm">
+          <div *ngIf="!isMessageFromCurrentUser(notification)"
+               class="text-xs text-purple-600 dark:text-purple-400 font-medium mb-1">
+            {{selectedConversation.name}}
+          </div>
+          <p class="text-gray-900 dark:text-white">{{notification.message}}</p>
+          <div class="flex items-center justify-end mt-1 space-x-1">
+                <span class="text-xs text-gray-500 dark:text-gray-400">
+                  {{formatDate(notification.date)}}
+                </span>
+            <svg *ngIf="isMessageFromCurrentUser(notification)"
+                 [class.text-blue-500]="notification.read"
+                 class="h-4 w-4 text-gray-400"
+                 fill="none"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Messages -->
+      <div *ngFor="let signal of signals"
+           class="flex justify-center">
+        <div [ngClass]="{
+                'bg-blue-50 text-blue-700': signal.severity === 'info',
+                'bg-green-50 text-green-700': signal.severity === 'success',
+                'bg-yellow-50 text-yellow-700': signal.severity === 'warning',
+                'bg-red-50 text-red-700': signal.severity === 'error'
+              }" class="px-3 py-1 rounded-full text-xs">
+          {{signal.message}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message Input -->
+  <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+    <form (ngSubmit)="sendMessage()" class="flex items-center space-x-3">
+      <div class="flex-1">
+        <input type="text"
+               [(ngModel)]="newMessage"
+               name="newMessage"
+               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+               placeholder="Tapez votre message..."
+               (keyup.enter)="sendMessage()">
+      </div>
+      <button type="submit"
+              [disabled]="!newMessage.trim()"
+              class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
+        <div class="flex items-center space-x-2">
+          <span>Envoyer</span>
+          <i-feather name="send" class="h-4 w-4"></i-feather>
+        </div>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- No Conversation Selected State -->
+<div class="flex-1 flex items-center justify-center" *ngIf="!selectedConversation">
+  <div class="text-center">
+    <div class="w-16 h-16 mx-auto mb-4 text-gray-400">
+      <i-feather name="message-circle" class="w-full h-full"></i-feather>
+    </div>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+      Sélectionnez une conversation
+    </h3>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      Choisissez une conversation dans la liste pour commencer à discuter
+    </p>
+  </div>
+</div>
+</div>
+</div>
