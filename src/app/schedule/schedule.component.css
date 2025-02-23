@@ -41,3 +41,10 @@
 .dark ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(75, 85, 99, 0.7);
 }
+.break-words {
+  word-wrap: break-word;
+}
+
+.w-fit {
+  width: fit-content;
+}

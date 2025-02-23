@@ -156,17 +156,18 @@
               <!-- Session Card -->
               <ng-container *ngIf="getFilteredSchedule()[day] && getFilteredSchedule()[day][time]">
                 <!-- Session Card -->
+                <!-- Session Card -->
                 <div *ngFor="let seance of getFilteredSchedule()[day][time]"
-                     class="rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer group bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700"
+                     class="rounded-lg p-3 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer group bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 min-w-[180px]"
                      (click)="openEditModal(seance, day, time)">
 
                   <!-- Session Content -->
-                  <div class="flex flex-col divide-y divide-gray-200 dark:divide-gray-700">
+                  <div class="flex flex-col divide-y divide-gray-200 dark:divide-gray-700 space-y-2">
                     <!-- Header Section -->
-                    <div class="pb-3">
-                      <div class="flex items-center justify-between">
-                        <h3 class="font-medium text-gray-900 dark:text-white text-lg">{{ seance.name }}</h3>
-                        <span class="px-3 py-1 text-sm rounded-full"
+                    <div class="pb-2">
+                      <div class="flex flex-col space-y-2">
+                        <h3 class="font-medium text-gray-900 dark:text-white text-base break-words">{{ seance.name }}</h3>
+                        <span class="px-2 py-0.5 text-xs rounded-full w-fit"
                               [ngClass]="{'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200': seance.type === 'COURS',
                         'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200': seance.type === 'TD',
                         'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200': seance.type === 'TP'}">
@@ -176,65 +177,53 @@
                     </div>
 
                     <!-- Details Section -->
-                    <div class="py-3 space-y-3">
+                    <div class="py-2 flex flex-col space-y-2">
                       <!-- Professor -->
-                      <div class="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
-                        <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                          <i-feather name="user" class="h-4 w-4"></i-feather>
+                      <div class="flex items-start space-x-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div class="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <i-feather name="user" class="h-3 w-3"></i-feather>
                         </div>
-                        <div class="flex flex-col">
-                          <span class="text-xs text-gray-500 dark:text-gray-400">Professor</span>
-                          <span class="font-medium">{{ seance.professor }}</span>
-                        </div>
+                        <span class="font-medium break-words">{{ seance.professor }}</span>
                       </div>
 
                       <!-- Room -->
-                      <div class="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
-                        <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                          <i-feather name="map-pin" class="h-4 w-4"></i-feather>
+                      <div class="flex items-start space-x-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div class="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <i-feather name="map-pin" class="h-3 w-3"></i-feather>
                         </div>
-                        <div class="flex flex-col">
-                          <span class="text-xs text-gray-500 dark:text-gray-400">Room</span>
-                          <span class="font-medium">{{ seance.room }}</span>
-                        </div>
+                        <span class="font-medium break-words">{{ seance.room }}</span>
                       </div>
 
                       <!-- Group -->
-                      <div class="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
-                        <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                          <i-feather name="users" class="h-4 w-4"></i-feather>
+                      <div class="flex items-start space-x-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div class="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <i-feather name="users" class="h-3 w-3"></i-feather>
                         </div>
-                        <div class="flex flex-col">
-                          <span class="text-xs text-gray-500 dark:text-gray-400">Group</span>
-                          <span class="font-medium">{{ seance.groupe }}</span>
-                        </div>
+                        <span class="font-medium break-words">{{ seance.groupe }}</span>
                       </div>
 
                       <!-- Frequency -->
-                      <div class="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
-                        <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                          <i-feather name="repeat" class="h-4 w-4"></i-feather>
+                      <div class="flex items-start space-x-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div class="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <i-feather name="repeat" class="h-3 w-3"></i-feather>
                         </div>
-                        <div class="flex flex-col">
-                          <span class="text-xs text-gray-500 dark:text-gray-400">Frequency</span>
-                          <span class="font-medium">{{ seance.biWeekly ? "BiWeekly" : "Weekly" }}</span>
-                        </div>
+                        <span class="font-medium">{{ seance.biWeekly ? "BiWeekly" : "Weekly" }}</span>
                       </div>
                     </div>
 
                     <!-- Action Buttons Section -->
-                    <div class="pt-3">
+                    <div class="pt-2">
                       <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div class="flex space-x-2">
+                        <div class="flex flex-col space-y-1">
                           <button *ngIf="seance.biWeekly"
-                                  class="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+                                  class="w-full flex items-center justify-center space-x-1 px-2 py-1 bg-green-500 hover:bg-green-600 text-white rounded text-xs transition-colors"
                                   (click)="openAddModal(day,time); $event.stopPropagation()">
-                            <i-feather name="plus-circle" class="h-4 w-4"></i-feather>
-                            <span>Add Session</span>
+                            <i-feather name="plus-circle" class="h-3 w-3"></i-feather>
+                            <span>Add</span>
                           </button>
-                          <button class="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+                          <button class="w-full flex items-center justify-center space-x-1 px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs transition-colors"
                                   (click)="openDeleteModal(seance.id,day,selectedGroup,time); $event.stopPropagation()">
-                            <i-feather name="trash-2" class="h-4 w-4"></i-feather>
+                            <i-feather name="trash-2" class="h-3 w-3"></i-feather>
                             <span>Delete</span>
                           </button>
                         </div>
@@ -245,11 +234,11 @@
 
                 <!-- Empty Slot -->
                 <div *ngIf="!getFilteredSchedule()[day][time]"
-                     class="h-full min-h-[240px] flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary cursor-pointer group transition-all duration-300"
+                     class="h-[180px] flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary cursor-pointer group transition-all duration-300"
                      (click)="openAddModal(day, time)">
                   <div class="text-center group-hover:scale-110 transition-transform duration-300">
-                    <i-feather name="plus-circle" class="h-6 w-6 text-gray-400 dark:text-gray-500 mx-auto mb-2"></i-feather>
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Add Session</span>
+                    <i-feather name="plus-circle" class="h-5 w-5 text-gray-400 dark:text-gray-500 mx-auto mb-1"></i-feather>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Add Session</span>
                   </div>
                 </div>
               </ng-container>
