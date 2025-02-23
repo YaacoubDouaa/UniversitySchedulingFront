@@ -579,18 +579,6 @@ export class ScheduleComponent implements OnInit {
       : 'rgba(243, 244, 246, 0.8)'; // Light gray for regular
   }
 
-  getTypeColor(type: string): string {
-    switch(type) {
-      case 'COURS':
-        return 'rgb(59, 130, 246)'; // Blue
-      case 'TD':
-        return 'rgb(16, 185, 129)'; // Green
-      case 'TP':
-        return 'rgb(249, 115, 22)'; // Orange
-      default:
-        return 'rgb(107, 114, 128)'; // Gray
-    }
-  }
 
   saveEditChanges() {
 

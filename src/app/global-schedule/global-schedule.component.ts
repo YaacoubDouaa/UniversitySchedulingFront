@@ -60,4 +60,17 @@ export class GlobalScheduleComponent {
     });
     return courses;
   }
+  // schedule-display.component.ts
+  getCourseIcon(type: string): string {
+    switch (type) {
+      case 'COURS':
+        return 'book';
+      case 'TD':
+        return 'edit-3';
+      case 'TP':
+        return 'monitor';
+      default:
+        return 'circle';
+    }
+  }
 }
