@@ -9,16 +9,6 @@ export interface FichierExcel {
   importDate: string; // ISO Date Format
 }
 
-// Notification Interface
-export interface Notification {
-  id: number;
-  message: string;
-  date: string; // ISO Date Format
-  type: string;
-  read: boolean;
-  recepteurId: number;
-  expediteurId: number;
-}
 
 // PropositionDeRattrapage Interface
 export interface PropositionDeRattrapage {
@@ -39,4 +29,15 @@ export interface Signal {
   message: string;
   severity: string;
   timestamp: string; // ISO Date Format
+}
+
+// Notification Interface
+export interface Notification {
+  id: number;
+  message: string;
+  date: string; // ISO Date Format
+  type: string;
+  read: boolean;
+  recepteurId: number;
+  expediteurId: number;
 }

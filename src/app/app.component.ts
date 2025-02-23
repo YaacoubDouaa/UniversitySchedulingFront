@@ -25,6 +25,7 @@ import {animate, style, transition, trigger} from '@angular/animations';
     isSidebarOpen = true;
     currentDate: string = '';
     currentUser: string = 'YaacoubDouaa';
+    currentUserId:number=1;
     unreadMessages = 3;
     showMessageNotification = false;
     latestMessage = {
