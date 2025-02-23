@@ -579,7 +579,18 @@ export class ScheduleComponent implements OnInit {
       : 'rgba(243, 244, 246, 0.8)'; // Light gray for regular
   }
 
-
+  getCourseIcon(type: string): string {
+    switch (type) {
+      case 'COURS':
+        return 'book';
+      case 'TD':
+        return 'edit-3';
+      case 'TP':
+        return 'monitor';
+      default:
+        return 'circle';
+    }
+  }
   saveEditChanges() {
 
   }

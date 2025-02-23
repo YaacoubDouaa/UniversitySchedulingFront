@@ -1,66 +1,102 @@
-import { Component } from '@angular/core';
+import {Component, Inject, Injector, OnInit} from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { Seance } from '../models/Seance';
 import { Schedule } from '../models/Schedule';
-import { FormControl } from '@angular/forms';
-import { map, Observable, startWith } from 'rxjs';
-import { Router } from '@angular/router';
-import {ScheduleService} from '../schedule-service.service';
+import { ScheduleService } from '../schedule-service.service';
 
 @Component({
   selector: 'app-global-schedule',
-  standalone: false,
   templateUrl: './global-schedule.component.html',
-  styleUrls: ['./global-schedule.component.css']
+  styleUrls: ['./global-schedule.component.css'],
+  standalone:false,
+  animations: [
+    trigger('slideDown', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-10px)' }),
+        animate('200ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(-10px)' }))
+      ])
+    ])
+  ]
 })
-export class GlobalScheduleComponent {
+export class GlobalScheduleComponent implements OnInit {
   schedule: Schedule | null = null;
-  days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'];
-  timeSlots = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
-  editingCell: any = null;
-  currentDate = '2025-02-23 18:32:55';
+  days: string[] = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+  timeSlots: string[] = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
+  currentDate: string = '2025-02-23 21:14:04';
+  currentUser: string = 'YaacoubDouaa';
+  selectedTimeSlot: { day: string; time: string } | null = null;
 
-  constructor(private scheduleService: ScheduleService) {
+  constructor(private scheduleService: ScheduleService,private injector:Injector) {}
+
+  ngOnInit(): void {
+    this.loadSchedule();
+    this.updateCurrentTime();
   }
 
-  ngOnInit() {
-    this.scheduleService.currentGlobalSchedule.subscribe(schedule => {
+  private updateCurrentTime(): void {
+    setInterval(() => {
+      const now = new Date();
+      this.currentDate = this.formatDateTime(now);
+    }, 1000);
+  }
+
+  private formatDateTime(date: Date): string {
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
+  loadSchedule(): void {
+    // Lazy injection of the service
+    this.scheduleService = this.injector.get(ScheduleService);
+    // Subscribe to get the latest schedule data
+    this.scheduleService.getGlobalSchedule().subscribe((schedule: Schedule) => {
       this.schedule = schedule;
     });
   }
 
-  getClassForCourse(course: any): string {
-    const baseClasses = 'p-2 rounded-lg shadow-sm text-sm mb-2';
+  getAllCoursesForSlot(day: string, timeSlot: string): Seance[] {
+    if (!this.schedule?.[day]) return [];
 
-    switch (course?.type) {
-      case 'COURS':
-        return `${baseClasses} bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200`;
-      case 'TD':
-        return `${baseClasses} bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200`;
-      case 'TP':
-        return `${baseClasses} bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200`;
-      default:
-        return `${baseClasses} bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200`;
-    }
-  }
-
-  getAllCoursesForSlot(day: string, timeSlot: string): any[] {
-    if (!this.schedule || !this.schedule[day]) return [];
-
-    const courses: any[] = [];
+    const courses: Seance[] = [];
     Object.keys(this.schedule[day]).forEach(group => {
       const groupSchedule = this.schedule![day][group];
-      if (groupSchedule && groupSchedule[timeSlot]) {
+      if (groupSchedule?.[timeSlot]) {
         groupSchedule[timeSlot].forEach(course => {
           courses.push({
             ...course,
-            group: group // Add group information to the course
+            groupe: group
           });
         });
       }
     });
     return courses;
   }
-  // schedule-display.component.ts
+
+  toggleTimeSlotDetails(day: string, timeSlot: string): void {
+    if (this.isTimeSlotSelected(day, timeSlot)) {
+      this.selectedTimeSlot = null;
+    } else {
+      this.selectedTimeSlot = { day, time: timeSlot };
+    }
+  }
+
+  isTimeSlotSelected(day: string, timeSlot: string): boolean {
+    return this.selectedTimeSlot?.day === day && this.selectedTimeSlot?.time === timeSlot;
+  }
+
+  getUniqueSessionTypes(day: string, timeSlot: string): string[] {
+    const sessions = this.getAllCoursesForSlot(day, timeSlot);
+    return Array.from(new Set(sessions.map(session => session.type)));
+  }
+
   getCourseIcon(type: string): string {
     switch (type) {
       case 'COURS':
@@ -72,5 +108,20 @@ export class GlobalScheduleComponent {
       default:
         return 'circle';
     }
+  }
+
+  openAddModal(day: string, timeSlot: string): void {
+    // Implement your add modal logic
+    console.log('Opening add modal for:', day, timeSlot);
+  }
+
+  openEditModal(session: Seance, day: string, timeSlot: string): void {
+    // Implement your edit modal logic
+    console.log('Opening edit modal for:', session, day, timeSlot);
+  }
+
+  openDeleteModal(id: number, day: string, group: string, timeSlot: string): void {
+    // Implement your delete modal logic
+    console.log('Opening delete modal for:', id, day, group, timeSlot);
   }
 }
