@@ -137,7 +137,74 @@
         </div>
       </div>
     </div>
+    <!-- Resolution Guidelines Accordion -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 mb-6">
+      <mat-accordion>
+        <!-- Accordion Item -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <div class="flex items-center space-x-2">
+              <i-feather name="info" class="h-5 w-5 text-[#ef233c]"></i-feather>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Resolution Guidelines</h3>
+            </div>
+          </mat-expansion-panel-header>
 
+          <div class="p-4 space-y-4">
+            <!-- Available Actions -->
+            <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+              <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3 flex items-center">
+                <i-feather name="tool" class="h-4 w-4 text-[#ef233c] mr-2"></i-feather>
+                Available Actions
+              </h4>
+              <div class="grid grid-cols-2 gap-4 text-sm">
+                <div class="flex items-start space-x-2">
+                  <i-feather name="search" class="h-4 w-4 text-[#ef233c] mt-0.5"></i-feather>
+                  <span class="text-gray-600 dark:text-gray-300">View available rooms by selecting day and time</span>
+                </div>
+                <div class="flex items-start space-x-2">
+                  <i-feather name="refresh" class="h-4 w-4 text-[#ef233c] mt-0.5"></i-feather>
+                  <span class="text-gray-600 dark:text-gray-300">Auto-suggest alternative time slots</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Solutions -->
+            <div class="bg-[#ef233c]/5 p-4 rounded-lg border border-[#ef233c]/10">
+              <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3 flex items-center">
+                <i-feather name="zap" class="h-4 w-4 text-[#ef233c] mr-2"></i-feather>
+                Quick Solutions
+              </h4>
+              <div class="grid grid-cols-1 gap-3 text-sm">
+                <div class="flex items-start space-x-2">
+                  <div class="w-6 h-6 rounded-full bg-[#ef233c]/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-xs font-medium text-[#ef233c]">1</span>
+                  </div>
+                  <span class="text-gray-600 dark:text-gray-300">
+                Use the room autocomplete to see only available rooms for the selected time slot
+              </span>
+                </div>
+                <div class="flex items-start space-x-2">
+                  <div class="w-6 h-6 rounded-full bg-[#ef233c]/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-xs font-medium text-[#ef233c]">2</span>
+                  </div>
+                  <span class="text-gray-600 dark:text-gray-300">
+                Change either the room or time slot to automatically update conflict status
+              </span>
+                </div>
+                <div class="flex items-start space-x-2">
+                  <div class="w-6 h-6 rounded-full bg-[#ef233c]/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-xs font-medium text-[#ef233c]">3</span>
+                  </div>
+                  <span class="text-gray-600 dark:text-gray-300">
+                Click "Resolve Conflict" to apply changes and update the schedule
+              </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
     <!-- Conflicts List with enhanced cards -->
     <div class="grid gap-6">
       <div *ngFor="let conflict of conflicts; let i = index"

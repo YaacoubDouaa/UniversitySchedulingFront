@@ -1,64 +1,104 @@
-<form class="filter-container">
-  <div class="filter-item">
-    <h4>Select a Day</h4>
-    <mat-form-field appearance="outline">
-      <mat-label>Choose a day</mat-label>
-      <mat-select [(ngModel)]="selectedDay" name="group">
-        <mat-option *ngFor="let day of days" [value]="day">
-          {{ day }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
+<!-- Header with Time and User Info -->
 
-  <div class="filter-item">
-    <h4>Select a Time</h4>
-    <mat-form-field appearance="outline">
-      <mat-label>Choose a time</mat-label>
-      <mat-select [(ngModel)]="selectedTime" name="time">
-        <mat-option *ngFor="let time of times" [value]="time">
-          {{ time }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+
+<!-- Enhanced Filter Container -->
+<form class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 border border-gray-200 dark:border-gray-700">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Day Selection -->
+    <div class="space-y-2">
+      <h4 class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+        <i-feather name="calendar" class="h-4 w-4 mr-2 text-[#ef233c]"></i-feather>
+        Select a Day
+      </h4>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Choose a day</mat-label>
+        <mat-select [(ngModel)]="selectedDay" name="group" class="w-full">
+          <mat-option *ngFor="let day of days" [value]="day">
+            {{ day }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Time Selection -->
+    <div class="space-y-2">
+      <h4 class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+        <i-feather name="clock" class="h-4 w-4 mr-2 text-[#ef233c]"></i-feather>
+        Select a Time
+      </h4>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Choose a time</mat-label>
+        <mat-select [(ngModel)]="selectedTime" name="time" class="w-full">
+          <mat-option *ngFor="let time of times" [value]="time">
+            {{ time }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
   </div>
 </form>
-<div *ngIf="selectedTime !== '' && selectedDay !== ''">
-  <div class="card-container" style="display: flex; flex-wrap: wrap; gap: 1rem;">
-    <div *ngFor="let name of Object.keys(profs)"
-         class="card"
-         style="width: 18rem; cursor: pointer; padding: 1rem; border-radius: 8px;"
-         [style.backgroundColor]="getSalleColor(name, selectedDay, selectedTime, selectedType)">
 
-      <div class="card-body" style="display: flex; align-items: center; gap: 1rem;">
-        <!-- MatAvatar for Professor -->
-        <mat-icon matListAvatar style="font-size: 40px; background-color: #2196F3; color: white; border-radius: 50%; padding: 8px;">
-          person
-        </mat-icon>
+<!-- Professor Cards Grid -->
+<div *ngIf="selectedTime !== '' && selectedDay !== ''"
+     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div *ngFor="let name of Object.keys(profs)"
+       class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+       [class.bg-green-50]="isProfAvailable(name, selectedDay, selectedTime)"
+       [class.bg-red-50]="!isProfAvailable(name, selectedDay, selectedTime)">
 
-        <!-- Professor Name -->
-        <h2 class="card-title">{{ name }}</h2>
+    <!-- Professor Info -->
+    <div class="p-6">
+      <div class="flex items-center space-x-4 mb-4">
+        <div class="rounded-full p-3"
+             [ngClass]="{'bg-green-100 dark:bg-green-900/30': isProfAvailable(name, selectedDay, selectedTime),
+                        'bg-red-100 dark:bg-red-900/30': !isProfAvailable(name, selectedDay, selectedTime)}">
+          <i-feather name="user"
+                     class="h-6 w-6"
+                     [ngClass]="{'text-green-500': isProfAvailable(name, selectedDay, selectedTime),
+                                'text-red-500': !isProfAvailable(name, selectedDay, selectedTime)}">
+          </i-feather>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ name }}</h2>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+                [ngClass]="{'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200': isProfAvailable(name, selectedDay, selectedTime),
+                           'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200': !isProfAvailable(name, selectedDay, selectedTime)}">
+            {{ isProfAvailable(name, selectedDay, selectedTime) ? "Available" : "Occupied" }}
+          </span>
+        </div>
       </div>
 
-      <p class="card-disponibilité" style="text-align: center;">
-        {{ isProfAvailable(name, selectedDay, selectedTime) ? "Disponible" : "Occupée" }}
-      </p>
+      <!-- Action Buttons -->
+      <div class="flex flex-col space-y-2">
+        <button *ngIf="isProfAvailable(name, selectedDay, selectedTime)"
+                (click)="openAddModal(selectedDay, selectedTime)"
+                class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#ef233c] text-white hover:bg-[#ef233c]/90 transition-colors duration-300">
+          <i-feather name="plus-circle" class="h-4 w-4 mr-2"></i-feather>
+          <span>Assign Session</span>
+        </button>
 
-      <div class="button-group" style="display: flex; justify-content: center; gap: 0.5rem;">
-        <section *ngIf="isProfAvailable(name, selectedDay, selectedTime)">
-          <button mat-raised-button color="primary" (click)="openAddModal(selectedDay, selectedTime)">Assign a Session</button>
-        </section>
+        <button (click)="onSelectProf(profs[name].schedule); $event.stopPropagation()"
+                class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-300">
+          <i-feather name="calendar" class="h-4 w-4 mr-2"></i-feather>
+          <span>View Schedule</span>
+        </button>
 
-        <section>
-          <button mat-raised-button color="accent" (click)="onSelectProf(profs[name].schedule); $event.stopPropagation()">
-            View Schedule
-          </button>
-        </section>
-
-        <section *ngIf="!isProfAvailable(name, selectedDay, selectedTime)">
-          <button mat-raised-button color="warn">View Session</button>
-        </section>
+        <button *ngIf="!isProfAvailable(name, selectedDay, selectedTime)"
+                class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-300">
+          <i-feather name="eye" class="h-4 w-4 mr-2"></i-feather>
+          <span>View Session</span>
+        </button>
       </div>
     </div>
   </div>
+</div>
+
+<!-- Empty State -->
+<div *ngIf="selectedTime === '' || selectedDay === ''"
+     class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 p-12 text-center">
+  <div class="rounded-full bg-[#ef233c]/10 p-4 mb-4">
+    <i-feather name="calendar" class="h-8 w-8 text-[#ef233c]"></i-feather>
+  </div>
+  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Select Day and Time</h3>
+  <p class="text-sm text-gray-500 dark:text-gray-400">Choose a day and time to view professor availability</p>
 </div>
