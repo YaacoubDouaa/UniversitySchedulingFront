@@ -39,7 +39,7 @@ export class ProfessorSpaceComponent implements OnInit {
     { route: 'propose-rattrapage', label: 'Make-up Sessions', icon: 'clock' },
     { route: 'messages', label: 'Messages', icon: 'message-circle' }
   ];
- showMessageNotification: boolean=false;
+ showMessageNotification: boolean=true;
 
   constructor(
     private router: Router,

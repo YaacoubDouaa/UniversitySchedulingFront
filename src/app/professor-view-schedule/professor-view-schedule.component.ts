@@ -2,6 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import {ProfSchedule} from '../models/Professors';
 import {Seance} from '../models/Seance';
 import {SalleSchedule} from '../models/Salle';
+import {ProfessorsService} from '../professors.service';
+interface TimeSlot {
+  time: string;
+  sessions: {
+    [groupe: string]: Seance;
+  };
+}
+
+interface DaySchedule {
+  day: string;
+  timeSlots: TimeSlot[];
+}
 
 
 @Component({
@@ -10,102 +22,110 @@ import {SalleSchedule} from '../models/Salle';
   styleUrls: ['./professor-view-schedule.component.css'],standalone:false
 })
 export class ProfessorViewScheduleComponent implements OnInit {
-  days: string[] = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-  timeSlots: string[] = [
-    '08:00-09:30', '09:45-11:15', '11:30-13:00',
-    '14:00-15:30', '15:45-17:15', '17:30-19:00'
+
+  schedule: DaySchedule[] = [];
+  currentDay: string;
+  currentDateTime: string;
+  isLoading = true;
+  error: string | null = null;
+
+  readonly days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+  readonly timeSlots = [
+    '8:30-10:00',
+    '10:15-11:45',
+    '13:00-14:30',
+    '14:45-16:15',
+    '16:30-18:00'
   ];
 
-  schedule: SalleSchedule = {
-    MONDAY: {
-      '08:00-09:30': {
-        'ING_1': {
-          name: 'Mathematics 101',
-          id:12,
-          room: 'A-101',
-          type: 'COURS',
-          professor: 'Dr. Smith',
-          groupe: 'ING_1',
-          biWeekly: false
+  constructor(public professorsService: ProfessorsService) {
+    this.currentDay = this.getCurrentDay();
+    this.currentDateTime = this.professorsService.getCurrentDateTime();
+  }
+
+  ngOnInit(): void {
+    this.loadSchedule();
+    this.startTimeUpdate();
+  }
+
+  private getCurrentDay(): string {
+    const days = ['DIMANCHE', 'LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+    return days[new Date().getDay()];
+  }
+
+  private startTimeUpdate(): void {
+    setInterval(() => {
+      this.currentDateTime = this.professorsService.getCurrentDateTime();
+    }, 1000);
+  }
+
+  private loadSchedule(): void {
+    this.isLoading = true;
+    this.error = null;
+
+    this.professorsService.getCurrentProfessorSchedule()
+      .subscribe({
+        next: (schedule) => {
+          if (schedule) {
+            this.schedule = this.formatSchedule(schedule);
+          }
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading schedule:', err);
+          this.error = 'Failed to load schedule. Please try again later.';
+          this.isLoading = false;
         }
-      },
-      '11:30-13:00': {
-        'ING_2': {
-          name: 'Physics 202',
-          id:16,
-          room: 'B-203',
-          type: 'COURS',
-          professor: 'Dr. Smith',
-          groupe: 'ING_1',
-          biWeekly: false
-        }
-      }
-    },
-    TUESDAY: {
-      '09:45-11:15': {
-        'ING_3': {
-          name: 'Chemistry 301',
-          id:17,
-          room: 'C-105',
-          type: 'COURS',
-          professor: 'Dr. Smith',
-          groupe: 'ING_1',
-          biWeekly: false
-        }
-      }
-    },
-    WEDNESDAY: {
-      '14:00-15:30': {
-        'ING_4': {
-          name: 'Biology 102',
-          id:18,
-          room: 'D-201',
-          type: 'COURS',
-          professor: 'Dr. Smith',
-          groupe: 'ING_1',
-          biWeekly: false
-        }
-      }
-    },
-    THURSDAY: {
-      '15:45-17:15': {
-        'ING_5': {
-          name: 'Computer Science 201',
-          id:19,
-          room: 'E-302',
-          type: 'COURS',
-          professor: 'Dr. Smith',
-          groupe: 'ING_1',
-          biWeekly: false
-        }
-      }
-    },
-    FRIDAY: {
-      '11:30-13:00': {
-        'ING_6': {
-          name: 'Statistics 301',
-          id:20,
-          room: 'F-105',
-          type: 'COURS',
-          professor: 'Dr. Smith',
-          groupe: 'ING_1',
-          biWeekly: false
-        }
-      }
+      });
+  }
+
+  private formatSchedule(schedule: ProfSchedule): DaySchedule[] {
+    return this.days.map(day => ({
+      day,
+      timeSlots: this.timeSlots
+        .filter(time => schedule[day]?.[time])
+        .map(time => ({
+          time,
+          sessions: schedule[day][time] || {}
+        }))
+        .sort((a, b) => this.compareTimeSlots(a.time, b.time))
+    }));
+  }
+
+  private compareTimeSlots(a: string, b: string): number {
+    const [aStart] = a.split('-');
+    const [bStart] = b.split('-');
+    const [aHour, aMinute] = aStart.split(':').map(Number);
+    const [bHour, bMinute] = bStart.split(':').map(Number);
+
+    if (aHour !== bHour) return aHour - bHour;
+    return aMinute - bMinute;
+  }
+
+  isCurrentTimeSlot(day: string, time: string): boolean {
+    if (day !== this.currentDay) return false;
+    const [start, end] = time.split('-');
+    const [startHour, startMinute] = start.split(':').map(Number);
+    const [endHour, endMinute] = end.split(':').map(Number);
+
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    const isAfterStart = currentHour > startHour ||
+      (currentHour === startHour && currentMinute >= startMinute);
+    const isBeforeEnd = currentHour < endHour ||
+      (currentHour === endHour && currentMinute <= endMinute);
+
+    return isAfterStart && isBeforeEnd;
+  }
+
+  getSessionTypeClass(type: string): string {
+    switch (type) {
+      case 'COURS': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300';
+      case 'TD': return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300';
+      case 'TP': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-300';
     }
-  };
-
-  constructor() { }
-
-  ngOnInit(): void { }
-
-  getSession(day: string, time: string): Seance | null {
-    const daySchedule = this.schedule[day];
-    if (daySchedule && daySchedule[time]) {
-      // For simplicity, we're just returning the first class in the time slot
-      // You might want to handle multiple classes in a single time slot differently
-      return Object.values(daySchedule[time])[0];
-    }
-    return null;
   }
 }

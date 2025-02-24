@@ -24,7 +24,7 @@ interface NavItem {
 export class SidebarComponent {
   @Input() isOpen = true;
 
-  navItems: NavItem[] = [
+  @Input() navItems: NavItem[] = [
     { icon: 'grid', label: 'Tableau de Bord', route: '/', active: true },
     { icon: 'calendar', label: 'Emploi du Temps', route: '/schedule' },
     { icon: 'alert-triangle', label: 'Conflits', route: '/conflict' },
@@ -35,9 +35,9 @@ export class SidebarComponent {
     { icon: 'message-circle', label: 'Messages', route: '/messages' }, // Added messaging
 
   ];
-  currentUser='Douaa';
+  @Input() currentUser='Douaa';
 
-  toggleSidebar(): void {
+  @Input() toggleSidebar(): void {
     this.isOpen = !this.isOpen;
   }
 }

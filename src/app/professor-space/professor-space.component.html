@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
   <!-- Message Notification -->
-    <div
+    <div *ngIf="showMessageNotification"
          [@slideInOut]
          (click)="navigateToMessages()"
          class="fixed bottom-4 right-4 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-purple-200 dark:border-purple-800 cursor-pointer transform hover:scale-102 transition-all duration-300 z-50">
