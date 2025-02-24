@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import {RouterLink, RouterLinkActive} from '@angular/router';
+import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {FeatherModule} from 'angular-feather';
 import {NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
 
@@ -37,7 +37,14 @@ export class SidebarComponent {
   ];
   @Input() currentUser='Douaa';
 
+  constructor(private router:Router) {
+  }
+
   @Input() toggleSidebar(): void {
     this.isOpen = !this.isOpen;
+  }
+
+  @Input()  logout(): void {
+    this.router.navigate(['/professor']);
   }
 }

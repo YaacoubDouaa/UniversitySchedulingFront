@@ -1,22 +1,22 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { Subscription } from 'rxjs';
 import {PropositionsDeRattrapageService} from '../propositions-de-rattrapage.service';
 import {NotificationService} from '../notifications.service';
-
+import {formatDate} from 'date-fns';
+import {PropositionDeRattrapage} from '../models/Notifications';
+type TabType = 'new' | 'list';
 @Component({
   selector: 'app-propose-rattrapage',
   templateUrl: './propose-rattrapage.component.html',
   standalone:false
 })
 export class ProposeRattrapageComponent implements OnInit, OnDestroy {
-  rattrapageForm: FormGroup=new FormGroup({});
-  isSubmitting = false;
-  showSuccess = false;
-  currentDateTime: string=new Date().toISOString();
-  currentUser: string = 'YaacoubDouaa';
-  activeTab: 'new' | 'list' = 'new';
+
+  @Input() currentUser: string = 'YaacoubDouaa';
+  @Input() codeEnseignet='P003';
+  activeTab: TabType = 'new';
   showConfirmDialog = false;
   propositions: any[] = [];
   private subscription = new Subscription();
@@ -36,11 +36,8 @@ export class ProposeRattrapageComponent implements OnInit, OnDestroy {
     private propositionsService: PropositionsDeRattrapageService,
     private notificationService: NotificationService
   ) {
-    // Initialize current user and datetime
     this.updateCurrentDateTime();
     setInterval(() => this.updateCurrentDateTime(), 1000);
-
-    // Initialize form
     this.initForm();
 
     // Subscribe to propositions changes
@@ -51,10 +48,24 @@ export class ProposeRattrapageComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnInit(): void {}
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+
+
+  // Add method to get proposition synchronously
+  getPropositionByIdSync(id: string): PropositionDeRattrapage[] {
+    return this.propositions.find(prop => prop.prof.codeEnseignet === id);
+  }
+
+
+
+  // Add these new properties
+  selectedProposition?: PropositionDeRattrapage;
+  showPropositionDetails = false;
+
+
+
+  setActiveTab(tab: TabType): void {
+    this.activeTab = tab;
   }
 
   private updateCurrentDateTime(): void {
@@ -68,6 +79,17 @@ export class ProposeRattrapageComponent implements OnInit, OnDestroy {
 
     this.currentDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   }
+  rattrapageForm: FormGroup=new FormGroup({});
+  isSubmitting = false;
+  showSuccess = false;
+  currentDateTime: string=new Date().toISOString();
+  ngOnInit(): void {}
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+
 
   private initForm(): void {
     const today = new Date().toISOString().split('T')[0];
@@ -268,11 +290,6 @@ export class ProposeRattrapageComponent implements OnInit, OnDestroy {
     }
   }
 
-  formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-  }
+
+  protected readonly formatDate = formatDate;
 }

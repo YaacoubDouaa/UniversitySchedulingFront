@@ -52,7 +52,7 @@
 
       <!-- Logout Button -->
       <button
-              [class.justify-center]="!isOpen"
+              [class.justify-center]="!isOpen" (click)="logout()"
               class="w-full flex items-center px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-gray-700 transition-colors">
         <i-feather name="log-out" class="h-5 w-5"></i-feather>
         <span *ngIf="isOpen" class="ml-3">Logout</span>

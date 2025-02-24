@@ -3,13 +3,15 @@ import {PropositionDeRattrapage} from './models/Notifications';
 import {Seance} from './models/Seance';
 import {RattrapageService} from './rattrapage.service';
 import {NotificationService} from './notifications.service';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, map, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PropositionsDeRattrapageService {
   private propositionsSubject = new BehaviorSubject<any[]>([]);
+  private propositionsByIdSubject = new BehaviorSubject<any[]>([]);
+
   propositions$ = this.propositionsSubject.asObservable();
 
   propositions: PropositionDeRattrapage[] = [
@@ -35,7 +37,7 @@ export class PropositionsDeRattrapageService {
     },
   ];
 
-
+propositionsById$ = this.propositionsSubject.asObservable();
   constructor(private rattrapageService: RattrapageService, private notificationService: NotificationService) {
     // Initialize with empty array
     this.propositionsSubject.next(this.propositions);
@@ -130,4 +132,12 @@ export class PropositionsDeRattrapageService {
       this.notificationService.addNotification('Failed to update salle', 'error', 0, 0);
     }
   }
+
+
+  getPropositionById(id:string): Observable<PropositionDeRattrapage | undefined> {
+    return this.propositions$.pipe(
+      map(propositions => propositions.find(prop => prop.prof.codeEnseignet === id))
+    );
+  }
+
 }
