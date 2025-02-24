@@ -3,11 +3,15 @@ import {PropositionDeRattrapage} from './models/Notifications';
 import {Seance} from './models/Seance';
 import {RattrapageService} from './rattrapage.service';
 import {NotificationService} from './notifications.service';
+import {BehaviorSubject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PropositionsDeRattrapageService {
+  private propositionsSubject = new BehaviorSubject<any[]>([]);
+  propositions$ = this.propositionsSubject.asObservable();
+
   propositions: PropositionDeRattrapage[] = [
     {
       id: 1,
@@ -32,8 +36,22 @@ export class PropositionsDeRattrapageService {
   ];
 
 
-  constructor(private rattrapageService: RattrapageService, private notificationService: NotificationService) { }
+  constructor(private rattrapageService: RattrapageService, private notificationService: NotificationService) {
+    // Initialize with empty array
+    this.propositionsSubject.next(this.propositions);
+  }
+  addProposition(proposition: any) {
+    const current = this.propositionsSubject.value;
+    this.propositionsSubject.next([proposition, ...current]);
+  }
 
+  updateProposition(id: number, updates: any) {
+    const current = this.propositionsSubject.value;
+    const updated = current.map(prop =>
+      prop.id === id ? { ...prop, ...updates } : prop
+    );
+    this.propositionsSubject.next(updated);
+  }
   confirmRattrapage(prop: PropositionDeRattrapage) {
     if (prop && prop.status === 'En attente') {
       prop.status = 'Confirmé';

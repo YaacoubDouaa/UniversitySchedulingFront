@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+import { Subscription } from 'rxjs';
 import {PropositionsDeRattrapageService} from '../propositions-de-rattrapage.service';
 import {NotificationService} from '../notifications.service';
 
@@ -8,10 +10,16 @@ import {NotificationService} from '../notifications.service';
   templateUrl: './propose-rattrapage.component.html',
   standalone:false
 })
-export class ProposeRattrapageComponent implements OnInit {
+export class ProposeRattrapageComponent implements OnInit, OnDestroy {
   rattrapageForm: FormGroup=new FormGroup({});
   isSubmitting = false;
   showSuccess = false;
+  currentDateTime: string=new Date().toISOString();
+  currentUser: string = 'YaacoubDouaa';
+  activeTab: 'new' | 'list' = 'new';
+  showConfirmDialog = false;
+  propositions: any[] = [];
+  private subscription = new Subscription();
 
   readonly courseTypes = ['COURS', 'TD', 'TP'];
   readonly niveaux = ['ING_1', 'ING_2', 'ING_3'];
@@ -28,13 +36,40 @@ export class ProposeRattrapageComponent implements OnInit {
     private propositionsService: PropositionsDeRattrapageService,
     private notificationService: NotificationService
   ) {
+    // Initialize current user and datetime
+    this.updateCurrentDateTime();
+    setInterval(() => this.updateCurrentDateTime(), 1000);
+
+    // Initialize form
     this.initForm();
+
+    // Subscribe to propositions changes
+    this.subscription.add(
+      this.propositionsService.propositions$.subscribe(props => {
+        this.propositions = props;
+      })
+    );
   }
 
   ngOnInit(): void {}
 
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  private updateCurrentDateTime(): void {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    this.currentDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
   private initForm(): void {
-    // Get current date in YYYY-MM-DD format for the date input
     const today = new Date().toISOString().split('T')[0];
 
     this.rattrapageForm = this.fb.group({
@@ -73,7 +108,30 @@ export class ProposeRattrapageComponent implements OnInit {
       return inputDate >= today ? null : { pastDate: true };
     };
   }
+
   onSubmit(): void {
+    if (this.rattrapageForm.invalid || this.isSubmitting) {
+      Object.keys(this.rattrapageForm.controls).forEach(key => {
+        const control = this.rattrapageForm.get(key);
+        if (control?.invalid) {
+          control.markAsTouched();
+        }
+      });
+      return;
+    }
+    this.showConfirmDialog = true;
+  }
+
+  confirmSubmit(): void {
+    this.showConfirmDialog = false;
+    this.submitForm();
+  }
+
+  cancelSubmit(): void {
+    this.showConfirmDialog = false;
+  }
+
+  private submitForm(): void {
     if (this.rattrapageForm.invalid || this.isSubmitting) {
       return;
     }
@@ -81,32 +139,40 @@ export class ProposeRattrapageComponent implements OnInit {
     this.isSubmitting = true;
     const formValue = this.rattrapageForm.value;
 
-    const newProposition = {
-      id: Math.floor(Math.random() * 10000),
-      date: formValue.date,
-      reason: formValue.reason === 'Autre' ? formValue.otherReason : formValue.reason,
-      status: 'En attente',
-      enseignantId: 101, // This should come from your auth service
-      type: formValue.type,
-      name: formValue.name,
-      niveau: formValue.niveau
-    };
-
     try {
-      this.propositionsService.propositions.push(newProposition);
+      const newProposition = {
+        id: Math.floor(Math.random() * 10000),
+        date: formValue.date,
+        reason: formValue.reason === 'Autre' ? formValue.otherReason : formValue.reason,
+        status: 'En attente',
+        enseignantId: 101,
+        type: formValue.type,
+        name: formValue.name,
+        niveau: formValue.niveau,
+        details: formValue.details
+      };
+
+      this.propositionsService.addProposition(newProposition);
+
       this.notificationService.addNotification(
         `Nouvelle proposition de rattrapage créée pour ${formValue.name}`,
         'success',
         101,
         0
       );
+
       this.showSuccess = true;
       this.rattrapageForm.reset({
-        type: 'COURS'
+        type: 'COURS',
+        date: new Date().toISOString().split('T')[0]
       });
+
       setTimeout(() => {
         this.showSuccess = false;
       }, 3000);
+
+      // Switch to list view after successful submission
+      this.activeTab = 'list';
     } catch (error) {
       this.notificationService.addNotification(
         'Erreur lors de la création de la proposition',
@@ -119,10 +185,9 @@ export class ProposeRattrapageComponent implements OnInit {
     }
   }
 
-  // Helper method for form validation
   hasError(controlName: string, errorName: string): boolean {
     const control = this.rattrapageForm.get(controlName);
-    return control?.touched && control?.hasError(errorName) || false;
+    return (control?.touched && control?.hasError(errorName)) || false;
   }
 
   getErrorMessage(controlName: string): string {
@@ -179,5 +244,35 @@ export class ProposeRattrapageComponent implements OnInit {
     return '';
   }
 
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'Confirmé':
+        return 'text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400';
+      case 'Refusé':
+        return 'text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400';
+      case 'En attente':
+      default:
+        return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-400';
+    }
+  }
 
+  getStatusIcon(status: string): string {
+    switch (status) {
+      case 'Confirmé':
+        return 'check-square';
+      case 'Refusé':
+        return 'x-square';
+      case 'En attente':
+      default:
+        return 'clock';
+    }
+  }
+
+  formatDate(date: string): string {
+    return new Date(date).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+  }
 }
