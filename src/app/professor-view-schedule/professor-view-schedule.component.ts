@@ -128,4 +128,13 @@ export class ProfessorViewScheduleComponent implements OnInit {
       default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-300';
     }
   }
+  getSessionsForTimeSlot(day: string, timeSlot: string): Seance[] {
+    const daySchedule = this.schedule.find(d => d.day === day);
+    if (!daySchedule) return [];
+
+    const timeSlotData = daySchedule.timeSlots.find(t => t.time === timeSlot);
+    if (!timeSlotData) return [];
+
+    return Object.values(timeSlotData.sessions);
+  }
 }

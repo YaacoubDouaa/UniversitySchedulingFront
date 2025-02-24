@@ -6,12 +6,12 @@
         Weekly Schedule
       </h1>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        Current Date: {{currentDateTime}}
+        Manage your teaching schedule and sessions
       </p>
     </div>
-    <div class="flex items-center space-x-2 text-sm bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-sm">
-      <i-feather name="clock" class="h-4 w-4 text-blue-500 dark:text-blue-400"></i-feather>
-      <span class="text-gray-900 dark:text-white font-medium">{{currentDateTime | date:'HH:mm:ss'}}</span>
+    <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-3 py-2 rounded-lg shadow-sm">
+      <i-feather name="clock" class="h-4 w-4"></i-feather>
+      <span>{{currentDateTime}}</span>
     </div>
   </div>
 
@@ -26,114 +26,112 @@
       <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
         <i-feather name="alert-triangle" class="h-8 w-8 text-red-600 dark:text-red-400"></i-feather>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Schedule Loading Error</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+        Schedule Loading Error
+      </h3>
       <p class="text-gray-500 dark:text-gray-400">{{error}}</p>
     </div>
   </div>
 
-  <!-- Schedule Grid -->
-  <div *ngIf="!isLoading && !error" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-    <!-- Day Card -->
-    <div *ngFor="let daySchedule of schedule"
-         class="relative bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden"
-         [class.ring-2]="daySchedule.day === currentDay"
-         [class.ring-blue-500]="daySchedule.day === currentDay"
-         [class.dark:ring-blue-400]="daySchedule.day === currentDay">
-      <!-- Current Day Indicator -->
-      <div *ngIf="daySchedule.day === currentDay"
-           class="absolute top-0 left-0 w-1 h-full bg-blue-500 dark:bg-blue-400">
-      </div>
 
-      <!-- Day Header -->
-      <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold"
-              [class.text-blue-600]="daySchedule.day === currentDay"
-              [class.text-gray-900]="daySchedule.day !== currentDay"
-              [class.dark:text-blue-400]="daySchedule.day === currentDay"
-              [class.dark:text-white]="daySchedule.day !== currentDay">
-            {{daySchedule.day}}
-          </h3>
-          <div *ngIf="daySchedule.day === currentDay"
-               class="px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30">
-            <span class="text-xs font-medium text-blue-600 dark:text-blue-400">Current Day</span>
-          </div>
+    <!-- User Info Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+      <div class="flex items-center space-x-3">
+        <i-feather name="user" class="h-5 w-5 text-blue-500 dark:text-blue-400"></i-feather>
+        <div class="flex-1">
+          <p class="text-sm text-gray-500 dark:text-gray-400">Current User's Login</p>
+          <p class="text-base font-medium text-gray-900 dark:text-white">
+            {{professorsService.getCurrentUser()}}
+          </p>
         </div>
-      </div>
-
-      <!-- Sessions List -->
-      <div class="divide-y divide-gray-200 dark:divide-gray-700">
-        <ng-container *ngIf="daySchedule.timeSlots.length > 0; else noSessions">
-          <div *ngFor="let timeSlot of daySchedule.timeSlots"
-               class="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-               [class.bg-blue-5050]="isCurrentTimeSlot(daySchedule.day, timeSlot.time)"
-          [class.dark:bg-blue-90020]="isCurrentTimeSlot(daySchedule.day, timeSlot.time)">
-
-          <!-- Time -->
-          <div class="flex items-center space-x-2 mb-3">
-            <i-feather name="clock"
-                       class="h-4 w-4"
-                       [class.text-blue-500]="isCurrentTimeSlot(daySchedule.day, timeSlot.time)"
-                       [class.text-gray-400]="!isCurrentTimeSlot(daySchedule.day, timeSlot.time)">
-            </i-feather>
-            <span class="text-sm font-medium"
-                  [class.text-blue-600]="isCurrentTimeSlot(daySchedule.day, timeSlot.time)"
-                  [class.text-gray-900]="!isCurrentTimeSlot(daySchedule.day, timeSlot.time)"
-                  [class.dark:text-blue-400]="isCurrentTimeSlot(daySchedule.day, timeSlot.time)"
-                  [class.dark:text-white]="!isCurrentTimeSlot(daySchedule.day, timeSlot.time)">
-                {{timeSlot.time}}
-              </span>
-            <div *ngIf="isCurrentTimeSlot(daySchedule.day, timeSlot.time)"
-                 class="w-2 h-2 rounded-full bg-blue-500 animate-pulse">
-            </div>
-          </div>
-
-          <!-- Sessions -->
-          <div class="space-y-4">
-            <div *ngFor="let session of timeSlot.sessions | keyvalue"
-                 class="p-4 rounded-lg"
-                 [class.bg-blue-5080]="isCurrentTimeSlot(daySchedule.day, timeSlot.time)"
-            [class.dark:bg-blue-90030]="isCurrentTimeSlot(daySchedule.day, timeSlot.time)">
-            <h4 class="text-base font-medium text-gray-900 dark:text-white mb-2">
-              {{session.value.name}}
-            </h4>
-
-            <!-- Tags -->
-            <div class="flex flex-wrap gap-2">
-                  <span [class]="getSessionTypeClass(session.value.type) + ' px-2.5 py-0.5 rounded-full text-xs font-medium'">
-                    {{session.value.type}}
-                  </span>
-              <span class="bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 px-2.5 py-0.5 rounded-full text-xs font-medium">
-                    {{session.value.groupe}}
-                  </span>
-              <span class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300 px-2.5 py-0.5 rounded-full text-xs font-medium">
-                    {{session.value.room}}
-                  </span>
-            </div>
-
-            <!-- Bi-weekly Indicator -->
-            <div *ngIf="session.value.biWeekly"
-                 class="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-2">
-              <i-feather name="repeat" class="h-3 w-3 mr-1"></i-feather>
-              <span>Bi-weekly</span>
-            </div>
-          </div>
       </div>
     </div>
-    </ng-container>
-
-    <!-- No Sessions -->
-    <ng-template #noSessions>
-      <div class="p-6 text-center">
-        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
-          <i-feather name="calendar" class="h-6 w-6 text-gray-400 dark:text-gray-500"></i-feather>
-        </div>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          No sessions scheduled
-        </p>
-      </div>
-    </ng-template>
   </div>
-</div>
-</div>
-</div>
+
+  <!-- Schedule Table -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-800">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            Time
+          </th>
+          <th scope="col"
+              *ngFor="let day of days"
+              [class.text-blue-600]="day === currentDay"
+              [class.dark:text-blue-400]="day === currentDay"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            {{day}}
+          </th>
+        </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+        <tr *ngFor="let timeSlot of timeSlots">
+          <!-- Time Column -->
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+            <div class="flex items-center space-x-2">
+              <i-feather name="clock" class="h-4 w-4 text-gray-400"></i-feather>
+              <span>{{timeSlot}}</span>
+            </div>
+          </td>
+
+          <!-- Day Columns -->
+          <td *ngFor="let day of days"
+              class="px-6 py-4"
+              [class.bg-blue-50]="isCurrentTimeSlot(day, timeSlot)"
+              [class.dark:bg-blue-90020]="isCurrentTimeSlot(day, timeSlot)">
+          <ng-container *ngFor="let session of getSessionsForTimeSlot(day, timeSlot)">
+            <!-- Session Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2 last:mb-0">
+              <!-- Course Name -->
+              <div class="flex items-center space-x-2 mb-2">
+                <i-feather name="book" class="h-4 w-4 text-gray-400"></i-feather>
+                <h4 class="text-sm font-medium text-gray-900 dark:text-white">
+                  {{session.name}}
+                </h4>
+              </div>
+
+              <!-- Session Details -->
+              <div class="space-y-2">
+                <!-- Type -->
+                <div class="flex items-center space-x-2">
+                  <i-feather name="tag" class="h-3 w-3 text-gray-400"></i-feather>
+                  <span [class]="getSessionTypeClass(session.type) + ' text-xs px-2 py-1 rounded-full'">
+                        {{session.type}}
+                      </span>
+                </div>
+
+                <!-- Group -->
+                <div class="flex items-center space-x-2">
+                  <i-feather name="users" class="h-3 w-3 text-gray-400"></i-feather>
+                  <span class="text-xs text-gray-600 dark:text-gray-300">
+                        {{session.groupe}}
+                      </span>
+                </div>
+
+                <!-- Room -->
+                <div class="flex items-center space-x-2">
+                  <i-feather name="map-pin" class="h-3 w-3 text-gray-400"></i-feather>
+                  <span class="text-xs text-gray-600 dark:text-gray-300">
+                        {{session.room}}
+                      </span>
+                </div>
+
+                <!-- Bi-weekly indicator if applicable -->
+                <div *ngIf="session.biWeekly" class="flex items-center space-x-2">
+                  <i-feather name="repeat" class="h-3 w-3 text-gray-400"></i-feather>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">
+                        Bi-weekly
+                      </span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
