@@ -357,4 +357,8 @@ export class ProfessorsService {
       return (aHours * 60 + aMinutes) - (bHours * 60 + bMinutes);
     });
   }
+
+  getCurrentProfessorSchedule() {
+
+  }
 }

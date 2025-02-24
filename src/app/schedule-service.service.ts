@@ -273,4 +273,15 @@ export class ScheduleService {
     }
   }
 
+  /**
+   * Get room schedule
+   */
+  getRoomSchedule(room: string): Observable<Schedule> {
+    // This should be replaced with actual API call
+    return this.currentDisponibilite;
+  }
+
+  changeSchedule(salleSchedule: Schedule) {
+    
+  }
 }

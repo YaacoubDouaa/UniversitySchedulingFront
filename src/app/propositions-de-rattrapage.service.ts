@@ -48,6 +48,9 @@ export class PropositionsDeRattrapageService {
   private propositionsSubject = new BehaviorSubject<PropositionDeRattrapage[]>(this.initialPropositions);
   propositions$ = this.propositionsSubject.asObservable();
 
+  private propositionsByIdSubject = new BehaviorSubject<PropositionDeRattrapage[]>([]);
+  propositionsById$ = this.propositionsByIdSubject.asObservable();
+
   /**
    * Schedule mapping
    */
@@ -60,8 +63,25 @@ export class PropositionsDeRattrapageService {
   constructor(
     private rattrapageService: RattrapageService,
     private notificationService: NotificationService
-  ) {}
-
+  ) {  // Initialize propositionsById when service is created
+    this.initializePropositionsById();}
+  /**
+   * Initialize propositionsById from initial propositions
+   */
+  private initializePropositionsById(): void {
+    const currentUserId = this.getCurrentUserId();
+    const filteredPropositions = this.initialPropositions.filter(
+      prop => prop.enseignantId.toString() === currentUserId
+    );
+    this.propositionsByIdSubject.next(filteredPropositions);
+  }
+  /**
+   * Get current user ID
+   */
+  private getCurrentUserId(): string {
+    // This should be replaced with actual user authentication
+    return '3'; // Example ID
+  }
   /**
    * Add new proposition
    */
@@ -73,6 +93,12 @@ export class PropositionsDeRattrapageService {
       status: 'En attente'
     };
     this.propositionsSubject.next([newProposition, ...current]);
+
+    // Update propositionsById if it belongs to current user
+    if (newProposition.enseignantId.toString() === this.getCurrentUserId()) {
+      const currentById = this.propositionsByIdSubject.value;
+      this.propositionsByIdSubject.next([newProposition, ...currentById]);
+    }
   }
 
   /**
@@ -83,8 +109,23 @@ export class PropositionsDeRattrapageService {
     this.propositionsSubject.next(
       current.map(prop => prop.id === id ? { ...prop, ...updates } : prop)
     );
+    // Update propositionsById if it exists there
+    const currentById = this.propositionsByIdSubject.value;
+    if (currentById.some(prop => prop.id === id)) {
+      const updatedPropositionsById = currentById.map(prop =>
+        prop.id === id ? { ...prop, ...updates } : prop
+      );
+      this.propositionsByIdSubject.next(updatedPropositionsById);
+    }
   }
-
+  /**
+   * Get propositions by enseignant ID
+   */
+  getPropositionsById(enseignantId: string): Observable<PropositionDeRattrapage[]> {
+    return this.propositions$.pipe(
+      map(propositions => propositions.filter(p => p.enseignantId.toString() === enseignantId))
+    );
+  }
   /**
    * Confirm makeup session
    */

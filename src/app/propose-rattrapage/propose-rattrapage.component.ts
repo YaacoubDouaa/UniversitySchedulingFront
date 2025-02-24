@@ -14,8 +14,8 @@ type TabType = 'new' | 'list';
 })
 export class ProposeRattrapageComponent implements OnInit, OnDestroy {
 
-  @Input() currentUser: string = 'YaacoubDouaa';
-  @Input() codeEnseignet='P003';
+
+
   activeTab: TabType = 'new';
   showConfirmDialog = false;
   propositions: any[] = [];

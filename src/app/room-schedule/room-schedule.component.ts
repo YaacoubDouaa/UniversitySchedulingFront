@@ -22,13 +22,13 @@ interface DeleteSelection {
   selector: 'app-room-schedule',
   standalone: false,
   templateUrl: './room-schedule.component.html',
-  styleUrls: ['./room-schedule.component.css']
+  styleUrls: ['./room-schedule.component.scss']
 })
 export class RoomScheduleComponent implements OnInit, OnDestroy {
   /**
    * System Configuration
    */
-  private readonly currentDateTime = '2025-02-24 21:01:30';
+  private readonly currentDateTime = '2025-02-24 22:30:32';
   private readonly currentUser = 'YaacoubDouaa';
 
   /**
@@ -37,13 +37,16 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   readonly days: string[] = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
   readonly timeSlots: string[] = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
   readonly niveaux: string[] = ['ING1_INFO', 'ING2_INFO', 'ING3_INFO'];
+  readonly rooms: string[] = ['A101', 'A102', 'A103', 'B101', 'B102', 'B103'];
 
   /**
    * Component State
    */
   salleSchedule: Schedule | null = null;
+  selectedRoom: string = 'A101';
   selectedNiveau: string = 'ING1_INFO';
-  private selectedFrequency: 'weekly' | 'biweekly' = 'weekly';
+  selectedFrequency: 'weekly' | 'biweekly' = 'weekly';
+  isLoading: boolean = false;
 
   /**
    * Modal States
@@ -80,45 +83,62 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load schedule data from service
+   * Schedule Loading and Management
    */
   private loadSchedule(): void {
-    this.scheduleSubscription = this.scheduleService.currentDisponibilite
+    this.isLoading = true;
+    this.scheduleSubscription = this.scheduleService.getRoomSchedule(this.selectedRoom)
       .subscribe({
         next: (schedule: Schedule) => {
           this.salleSchedule = schedule;
+          this.isLoading = false;
         },
         error: (error: Error) => {
           console.error('Error loading schedule:', error);
           this.showError = true;
           this.errorMessage = 'Failed to load schedule';
+          this.isLoading = false;
         }
       });
   }
 
+  onRoomChange(): void {
+    this.loadSchedule();
+  }
+
   /**
-   * Get sessions for a specific time slot
+   * Session Management
    */
   getSessions(day: string, time: string, niveau: string): Seance[] {
-    return this.scheduleService.getSessionsForTimeSlot(day, time, niveau);
+    if (!this.salleSchedule?.[day]?.[time]?.[niveau]) {
+      return [];
+    }
+    return this.salleSchedule[day][time][niveau];
   }
 
-  /**
-   * Check if a session can be added to a time slot
-   */
   canAddSession(day: string, time: string, niveau: string, isBiweekly: boolean): boolean {
-    return this.scheduleService.canAddSession(day, time, niveau, isBiweekly);
+    if (!this.salleSchedule?.[day]?.[time]?.[niveau]) {
+      return true;
+    }
+
+    const existingSessions = this.salleSchedule[day][time][niveau];
+    const hasWeeklySession = existingSessions.some(s => !s.biWeekly);
+    const biweeklyCount = existingSessions.filter(s => s.biWeekly).length;
+
+    if (hasWeeklySession) return false;
+    if (!isBiweekly) return existingSessions.length === 0;
+    return biweeklyCount < 2;
   }
 
   /**
-   * Open modal for adding new session
+   * Modal Management
    */
   openAddModal(day: string, time: string, niveau: string): void {
     this.selectedActivity = {
       seance: {
-        id: Math.random(),
+        id: Math.floor(Math.random() * 1000000),
         name: '',
-        room: '',
+        room: this.selectedRoom,
         type: 'COURS',
         professor: '',
         groupe: niveau,
@@ -132,30 +152,6 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
     this.showError = false;
   }
 
-  /**
-   * Save new session
-   */
-  saveAddChanges(): void {
-    if (!this.selectedActivity) return;
-
-    const { day, time, niveau, seance } = this.selectedActivity;
-
-    this.scheduleService.addSession(day, time, niveau, seance)
-      .subscribe({
-        next: () => {
-          this.closeAddModal();
-          this.loadSchedule(); // Refresh data
-        },
-        error: (error: Error) => {
-          this.showError = true;
-          this.errorMessage = error.message || 'Failed to add session';
-        }
-      });
-  }
-
-  /**
-   * Open modal for editing session
-   */
   openEditModal(seance: Seance, day: string, time: string, niveau: string): void {
     this.selectedActivity = {
       seance: { ...seance },
@@ -163,62 +159,84 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
       time,
       niveau
     };
+    this.selectedFrequency = seance.biWeekly ? 'biweekly' : 'weekly';
     this.showEditModal = true;
     this.showError = false;
   }
 
+  openDeleteModal(id: number, day: string, niveau: string, time: string): void {
+    this.seanceToDelete = { id, day, niveau, time };
+    this.showDeleteModal = true;
+    this.showError = false;
+  }
+
   /**
-   * Save edited session
+   * Save Operations
    */
-  saveEditChanges(): void {
+  saveAddChanges(): void {
     if (!this.selectedActivity) return;
 
     const { day, time, niveau, seance } = this.selectedActivity;
+    seance.biWeekly = this.selectedFrequency === 'biweekly';
 
-    this.scheduleService.updateSession(day, time, niveau, seance)
+    this.isLoading = true;
+    this.scheduleService.addSession(day, time, niveau, seance)
       .subscribe({
         next: () => {
-          this.closeEditModal();
-          this.loadSchedule(); // Refresh data
+          this.closeAddModal();
+          this.loadSchedule();
         },
         error: (error: Error) => {
           this.showError = true;
-          this.errorMessage = error.message || 'Failed to update session';
+          this.errorMessage = error.message || 'Failed to add session';
+          this.isLoading = false;
         }
       });
   }
 
-  /**
-   * Open delete confirmation modal
-   */
-  openDeleteModal(id: number, day: string, niveau: string, time: string): void {
-    this.seanceToDelete = { id, day, niveau, time };
-    this.showDeleteModal = true;
+  saveEditChanges(): void {
+    if (!this.selectedActivity) return;
+
+    const { day, time, niveau, seance } = this.selectedActivity;
+    seance.biWeekly = this.selectedFrequency === 'biweekly';
+
+    this.isLoading = true;
+    this.scheduleService.updateSession(day, time, niveau, seance)
+      .subscribe({
+        next: () => {
+          this.closeEditModal();
+          this.loadSchedule();
+        },
+        error: (error: Error) => {
+          this.showError = true;
+          this.errorMessage = error.message || 'Failed to update session';
+          this.isLoading = false;
+        }
+      });
   }
 
-  /**
-   * Confirm and process deletion
-   */
   confirmDelete(): void {
     if (!this.seanceToDelete) return;
 
     const { id, day, niveau, time } = this.seanceToDelete;
 
+    this.isLoading = true;
     this.scheduleService.deleteSession(day, time, niveau, id)
       .subscribe({
         next: () => {
           this.closeDeleteModal();
-          this.loadSchedule(); // Refresh data
+          this.loadSchedule();
         },
         error: (error: Error) => {
           this.showError = true;
           this.errorMessage = error.message || 'Failed to delete session';
+          this.isLoading = false;
         }
       });
   }
 
   /**
-   * Modal close handlers
+   * Modal Close Handlers
    */
   closeAddModal(): void {
     this.showAddModal = false;
@@ -238,8 +256,14 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
     this.showError = false;
   }
 
+  closeModal(): void {
+    this.closeAddModal();
+    this.closeEditModal();
+    this.closeDeleteModal();
+  }
+
   /**
-   * System state getters
+   * System State Getters
    */
   getCurrentDateTime(): string {
     return this.currentDateTime;
@@ -248,7 +272,4 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   getCurrentUser(): string {
     return this.currentUser;
   }
-
-
-
 }
