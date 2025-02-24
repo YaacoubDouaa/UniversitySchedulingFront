@@ -2,10 +2,57 @@
   <!-- Schedule Container -->
   <div class="schedule-container bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden" *ngIf="salleSchedule">
     <!-- Header -->
-    <div class="bg-primary/10 dark:bg-primary/5 p-4 border-b border-gray-200 dark:border-gray-700">
-      <div class="flex items-center space-x-3">
-        <i-feather name="calendar" class="h-6 w-6 text-primary"></i-feather>
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Salle Schedule</h2>
+    <div class="bg-primary/10 dark:bg-primary/5 p-6 border-b border-gray-200 dark:border-gray-700">
+      <!-- Title Section -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center space-x-4">
+          <i-feather name="map-pin" class="h-6 w-6 text-primary"></i-feather>
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Room {{ selectedRoom }}</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Schedule Management</p>
+          </div>
+        </div>
+
+        <!-- Room Selection -->
+        <div class="flex items-center space-x-4">
+          <mat-form-field appearance="outline" class="w-48">
+            <mat-label>Select Room</mat-label>
+            <mat-select [(ngModel)]="selectedRoom" (selectionChange)="onRoomChange()">
+              <mat-option *ngFor="let room of rooms" [value]="room">{{ room }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Filters and Legend -->
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <!-- Level Selection -->
+        <mat-form-field appearance="outline" class="w-48">
+          <mat-label>Select Level</mat-label>
+          <mat-select [(ngModel)]="selectedNiveau">
+            <mat-option *ngFor="let niveau of niveaux" [value]="niveau">{{ niveau }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Legend -->
+        <div class="flex flex-wrap items-center gap-4">
+          <div class="flex items-center space-x-2">
+            <span class="h-3 w-3 rounded-full bg-blue-100 dark:bg-blue-900/30"></span>
+            <span class="text-sm text-gray-600 dark:text-gray-400">COURS</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="h-3 w-3 rounded-full bg-green-100 dark:bg-green-900/30"></span>
+            <span class="text-sm text-gray-600 dark:text-gray-400">TD</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="h-3 w-3 rounded-full bg-orange-100 dark:bg-orange-900/30"></span>
+            <span class="text-sm text-gray-600 dark:text-gray-400">TP</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="h-3 w-3 rounded-full bg-gray-200 dark:bg-gray-700"></span>
+            <span class="text-sm text-gray-600 dark:text-gray-400">Bi-weekly</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -14,8 +61,13 @@
       <table class="w-full">
         <thead>
         <tr class="bg-gray-50 dark:bg-gray-800">
-          <th class="p-4 border-b border-gray-200 dark:border-gray-700"></th>
-          <th *ngFor="let time of timeSlots" class="p-4 border-b border-gray-200 dark:border-gray-700">
+          <th class="sticky left-0 z-10 p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+            <div class="flex items-center space-x-2">
+              <i-feather name="calendar" class="h-4 w-4 text-primary"></i-feather>
+              <span class="font-medium text-gray-700 dark:text-gray-300">Day/Time</span>
+            </div>
+          </th>
+          <th *ngFor="let time of timeSlots" class="p-4 border-b border-gray-200 dark:border-gray-700 min-w-[200px]">
             <div class="flex items-center justify-center space-x-2">
               <i-feather name="clock" class="h-4 w-4 text-primary"></i-feather>
               <span class="font-medium text-gray-700 dark:text-gray-300">{{ time }}</span>
@@ -25,81 +77,69 @@
         </thead>
         <tbody>
         <tr *ngFor="let day of days">
-          <td class="p-4 border-b border-gray-200 dark:border-gray-700">
+          <td class="sticky left-0 z-10 p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <div class="flex items-center space-x-2">
               <i-feather name="calendar" class="h-4 w-4 text-primary"></i-feather>
               <span class="font-medium text-gray-700 dark:text-gray-300">{{ day }}</span>
             </div>
           </td>
-          <td *ngFor="let time of timeSlots" class="p-4 border border-gray-200 dark:border-gray-700">
-            <!-- Scheduled Activity -->
-            <ng-container *ngIf="salleSchedule[day] && salleSchedule[day][time]">
-              <div *ngFor="let niveau of getNiveaux(day, time)">
-                <div
-                  class="activity-card group hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 rounded-lg p-4 cursor-pointer"
-                  (click)="openEditModal(salleSchedule[day][time][niveau], day, time)"
-                  [ngStyle]="{
-                      'background-color': getActivityColor(salleSchedule[day][time][niveau].biWeekly),
-                      'color': getTypeColor(salleSchedule[day][time][niveau].type)
-                    }"
-                >
-                  <!-- Activity Content -->
-                  <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                      <span class="font-semibold">{{ salleSchedule[day][time][niveau].name }}</span>
-                      <span *ngIf="salleSchedule[day][time][niveau].biWeekly"
-                            class="text-xs px-2 py-1 rounded-full bg-primary/20">
-                          Biweekly
-                        </span>
-                    </div>
+          <td *ngFor="let time of timeSlots"
+              class="p-4 border border-gray-200 dark:border-gray-700 relative min-h-[120px] align-top">
+            <!-- Session Cards -->
+            <ng-container *ngIf="getSessions(day, time, selectedNiveau).length > 0">
+              <div *ngFor="let seance of getSessions(day, time, selectedNiveau)"
+                   class="session-card group mb-2 last:mb-0 relative rounded-lg p-4 cursor-pointer transform
+                            transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                   [ngClass]="{
+                       'bg-blue-100 dark:bg-blue-900/30': seance.type === 'COURS',
+                       'bg-green-100 dark:bg-green-900/30': seance.type === 'TD',
+                       'bg-orange-100 dark:bg-orange-900/30': seance.type === 'TP'
+                     }"
+                   (click)="openEditModal(seance, day, time, selectedNiveau)">
 
-                    <div class="flex items-center space-x-2 text-sm">
-                      <i-feather name="user" class="h-4 w-4"></i-feather>
-                      <span>{{ salleSchedule[day][time][niveau].professor }}</span>
-                    </div>
-
-                    <div class="flex items-center space-x-2 text-sm">
-                      <i-feather name="map-pin" class="h-4 w-4"></i-feather>
-                      <span>{{ salleSchedule[day][time][niveau].room }}</span>
-                    </div>
-
-                    <div class="flex items-center space-x-2 text-sm">
-                      <i-feather name="tag" class="h-4 w-4"></i-feather>
-                      <span>{{ salleSchedule[day][time][niveau].type }}</span>
-                    </div>
-
-                    <div class="flex items-center space-x-2 text-sm">
-                      <i-feather name="users" class="h-4 w-4"></i-feather>
-                      <span>{{ salleSchedule[day][time][niveau].groupe }}</span>
-                    </div>
-
-                    <!-- Delete Button -->
-                    <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        class="mt-2 w-full flex items-center justify-center space-x-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
-                        (click)="openDeleteModal(day,time,niveau,salleSchedule[day][time][niveau].id); $event.stopPropagation()"
-                      >
-                        <i-feather name="trash-2" class="h-4 w-4"></i-feather>
-                        <span>Delete</span>
-                      </button>
-                    </div>
+                <!-- Session Content -->
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ seance.name }}</span>
+                    <span *ngIf="seance.biWeekly"
+                          class="text-xs px-2 py-1 rounded-full bg-gray-200 dark:bg-gray-700
+                                   text-gray-700 dark:text-gray-300">
+                        Bi-weekly
+                      </span>
                   </div>
+
+                  <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                    <i-feather name="user" class="h-4 w-4"></i-feather>
+                    <span>{{ seance.professor }}</span>
+                  </div>
+
+                  <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                    <i-feather name="users" class="h-4 w-4"></i-feather>
+                    <span>{{ seance.groupe }}</span>
+                  </div>
+
+                  <!-- Delete Button -->
+                  <button class="absolute top-2 right-2 p-1 rounded-full hover:bg-red-200 dark:hover:bg-red-900/30
+                                 opacity-0 group-hover:opacity-100 transition-opacity"
+                          (click)="openDeleteModal(seance.id, day, selectedNiveau, time); $event.stopPropagation()">
+                    <i-feather name="trash-2" class="h-4 w-4 text-red-600"></i-feather>
+                  </button>
                 </div>
               </div>
             </ng-container>
 
             <!-- Empty Slot -->
-            <ng-container *ngIf="!salleSchedule[day] || !salleSchedule[day][time]">
-              <div
-                class="h-full min-h-[100px] flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary dark:hover:border-primary transition-colors cursor-pointer"
-                (click)="openAddModal(day,time)"
-              >
-                <div class="text-center">
-                  <i-feather name="plus-circle" class="h-6 w-6 text-gray-400 dark:text-gray-500 mx-auto mb-2"></i-feather>
-                  <span class="text-sm text-gray-500 dark:text-gray-400">Add Session</span>
-                </div>
+            <div *ngIf="getSessions(day, time, selectedNiveau).length === 0"
+                 class="h-full min-h-[100px] flex items-center justify-center rounded-lg border-2
+                          border-dashed border-gray-300 dark:border-gray-600 hover:border-primary
+                          dark:hover:border-primary transition-colors cursor-pointer"
+                 (click)="openAddModal(day, time, selectedNiveau)">
+              <div class="text-center">
+                <i-feather name="plus-circle" class="h-6 w-6 text-gray-400 dark:text-gray-500 mx-auto mb-2">
+                </i-feather>
+                <span class="text-sm text-gray-500 dark:text-gray-400">Add Session</span>
               </div>
-            </ng-container>
+            </div>
           </td>
         </tr>
         </tbody>
@@ -108,112 +148,297 @@
   </div>
 
   <!-- No Schedule Message -->
-  <div *ngIf="!salleSchedule" class="flex flex-col items-center justify-center p-12 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+  <div *ngIf="!salleSchedule"
+       class="flex flex-col items-center justify-center p-12 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
     <i-feather name="calendar-x" class="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4"></i-feather>
     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">No Schedule Available</h3>
     <p class="text-gray-500 dark:text-gray-400 mt-2">There is no schedule data to display.</p>
   </div>
 
-  <!-- Edit/Add Modal -->
-  <div *ngIf="selectedActivity"
-       class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-       (click)="closeModal($event)">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full m-4 p-6"
-         (click)="$event.stopPropagation()">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
-          <i-feather [name]="selectedActivity.seance.id ? 'edit' : 'plus-circle'" class="h-5 w-5"></i-feather>
-          <span>{{ selectedActivity.seance.id ? 'Edit Activity' : 'Add Activity' }}</span>
-        </h2>
-        <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                (click)="closeModal()">
-          <i-feather name="x" class="h-5 w-5"></i-feather>
-        </button>
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+    <!-- Schedule Container -->
+    <div class="schedule-container bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden" *ngIf="salleSchedule">
+      <!-- Header -->
+      <div class="bg-primary/10 dark:bg-primary/5 p-6 border-b border-gray-200 dark:border-gray-700">
+        <!-- Title Section -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center space-x-4">
+            <i-feather name="map-pin" class="h-6 w-6 text-primary"></i-feather>
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Room {{ selectedRoom }}</h2>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Schedule Management</p>
+            </div>
+          </div>
+
+          <!-- Room Selection -->
+          <div class="flex items-center space-x-4">
+            <mat-form-field appearance="outline" class="w-48">
+              <mat-label>Select Room</mat-label>
+              <mat-select [(ngModel)]="selectedRoom" (selectionChange)="onRoomChange()">
+                <mat-option *ngFor="let room of rooms" [value]="room">{{ room }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Filters and Legend -->
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <!-- Level Selection -->
+          <mat-form-field appearance="outline" class="w-48">
+            <mat-label>Select Level</mat-label>
+            <mat-select [(ngModel)]="selectedNiveau">
+              <mat-option *ngFor="let niveau of niveaux" [value]="niveau">{{ niveau }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Legend -->
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="flex items-center space-x-2">
+              <span class="h-3 w-3 rounded-full bg-blue-100 dark:bg-blue-900/30"></span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">COURS</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="h-3 w-3 rounded-full bg-green-100 dark:bg-green-900/30"></span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">TD</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="h-3 w-3 rounded-full bg-orange-100 dark:bg-orange-900/30"></span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">TP</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="h-3 w-3 rounded-full bg-gray-200 dark:bg-gray-700"></span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">Bi-weekly</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <form class="space-y-4">
-        <div>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>
+      <!-- Schedule Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+          <tr class="bg-gray-50 dark:bg-gray-800">
+            <th class="sticky left-0 z-10 p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
               <div class="flex items-center space-x-2">
-                <i-feather name="bookmark" class="h-4 w-4"></i-feather>
-                <span>Activity Name</span>
+                <i-feather name="calendar" class="h-4 w-4 text-primary"></i-feather>
+                <span class="font-medium text-gray-700 dark:text-gray-300">Day/Time</span>
               </div>
-            </mat-label>
-            <input matInput [(ngModel)]="selectedActivity.seance.name" name="activityName" required />
-          </mat-form-field>
-        </div>
-
-        <div>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>
+            </th>
+            <th *ngFor="let time of timeSlots" class="p-4 border-b border-gray-200 dark:border-gray-700 min-w-[200px]">
+              <div class="flex items-center justify-center space-x-2">
+                <i-feather name="clock" class="h-4 w-4 text-primary"></i-feather>
+                <span class="font-medium text-gray-700 dark:text-gray-300">{{ time }}</span>
+              </div>
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let day of days">
+            <td class="sticky left-0 z-10 p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
               <div class="flex items-center space-x-2">
-                <i-feather name="user" class="h-4 w-4"></i-feather>
-                <span>Professor</span>
+                <i-feather name="calendar" class="h-4 w-4 text-primary"></i-feather>
+                <span class="font-medium text-gray-700 dark:text-gray-300">{{ day }}</span>
               </div>
-            </mat-label>
-            <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required />
-          </mat-form-field>
-        </div>
+            </td>
+            <td *ngFor="let time of timeSlots"
+                class="p-4 border border-gray-200 dark:border-gray-700 relative min-h-[120px] align-top">
+              <!-- Session Cards -->
+              <ng-container *ngIf="getSessions(day, time, selectedNiveau).length > 0">
+                <div *ngFor="let seance of getSessions(day, time, selectedNiveau)"
+                     class="session-card group mb-2 last:mb-0 relative rounded-lg p-4 cursor-pointer transform
+                            transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                     [ngClass]="{
+                       'bg-blue-100 dark:bg-blue-900/30': seance.type === 'COURS',
+                       'bg-green-100 dark:bg-green-900/30': seance.type === 'TD',
+                       'bg-orange-100 dark:bg-orange-900/30': seance.type === 'TP'
+                     }"
+                     (click)="openEditModal(seance, day, time, selectedNiveau)">
 
-        <div>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>
-              <div class="flex items-center space-x-2">
-                <i-feather name="tag" class="h-4 w-4"></i-feather>
-                <span>Type</span>
+                  <!-- Session Content -->
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-semibold text-gray-900 dark:text-white">{{ seance.name }}</span>
+                      <span *ngIf="seance.biWeekly"
+                            class="text-xs px-2 py-1 rounded-full bg-gray-200 dark:bg-gray-700
+                                   text-gray-700 dark:text-gray-300">
+                        Bi-weekly
+                      </span>
+                    </div>
+
+                    <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                      <i-feather name="user" class="h-4 w-4"></i-feather>
+                      <span>{{ seance.professor }}</span>
+                    </div>
+
+                    <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                      <i-feather name="users" class="h-4 w-4"></i-feather>
+                      <span>{{ seance.groupe }}</span>
+                    </div>
+
+                    <!-- Delete Button -->
+                    <button class="absolute top-2 right-2 p-1 rounded-full hover:bg-red-200 dark:hover:bg-red-900/30
+                                 opacity-0 group-hover:opacity-100 transition-opacity"
+                            (click)="openDeleteModal(seance.id, day, selectedNiveau, time); $event.stopPropagation()">
+                      <i-feather name="trash-2" class="h-4 w-4 text-red-600"></i-feather>
+                    </button>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- Empty Slot -->
+              <div *ngIf="getSessions(day, time, selectedNiveau).length === 0"
+                   class="h-full min-h-[100px] flex items-center justify-center rounded-lg border-2
+                          border-dashed border-gray-300 dark:border-gray-600 hover:border-primary
+                          dark:hover:border-primary transition-colors cursor-pointer"
+                   (click)="openAddModal(day, time, selectedNiveau)">
+                <div class="text-center">
+                  <i-feather name="plus-circle" class="h-6 w-6 text-gray-400 dark:text-gray-500 mx-auto mb-2">
+                  </i-feather>
+                  <span class="text-sm text-gray-500 dark:text-gray-400">Add Session</span>
+                </div>
               </div>
-            </mat-label>
-            <input matInput [(ngModel)]="selectedActivity.seance.type" name="type" />
-          </mat-form-field>
-        </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-        <div class="flex justify-end space-x-3 pt-4">
-          <button mat-button
-                  class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+    <!-- No Schedule Message -->
+    <div *ngIf="!salleSchedule"
+         class="flex flex-col items-center justify-center p-12 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+      <i-feather name="calendar-x" class="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4"></i-feather>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">No Schedule Available</h3>
+      <p class="text-gray-500 dark:text-gray-400 mt-2">There is no schedule data to display.</p>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div *ngIf="selectedActivity"
+         class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+         (click)="closeModal()">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full m-4 p-6"
+           (click)="$event.stopPropagation()">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
+            <i-feather [name]="selectedActivity.seance.id ? 'edit' : 'plus-circle'" class="h-5 w-5"></i-feather>
+            <span>{{ selectedActivity.seance.id ? 'Edit Session' : 'Add Session' }}</span>
+          </h2>
+          <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                   (click)="closeModal()">
-            <i-feather name="x" class="h-4 w-4"></i-feather>
-            <span>Cancel</span>
-          </button>
-          <button mat-raised-button color="primary"
-                  class="flex items-center space-x-2"
-                  (click)="selectedActivity.seance.id ? saveEditChanges() : saveAddChanges()">
-            <i-feather name="save" class="h-4 w-4"></i-feather>
-            <span>Save</span>
+            <i-feather name="x" class="h-5 w-5"></i-feather>
           </button>
         </div>
-      </form>
+
+        <form class="space-y-4" (submit)="$event.preventDefault()">
+          <!-- Session Name -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Session Name</mat-label>
+            <input matInput [(ngModel)]="selectedActivity.seance.name" name="name" required>
+          </mat-form-field>
+
+          <!-- Professor -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Professor</mat-label>
+            <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required>
+          </mat-form-field>
+
+          <!-- Type -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Type</mat-label>
+            <mat-select [(ngModel)]="selectedActivity.seance.type" name="type" required>
+              <mat-option value="COURS">Cours</mat-option>
+              <mat-option value="TD">TD</mat-option>
+              <mat-option value="TP">TP</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Frequency -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Frequency</mat-label>
+            <mat-select [(ngModel)]="selectedFrequency" name="frequency" required>
+              <mat-option value="weekly">Weekly</mat-option>
+              <mat-option value="biweekly">Bi-weekly</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Error Message -->
+          <div *ngIf="showError"
+               class="text-red-500 text-sm p-2 rounded bg-red-50 dark:bg-red-900/30">
+            {{ errorMessage }}
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex justify-end space-x-3 pt-4">
+            <button mat-button
+                    class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                    (click)="closeModal()">
+              <i-feather name="x" class="h-4 w-4"></i-feather>
+              <span>Cancel</span>
+            </button>
+            <button mat-raised-button color="primary"
+                    class="flex items-center space-x-2"
+                    (click)="selectedActivity.seance.id ? saveEditChanges() : saveAddChanges()">
+              <i-feather name="save" class="h-4 w-4"></i-feather>
+              <span>{{ selectedActivity.seance.id ? 'Update' : 'Save' }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div *ngIf="showDeleteModal"
+         class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+         (click)="closeDeleteModal()">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full m-4 p-6"
+           (click)="$event.stopPropagation()">
+        <div class="text-center">
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+            <i-feather name="alert-triangle" class="h-6 w-6 text-red-600"></i-feather>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Confirm Deletion</h3>
+          <p class="text-gray-500 dark:text-gray-400">
+            Are you sure you want to delete this session? This action cannot be undone.
+          </p>
+
+          <!-- Error Message -->
+          <div *ngIf="showError"
+               class="mt-4 text-red-500 text-sm p-2 rounded bg-red-50 dark:bg-red-900/30">
+            {{ errorMessage }}
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="mt-6 flex justify-end space-x-3">
+            <button mat-button
+                    class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                    (click)="closeDeleteModal()">
+              <i-feather name="x" class="h-4 w-4"></i-feather>
+              <span>Cancel</span>
+            </button>
+            <button mat-raised-button color="warn"
+                    class="flex items-center space-x-2"
+                    (click)="confirmDelete()">
+              <i-feather name="trash-2" class="h-4 w-4"></i-feather>
+              <span>Delete</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
-  <div *ngIf="showDeleteModal"
-       class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-       (click)="closeModal($event)">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full m-4 p-6"
-         (click)="$event.stopPropagation()">
-      <div class="text-center">
-        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
-          <i-feather name="alert-triangle" class="h-6 w-6 text-red-600"></i-feather>
-        </div>
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Confirm Deletion</h3>
-        <p class="text-gray-500 dark:text-gray-400">Are you sure you want to delete this session? This action cannot be undone.</p>
-
-        <div class="mt-6 flex justify-end space-x-3">
-          <button mat-button
-                  class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                  (click)="closeModal()">
-            <i-feather name="x" class="h-4 w-4"></i-feather>
-            <span>Cancel</span>
-          </button>
-          <button mat-raised-button color="warn"
-                  class="flex items-center space-x-2"
-                  (click)="confirmDelete()">
-            <i-feather name="trash-2" class="h-4 w-4"></i-feather>
-            <span>Delete</span>
-          </button>
-        </div>
-      </div>
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading"
+       class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="text-center">
+      <mat-spinner diameter="48" class="mx-auto"></mat-spinner>
+      <p class="mt-4 text-white">Loading...</p>
     </div>
+  </div>
+
+  <!-- System Info -->
+  <div class="fixed bottom-4 right-4 text-xs text-gray-500 dark:text-gray-400">
+    <div>Current Time: {{ getCurrentDateTime() }}</div>
+    <div>User: {{ getCurrentUser() }}</div>
   </div>
 </div>

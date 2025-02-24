@@ -1,160 +1,254 @@
-import {Component, Input} from '@angular/core';
-import {SalleList, SalleSchedule} from '../models/Salle';
-import {Seance} from '../models/Seance';
-import {ScheduleService} from '../schedule-service.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Schedule } from '../models/Schedule';
+import { Seance } from '../models/Seance';
+import { ScheduleService } from '../schedule-service.service';
 
+interface ActivitySelection {
+  seance: Seance;
+  day: string;
+  time: string;
+  niveau: string;
+}
+
+interface DeleteSelection {
+  id: number;
+  day: string;
+  niveau: string;
+  time: string;
+}
 
 @Component({
   selector: 'app-room-schedule',
   standalone: false,
-
   templateUrl: './room-schedule.component.html',
-  styleUrl: './room-schedule.component.css'
+  styleUrls: ['./room-schedule.component.css']
 })
-export class RoomScheduleComponent {
-  salleSchedule: SalleSchedule | null = null;
-  days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
-  selectedActivity: {
-    seance: Seance;
-    day: string;
-    time: string;
-  } | null = null;
-  seanceToDelete: {
-    id: number;
-    day: string;
-    group: string;
-    time: string;
-  } | null = null;
-  showEditModal: boolean = false;
-  showDeleteModal: boolean = false;
-  timeSlots = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
-  private selectedFrequency: string ="weekly";
-  protected showAddModal: boolean=false;
-  constructor(private salleScheduleService: ScheduleService) {}
+export class RoomScheduleComponent implements OnInit, OnDestroy {
+  /**
+   * System Configuration
+   */
+  private readonly currentDateTime = '2025-02-24 21:01:30';
+  private readonly currentUser = 'YaacoubDouaa';
+
+  /**
+   * Constants
+   */
+  readonly days: string[] = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+  readonly timeSlots: string[] = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
+  readonly niveaux: string[] = ['ING1_INFO', 'ING2_INFO', 'ING3_INFO'];
+
+  /**
+   * Component State
+   */
+  salleSchedule: Schedule | null = null;
+  selectedNiveau: string = 'ING1_INFO';
+  private selectedFrequency: 'weekly' | 'biweekly' = 'weekly';
+
+  /**
+   * Modal States
+   */
+  showAddModal = false;
+  showEditModal = false;
+  showDeleteModal = false;
+
+  /**
+   * Error Handling
+   */
+  errorMessage = '';
+  showError = false;
+
+  /**
+   * Selected Items
+   */
+  selectedActivity: ActivitySelection | null = null;
+  seanceToDelete: DeleteSelection | null = null;
+
+  /**
+   * Subscription Management
+   */
+  private scheduleSubscription?: Subscription;
+
+  constructor(private scheduleService: ScheduleService) {}
 
   ngOnInit(): void {
-    this.salleScheduleService.currentDisponibilite.subscribe(schedule => {
-      this.salleSchedule = schedule;
-    });
+    this.loadSchedule();
   }
 
-  getClassDetails(day: string, time: string): any {
-    return this.salleSchedule || null;
+  ngOnDestroy(): void {
+    this.scheduleSubscription?.unsubscribe();
   }
 
-  getNiveaux(day: string, time: string): string[] {
-    return this.salleSchedule?.[day]?.[time]
-      ? Object.keys(this.salleSchedule[day][time])
-      : [];
+  /**
+   * Load schedule data from service
+   */
+  private loadSchedule(): void {
+    this.scheduleSubscription = this.scheduleService.currentDisponibilite
+      .subscribe({
+        next: (schedule: Schedule) => {
+          this.salleSchedule = schedule;
+        },
+        error: (error: Error) => {
+          console.error('Error loading schedule:', error);
+          this.showError = true;
+          this.errorMessage = 'Failed to load schedule';
+        }
+      });
   }
 
-  viewSeance(day: string, time: string): Seance | null {
-    if (this.salleSchedule && this.salleSchedule[day] && this.salleSchedule[day][time]) {
-      const niveaux = Object.keys(this.salleSchedule[day][time]);
-      if (niveaux.length > 0) {
-        return this.salleSchedule[day][time][niveaux[0]];
-      }
-    }
-    return null;
+  /**
+   * Get sessions for a specific time slot
+   */
+  getSessions(day: string, time: string, niveau: string): Seance[] {
+    return this.scheduleService.getSessionsForTimeSlot(day, time, niveau);
   }
-  getTypeColor(type: string | undefined): string {
-    switch (type) {
-      case 'TD' :
-        return "#7209b7";
-      case 'TP':
-        return '#2b9348';
-      case 'COURS':
-        return '#FF331F'
-      default:
-        return 'transparent';
-    }}
 
-  getActivityColor(biweekly: boolean | undefined): string {
-    switch (biweekly) {
-      case true:
-        return "#B0B8C7";
-      case false:
-        return 'transparent';
-      default:
-        return 'transparent';
-    }}
+  /**
+   * Check if a session can be added to a time slot
+   */
+  canAddSession(day: string, time: string, niveau: string, isBiweekly: boolean): boolean {
+    return this.scheduleService.canAddSession(day, time, niveau, isBiweekly);
+  }
 
-
-// 1️⃣ Open Add Modal
-  openAddModal(day: string, time: string): void {
+  /**
+   * Open modal for adding new session
+   */
+  openAddModal(day: string, time: string, niveau: string): void {
     this.selectedActivity = {
-      seance: { name: '', id: 0, room: '', type: 'COURS', professor: '', groupe: '', biWeekly: this.selectedFrequency === 'biweekly' },
+      seance: {
+        id: Math.random(),
+        name: '',
+        room: '',
+        type: 'COURS',
+        professor: '',
+        groupe: niveau,
+        biWeekly: this.selectedFrequency === 'biweekly'
+      },
       day,
-      time
+      time,
+      niveau
     };
     this.showAddModal = true;
+    this.showError = false;
   }
 
-  // 2️⃣ Save Added Session
+  /**
+   * Save new session
+   */
   saveAddChanges(): void {
-    if (this.selectedActivity && this.salleSchedule) {
-      const { day, time, seance } = this.selectedActivity;
+    if (!this.selectedActivity) return;
 
-      if (!this.salleSchedule[day]) this.salleSchedule[day] = {};
-      if (!this.salleSchedule[day][time]) this.salleSchedule[day][time] = {};
+    const { day, time, niveau, seance } = this.selectedActivity;
 
-      const niveau = seance.groupe || 'Default';
-      this.salleSchedule[day][time][niveau] = seance;
-    }
-    this.showAddModal = false; // Close the modal
-    this.closeModal();
+    this.scheduleService.addSession(day, time, niveau, seance)
+      .subscribe({
+        next: () => {
+          this.closeAddModal();
+          this.loadSchedule(); // Refresh data
+        },
+        error: (error: Error) => {
+          this.showError = true;
+          this.errorMessage = error.message || 'Failed to add session';
+        }
+      });
   }
 
-  // 3️⃣ Open Edit Modal
-  openEditModal(seance: Seance | null, day: string, time: string): void {
+  /**
+   * Open modal for editing session
+   */
+  openEditModal(seance: Seance, day: string, time: string, niveau: string): void {
     this.selectedActivity = {
-      seance: seance ? { ...seance } : { name: '', id: 0, room: '', type: 'COURS', professor: '', groupe: '', biWeekly: this.selectedFrequency === 'biweekly' },
+      seance: { ...seance },
       day,
-      time
+      time,
+      niveau
     };
     this.showEditModal = true;
+    this.showError = false;
   }
 
-  // 4️⃣ Save Edited Changes
+  /**
+   * Save edited session
+   */
   saveEditChanges(): void {
-    if (this.selectedActivity && this.salleSchedule) {
-      const { day, time, seance } = this.selectedActivity;
+    if (!this.selectedActivity) return;
 
-      if (this.salleSchedule[day] && this.salleSchedule[day][time]) {
-        const niveau = seance.groupe || 'Default';
-        this.salleSchedule[day][time][niveau] = seance;
-      }
-    }
-    this.showEditModal = false;
-    this.closeModal();// Close the modal
+    const { day, time, niveau, seance } = this.selectedActivity;
+
+    this.scheduleService.updateSession(day, time, niveau, seance)
+      .subscribe({
+        next: () => {
+          this.closeEditModal();
+          this.loadSchedule(); // Refresh data
+        },
+        error: (error: Error) => {
+          this.showError = true;
+          this.errorMessage = error.message || 'Failed to update session';
+        }
+      });
   }
-  openDeleteModal(day: string, time: string, group: string, seanceId: number): void {
-    this.seanceToDelete = { id: seanceId, day, group, time };
+
+  /**
+   * Open delete confirmation modal
+   */
+  openDeleteModal(id: number, day: string, niveau: string, time: string): void {
+    this.seanceToDelete = { id, day, niveau, time };
     this.showDeleteModal = true;
   }
 
+  /**
+   * Confirm and process deletion
+   */
   confirmDelete(): void {
-    if (this.seanceToDelete && this.salleSchedule) {
-      const { day, time, group, id } = this.seanceToDelete;
-      if (this.salleSchedule[day]?.[time]?.[group]?.id === id) {
-        delete this.salleSchedule[day][time][group];
-      }
-    }
+    if (!this.seanceToDelete) return;
+
+    const { id, day, niveau, time } = this.seanceToDelete;
+
+    this.scheduleService.deleteSession(day, time, niveau, id)
+      .subscribe({
+        next: () => {
+          this.closeDeleteModal();
+          this.loadSchedule(); // Refresh data
+        },
+        error: (error: Error) => {
+          this.showError = true;
+          this.errorMessage = error.message || 'Failed to delete session';
+        }
+      });
+  }
+
+  /**
+   * Modal close handlers
+   */
+  closeAddModal(): void {
+    this.showAddModal = false;
+    this.selectedActivity = null;
+    this.showError = false;
+  }
+
+  closeEditModal(): void {
+    this.showEditModal = false;
+    this.selectedActivity = null;
+    this.showError = false;
+  }
+
+  closeDeleteModal(): void {
     this.showDeleteModal = false;
     this.seanceToDelete = null;
+    this.showError = false;
   }
 
-  closeModal(event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    this.showAddModal = false;
-    this.showEditModal = false;
-    this.showDeleteModal = false;
-    this.selectedActivity = null;
+  /**
+   * System state getters
+   */
+  getCurrentDateTime(): string {
+    return this.currentDateTime;
   }
+
+  getCurrentUser(): string {
+    return this.currentUser;
+  }
+
+
 
 }
-
-
-
