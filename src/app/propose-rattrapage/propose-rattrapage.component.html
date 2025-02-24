@@ -1,31 +1,141 @@
-<div class="propose-container">
-  <h1>Propose Make-up Session</h1>
+<div class="max-w-4xl mx-auto p-6">
+  <!-- Form Card -->
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+    <!-- Form Header -->
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+        Proposer un rattrapage
+      </h2>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Remplissez le formulaire pour proposer une séance de rattrapage
+      </p>
+    </div>
 
-  <form [formGroup]="proposeForm" (ngSubmit)="onSubmit()">
-    <mat-form-field appearance="fill">
-      <mat-label>Course Name</mat-label>
-      <input matInput formControlName="courseName" required>
-    </mat-form-field>
+    <!-- Form -->
+    <form [formGroup]="rattrapageForm" (ngSubmit)="onSubmit()" class="p-6 space-y-6">
+      <!-- Course Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Nom du cours *
+        </label>
+        <input type="text"
+               formControlName="name"
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+               [class.border-red-500]="hasError('name', 'required') || hasError('name', 'minlength')">
+        <div *ngIf="hasError('name', 'required') || hasError('name', 'minlength')"
+             class="mt-1 text-sm text-red-500">
+          {{getErrorMessage('name')}}
+        </div>
+      </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Date</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="date" required>
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
+      <!-- Date -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Date proposée *
+        </label>
+        <input type="date"
+               formControlName="date"
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+               [class.border-red-500]="hasError('date', 'required') || hasError('date', 'pastDate')">
+        <div *ngIf="hasError('date', 'required') || hasError('date', 'pastDate')"
+             class="mt-1 text-sm text-red-500">
+          {{getErrorMessage('date')}}
+        </div>
+      </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Time</mat-label>
-      <input matInput type="time" formControlName="time" required>
-    </mat-form-field>
+      <!-- Type -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Type de séance *
+        </label>
+        <select formControlName="type"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+          <option *ngFor="let type of courseTypes" [value]="type">{{type}}</option>
+        </select>
+      </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Reason</mat-label>
-      <textarea matInput formControlName="reason" required></textarea>
-    </mat-form-field>
+      <!-- Niveau -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Niveau *
+        </label>
+        <select formControlName="niveau"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                [class.border-red-500]="hasError('niveau', 'required')">
+          <option value="">Sélectionnez un niveau</option>
+          <option *ngFor="let niveau of niveaux" [value]="niveau">{{niveau}}</option>
+        </select>
+        <div *ngIf="hasError('niveau', 'required')" class="mt-1 text-sm text-red-500">
+          {{getErrorMessage('niveau')}}
+        </div>
+      </div>
 
-    <button mat-raised-button color="primary" type="submit" [disabled]="!proposeForm.valid">
-      Submit Proposal
-    </button>
-  </form>
-</div>
+      <!-- Reason -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Raison *
+        </label>
+        <select formControlName="reason"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                [class.border-red-500]="hasError('reason', 'required')">
+          <option value="">Sélectionnez une raison</option>
+          <option *ngFor="let reason of reasons" [value]="reason">{{reason}}</option>
+        </select>
+        <div *ngIf="hasError('reason', 'required')" class="mt-1 text-sm text-red-500">
+          {{getErrorMessage('reason')}}
+        </div>
+      </div>
+
+      <!-- Other Reason -->
+      <div *ngIf="rattrapageForm.get('reason')?.value === 'Autre'">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Autre raison *
+        </label>
+        <input type="text"
+               formControlName="otherReason"
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+               [class.border-red-500]="hasError('otherReason', 'required')">
+
+      </div>
+
+      <!-- Details -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Détails supplémentaires
+        </label>
+        <textarea formControlName="details"
+                  rows="3"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                  [class.border-red-500]="hasError('details', 'maxlength')">
+        </textarea>
+        <div *ngIf="hasError('details', 'maxlength')" class="mt-1 text-sm text-red-500">
+          {{getErrorMessage('details')}}
+        </div>
+      </div>
+
+      <!-- Success Message -->
+      <div *ngIf="showSuccess"
+           class="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-md p-4">
+        <div class="flex">
+          <i-feather name="check-circle" class="h-5 w-5 text-green-400"></i-feather>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-green-800 dark:text-green-200">
+              Proposition de rattrapage créée avec succès
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="flex justify-end">
+        <button type="submit"
+                [disabled]="rattrapageForm.invalid || isSubmitting"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+          <div class="flex items-center">
+            <i-feather name="save" class="h-4 w-4 mr-2"></i-feather>
+            <span>{{isSubmitting ? 'Soumission en cours...' : 'Soumettre la proposition'}}</span>
+          </div>
+        </button>
+      </div>
+    </form>
+  </div></div>

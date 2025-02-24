@@ -82,7 +82,8 @@ import {FeatherModule} from 'angular-feather';
 import {allIcons} from 'angular-feather/icons';
 import {Calendar, Clock, User} from 'lucide-angular';
 import { MessagingComponent } from './messaging/messaging.component';
-import { AdministratorSapceComponent } from './administrator-sapce/administrator-sapce.component';
+import { AdministratorSpaceComponent } from './administrator-sapce/administrator-space.component';
+import {NotificationsComponent} from './notifications/notifications.component';
 
 @NgModule({
   declarations: [
@@ -109,7 +110,8 @@ import { AdministratorSapceComponent } from './administrator-sapce/administrator
     CsvImportComponent,
     DashboardComponent,
     MessagingComponent,
-    AdministratorSapceComponent
+    AdministratorSpaceComponent,
+    NotificationsComponent
 
   ],
   imports: [

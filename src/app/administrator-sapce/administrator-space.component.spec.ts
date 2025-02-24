@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AdministratorSapceComponent } from './administrator-sapce.component';
+import { AdministratorSpaceComponent } from './administrator-space.component';
 
 describe('AdministratorSapceComponent', () => {
-  let component: AdministratorSapceComponent;
-  let fixture: ComponentFixture<AdministratorSapceComponent>;
+  let component: AdministratorSpaceComponent;
+  let fixture: ComponentFixture<AdministratorSpaceComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AdministratorSapceComponent]
+      declarations: [AdministratorSpaceComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AdministratorSapceComponent);
+    fixture = TestBed.createComponent(AdministratorSpaceComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

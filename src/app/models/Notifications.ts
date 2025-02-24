@@ -32,7 +32,7 @@ export interface Signal {
 }
 
 // Notification Interface
-export interface Notification {
+export interface AppNotification {
   id: number;
   message: string;
   date: string; // ISO Date Format

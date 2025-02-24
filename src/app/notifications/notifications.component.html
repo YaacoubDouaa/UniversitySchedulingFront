@@ -1,26 +1,114 @@
-<mat-menu #notificationMenu="matMenu" class="notification-menu">
-  <div class="notification-header">
-    <h3>Notifications</h3>
-    <button mat-button color="primary" (click)="markAllAsRead()">Mark all as read</button>
+<div class="space-y-6">
+  <!-- Header Info -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- DateTime Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+      <div class="flex items-center space-x-3">
+        <i-feather name="clock" class="h-5 w-5 text-blue-500 dark:text-blue-400"></i-feather>
+        <div class="flex-1">
+          <p class="text-sm text-gray-500 dark:text-gray-400">Current Date and Time (UTC)</p>
+          <p class="text-base font-medium text-gray-900 dark:text-white">
+            {{currentDateTime}}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Info Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+      <div class="flex items-center space-x-3">
+        <i-feather name="user" class="h-5 w-5 text-blue-500 dark:text-blue-400"></i-feather>
+        <div class="flex-1">
+          <p class="text-sm text-gray-500 dark:text-gray-400">Current User's Login</p>
+          <p class="text-base font-medium text-gray-900 dark:text-white">
+            {{currentUser}}
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
-  <mat-divider></mat-divider>
-  <div class="notification-list">
-    <mat-list>
-      <mat-list-item *ngFor="let notification of notifications"
-                     [ngClass]="{'unread': !notification.read}"
-                     (click)="markAsRead(notification)">
-        <mat-icon mat-list-icon [ngClass]="notification.type">
-          {{ notification.type === 'info' ? 'info' :
-          notification.type === 'warning' ? 'warning' :
-            notification.type === 'success' ? 'check_circle' : 'error' }}
-        </mat-icon>
-        <div mat-line>{{notification.message}}</div>
-        <div mat-line class="notification-time">{{notification.timestamp | date:'short'}}</div>
-      </mat-list-item>
-    </mat-list>
+
+  <!-- Notifications Panel -->
+  <div class="relative">
+    <!-- Notification Bell -->
+    <button (click)="toggleNotifications()"
+            class="relative p-2 text-gray-500 hover:text-gray-600 focus:outline-none focus:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300">
+      <i-feather name="bell" class="h-6 w-6"></i-feather>
+      <!-- Notification Badge -->
+      <div *ngIf="unreadCount > 0"
+           class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2">
+        <span class="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+          {{unreadCount}}
+        </span>
+      </div>
+    </button>
+
+    <!-- Notifications List -->
+    <div *ngIf="showNotifications"
+         @slideInOut
+         class="absolute right-0 mt-2 w-96 max-h-[80vh] overflow-y-auto rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+      <!-- Header -->
+      <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+            Notifications
+          </h3>
+          <div class="flex items-center space-x-2">
+            <button (click)="clearAll()"
+                    class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+              Clear all
+            </button>
+            <button (click)="toggleNotifications()"
+                    class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+              <i-feather name="x" class="h-5 w-5"></i-feather>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="divide-y divide-gray-200 dark:divide-gray-700">
+        <ng-container *ngIf="notifications.length > 0; else noNotifications">
+          <div *ngFor="let notification of notifications"
+               class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer"
+               (click)="markAsRead(notification)">
+            <div class="flex items-start space-x-3">
+              <!-- Icon -->
+              <div [class]="'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ' + getNotificationClass(notification.type)">
+                <i-feather [name]="getNotificationIcon(notification.type)" class="h-4 w-4"></i-feather>
+              </div>
+
+              <!-- Content -->
+              <div class="flex-1 min-w-0">
+                <p class="text-sm text-gray-900 dark:text-white"
+                   [class.font-medium]="!notification.read">
+                  {{notification.message}}
+                </p>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  {{formatDate(notification.date)}}
+                </p>
+              </div>
+
+              <!-- Unread Indicator -->
+              <div *ngIf="!notification.read"
+                   class="flex-shrink-0 w-2 h-2 mt-1 rounded-full bg-blue-500">
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- No Notifications -->
+        <ng-template #noNotifications>
+          <div class="p-8 text-center">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
+              <i-feather name="bell-off" class="h-6 w-6 text-gray-400 dark:text-gray-500"></i-feather>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              No notifications yet
+            </p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
   </div>
-  <mat-divider></mat-divider>
-  <div class="notification-footer">
-    <button mat-button color="warn" (click)="clearNotifications()">Clear all</button>
-  </div>
-</mat-menu>
+</div>

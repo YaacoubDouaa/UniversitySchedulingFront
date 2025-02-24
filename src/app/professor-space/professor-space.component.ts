@@ -68,7 +68,7 @@ export class ProfessorSpaceComponent implements OnInit {
   }
 
   logout(): void {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/adminSpace']);
   }
 
   navigateToMessages(event?: Event): void {
