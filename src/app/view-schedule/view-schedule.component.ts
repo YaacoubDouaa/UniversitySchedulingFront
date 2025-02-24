@@ -1,244 +1,102 @@
-import {Component, Injector} from '@angular/core';
-import { map, Observable, startWith } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import {RattrapageSchedule, Schedule} from '../models/Schedule';
-import {Seance} from '../models/Seance';
-import {RattrapageService} from '../rattrapage.service';
+import { FormControl } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { RattrapageSchedule, Schedule } from '../models/Schedule';
+import { Seance } from '../models/Seance';
+import { RattrapageService } from '../rattrapage.service';
+import {ScheduleService} from '../schedule-service.service';
 
 
 @Component({
   selector: 'app-view-schedule',
-  standalone: false,
   templateUrl: './view-schedule.component.html',
-  styleUrl: './view-schedule.component.css'
+  styleUrls: ['./view-schedule.component.css'],
+  standalone:false,
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('200ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(10px)' }))
+      ])
+    ]),
+    trigger('slideIn', [
+      transition(':enter', [
+        style({ transform: 'translateX(-100%)' }),
+        animate('200ms ease-out', style({ transform: 'translateX(0)' }))
+      ])
+    ])
+  ]
 })
-export class ViewScheduleComponent {
+export class ViewScheduleComponent implements OnInit, OnDestroy {
+  // System Configuration
+  private readonly currentDateTime = '2025-02-24 20:26:26';
+  private readonly currentUser = 'YaacoubDouaa';
+
+  // Component Configuration
   days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+  timeSlots = ['08:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
+  groupOptions = ['ING1_INFO', 'ING1_INFO_TD1', 'ING1_INFO_TD2', 'ING1_INFO_TD1 || ING1_INFO_TD2'];
+
+  // UI State
   fullText = 'Schedule Manager';
   displayText = '';
-
-  timeSlots = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
   showTD = true;
   showTP = true;
-  selectedWeek = 'all'; // all, even, or odd
-  schedule: Schedule = {
-    LUNDI: {
-      ING1_INFO: {
-        '8:30-10:00': [{
-          name: 'Ch-Ingénierie et interprétabilité des systèmes informatiques',
-          id: 1,
-          groupe: 'ING1_INFO',
-          room: 'A-8',
-          type: 'COURS',
-          professor: 'Sara MTIW',
-          biWeekly: false
-        }]
-      },
-      ING1_INFO_TD1: {
-        '10:15-11:45': [{
-          name: 'TD-Algèbre certification 2',
-          id: 2,
-          groupe: 'ING1_INFO_TD1',
-          room: 'A-32',
-          type: 'TD',
-          professor: 'Soumaya BEN AICHA',
-          biWeekly: false
-        }],
-        '13:00-14:30': [{
-          name: 'TD-HDIG-Ingénierie et interprétabilité des systèmes informatiques',
-          id: 3,
-          groupe: 'ING1_INFO_TD1',
-          room: 'A-32',
-          type: 'TD',
-          professor: 'Sara MTIW',
-          biWeekly: false
-        }],
-        '14:45-16:15': [{
-          name: 'TD-HDIG-Preuve de programmes',
-          id: 4,
-          groupe: 'ING1_INFO_TD1',
-          room: 'A-32',
-          type: 'TD',
-          professor: 'Lassâad HAMEL',
-          biWeekly: false
-        }]
-      }
-    },
-    MARDI: {
-      ING1_INFO: {
-        '8:30-10:00': [{
-          name: 'Ch-Optimisation combinatoire',
-          id: 5,
-          groupe: 'ING1_INFO',
-          room: 'C-61',
-          type: 'COURS',
-          professor: 'Abir BEN DHIHA',
-          biWeekly: false
-        }]
-      },
-      ING1_INFO_TD1: {
-        '14:45-16:15': [{
-          name: 'TD-Français - certification 2',
-          id: 6,
-          groupe: 'ING1_INFO_TD1',
-          room: 'C-13',
-          type: 'TD',
-          professor: 'Hadda SMIDA',
-          biWeekly: false
-        }]
-      }
-    },
-    MERCREDI: {
-      ING1_INFO: {
-        '14:45-16:15': [{
-          name: 'Ch-Conception et analyse dalgorithmes',
-          id: 7,
-          groupe: 'ING1_INFO',
-          room: 'A-8',
-          type: 'COURS',
-          professor: 'Abir GHNIMI',
-          biWeekly: false
-        }]
-      },
-      ING1_INFO_TD1: {
-        '8:30-10:00': [{
-          name: 'TD-Optimisation combinatoire',
-          id: 8,
-          groupe: 'ING1_INFO_TD1',
-          room: 'A-13',
-          type: 'TD',
-          professor: 'Abir BEN DHIHA',
-          biWeekly: false
-        }],
-        '10:15-11:45': [{
-          name: 'TD-Conception et analyse dalgorithmes',
-          id: 9,
-          groupe: 'ING1_INFO_TD1',
-          room: 'A-34',
-          type: 'TD',
-          professor: 'Mariem GUIS',
-          biWeekly: false
-        }]
-      }
-    },
-    JEUDI: {
-      ING1_INFO: {
-        '13:00-14:30': [{
-          name: 'Ch-Intelligence Artificielle',
-          id: 10,
-          groupe: 'ING1_INFO',
-          room: 'A-8',
-          type: 'COURS',
-          professor: 'Abir GHNIMI',
-          biWeekly: false
-        }],
-        '14:45-16:15': [{
-          name: 'Ch-Types de données et preuve de programmes',
-          id: 11,
-          groupe: 'ING1_INFO',
-          room: 'A-8',
-          type: 'COURS',
-          professor: 'Ali KANOUN',
-          biWeekly: false
-        }],
-        '16:30-18:00': [{
-          name: 'CB-Preuve de programmes',
-          id: 12,
-          groupe: 'ING1_INFO',
-          room: 'A-32',
-          type: 'COURS',
-          professor: 'Ali KANOUN'
-        }]
-      },
-      ING1_INFO_TD1: {
-        '10:15-11:45': [{
-          name: 'TP-Techniques dapprentissage automatique',
-          id: 13,
-          groupe: 'ING1_INFO_TD1',
-          room: 'A-13',
-          type: 'TP',
-          professor: 'Mariem GARA',
-          biWeekly: false
-        }]
-      }
-    },
-    VENDREDI: {
-      'ING1_INFO_TD1 || ING1_INFO_TD2': {
-        '10:15-11:45': [{
-          name: 'TD-Techniques de communication',
-          id: 14,
-          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
-          room: 'C-15',
-          type: 'TD',
-          professor: 'Abir BERIDA',
-          biWeekly: true
-        }, {
-          name: 'TD-Techniques de communication',
-          id: 15,
-          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
-          room: 'C-15',
-          type: 'TD',
-          professor: 'Abir BERIDA',
-          biWeekly: true
-        }],
-        '14:45-16:15': [{
-          name: 'TP-3H00-3.15-Fondements de lintelligence Artificielle',
-          id: 16,
-          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
-          room: 'A-32',
-          type: 'TP',
-          professor: 'Manel MEJ',
-          biWeekly: true
-        }],
-        '16:30-18:00': [{
-          name: 'TP-3H00-3.15-frama-C et la preuve de programmes',
-          id: 17,
-          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
-          room: 'A-32',
-          type: 'TP',
-          professor: 'Sara MEJ',
-          biWeekly: true
-        }]
-      }
-    },
-    SAMEDI: {
-      ING1_INFO: {
-        '8:30-10:00': [{
-          name: 'Ch-Processus stochastique',
-          id: 18,
-          groupe: 'ING1_INFO',
-          room: 'C-61',
-          type: 'COURS',
-          professor: 'Sara MTIW'
-        }]
-      },
-      ING1_INFO_TD1: {
-        '14:45-16:15': [{
-          name: 'TD-3H00-3.15-Processus stochastique',
-          id: 19,
-          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
-          room: 'A-32',
-          type: 'TD',
-          professor: 'Sara MEJ'
-        }],
-        '8:30-10:00': [{
-          name: 'Ch-Processus stochastique',
-          id: 20,
-          groupe: 'ING1_INFO',
-          room: 'C-61',
-          type: 'TP',
-          professor: 'Sara MTIW'
-        }]
-      }
-    }
-  };
-  private rattrapageSchedule: RattrapageSchedule={};
+  selectedWeek = 'all';
+  selectedGroup = '';
+  isDarkMode = false;
 
-  constructor(private router: Router,private rattrapageService: RattrapageService,private injector: Injector) {
+  // Schedule State
+  private normalSchedule: Schedule = {};
+  private rattrapageSchedule: RattrapageSchedule = {};
+  private subscriptions: Subscription[] = [];
 
+  // Form Controls
+  filterGroup = new FormControl('');
+  filterWeek = new FormControl('all');
+  searchControl = new FormControl('');
+
+  constructor(
+    private router: Router,
+    private rattrapageService: RattrapageService,
+    private scheduleService: ScheduleService
+  ) {}
+
+  ngOnInit(): void {
+    this.initializeSubscriptions();
+    this.animateText();
   }
-  private animateText() {
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  private initializeSubscriptions(): void {
+    // Subscribe to schedule services
+    this.subscriptions.push(
+      this.scheduleService.currentSchedule.subscribe(schedule => {
+        this.normalSchedule = schedule;
+        this.updateFilteredSchedule();
+      }),
+
+      this.rattrapageService.getRattrapageSchedule().subscribe(schedule => {
+        this.rattrapageSchedule = schedule;
+        this.updateFilteredSchedule();
+      }),
+
+      // Subscribe to filter changes
+      this.filterGroup.valueChanges.subscribe(() => this.updateFilteredSchedule()),
+      this.filterWeek.valueChanges.subscribe(() => this.updateFilteredSchedule()),
+      this.searchControl.valueChanges.subscribe(() => this.updateFilteredSchedule())
+    );
+  }
+
+  private animateText(): void {
     let currentIndex = 0;
     const interval = setInterval(() => {
       if (currentIndex < this.fullText.length) {
@@ -249,94 +107,28 @@ export class ViewScheduleComponent {
       }
     }, 100);
   }
-  ngOnInit(): void {
-// Lazy injection of the service
-    this.rattrapageService = this.injector.get(RattrapageService);
-    // Subscribe to get the latest schedule data
-    this.rattrapageService.getRattrapageSchedule().subscribe((schedule: RattrapageSchedule) => {
-      this.rattrapageSchedule = schedule;
-      console.log(this.rattrapageSchedule); // Just to confirm it's working
-    });
-    this.animateText();
-  }
-  private _filter(value: string | null, options: string[]): string[] {
-    const filterValue = value ? value.toLowerCase() : '';
-    return options.filter(option => option.toLowerCase().includes(filterValue));
-  }
-
-  getActivityColor(biweekly: boolean | undefined): string {
-    switch (biweekly) {
-      case true:
-        return "#B0B8C7";
-      case false:
-        return 'transparent';
-      default:
-        return 'transparent';
-    }}
-  getTypeColor(type: string | undefined): string {
-    switch (type) {
-      case 'TD' :
-        return "#5603ad";
-      case 'TP':
-        return '#2a9d8f';
-      case 'COURS':
-        return '#ee4266'
-      default:
-        return 'transparent';
-    }}
-
-
-//     return 'rgba(131, 197, 190, 0.8)';
-  //   case 'TP':
-  //     return '#489fb5';
-  //   default:
-  //     return 'transparent';
-  // }
-
-  navigateToSchedule() {
-    this.router.navigate(['schedule']);
-  }
-
-   selectedGroup: string = '';
-  displayedGroup: string[] = [];
-  getDisplayedGroup(): string[] {
-    this.displayedGroup = [];
-    if (this.selectedGroup === 'ING1_INFO_TD1 || ING1_INFO_TD2') {
-      this.displayedGroup.push('ING1_INFO_TD1 || ING1_INFO_TD2');
-    } else if (this.selectedGroup === 'ING1_INFO_TD1') {
-      this.displayedGroup.push('ING1_INFO_TD1', 'ING1_INFO_TD1 || ING1_INFO_TD2','ING1_INFO');
-    } else if (this.selectedGroup === 'ING1_INFO_TD2') {
-      this.displayedGroup.push('ING1_INFO_TD2', 'ING1_INFO_TD1 || ING1_INFO_TD2','ING1_INFO');
-    }
-    if(this.selectedGroup === 'ING1_INFO') {this.displayedGroup.push('ING1_INFO_TD1', 'ING1_INFO_TD1 || ING1_INFO_TD2','ING1_INFO');}
-    return this.displayedGroup;
-  }
-
-  filteredSchedule: Seance[] = [];
-  groupOptions: string[] = ['ING1_INFO','ING1_INFO_TD1', 'ING1_INFO_TD2','ING1_INFO_TD1 || ING1_INFO_TD2'];
 
   getFilteredSchedule(): { [day: string]: { [time: string]: Seance[] | null } } {
     const filteredSchedule: { [day: string]: { [time: string]: Seance[] | null } } = {};
 
     this.days.forEach(day => {
       filteredSchedule[day] = {};
-      Object.keys(this.schedule[day] || {}).forEach(group => {
+
+      // Process normal sessions
+      Object.keys(this.normalSchedule[day] || {}).forEach(group => {
         if (this.getDisplayedGroup().includes(group)) {
-          Object.keys(this.schedule[day]?.[group] || {}).forEach(time => {
-            const seances = this.schedule[day]?.[group]?.[time];
+          Object.keys(this.normalSchedule[day]?.[group] || {}).forEach(time => {
+            const seances = this.normalSchedule[day]?.[group]?.[time];
             if (seances) {
               if (!filteredSchedule[day][time]) {
                 filteredSchedule[day][time] = [];
               }
               seances.forEach(seance => {
-                if (
-                  seance && (
-                    (this.showTD && seance.type === 'TD') ||
-                    (this.showTP && seance.type === 'TP') ||
-                    seance.type === 'COURS'
-                  )
-                ) {
-                  filteredSchedule[day][time]!.push(seance);
+                if (this.shouldShowSeance(seance)) {
+                  filteredSchedule[day][time]!.push({
+                    ...seance,
+                    isRattrapage: false
+                  });
                 }
               });
             }
@@ -344,52 +136,149 @@ export class ViewScheduleComponent {
         }
       });
 
-      // Add rattrapage seances with more robust checks
-      if (this.rattrapageSchedule?.[day]) {
-        Object.keys(this.rattrapageSchedule[day]).forEach(time => {
+      // Process rattrapage sessions
+      if (this.rattrapageSchedule[day]) {
+        Object.entries(this.rattrapageSchedule[day]).forEach(([time, seances]) => {
           if (!filteredSchedule[day][time]) {
             filteredSchedule[day][time] = [];
           }
 
-          // Only add rattrapage seances if they're valid
-          const rattrapageSeances = this.rattrapageSchedule[day]?.[time];
-          if (Array.isArray(rattrapageSeances) && rattrapageSeances.length > 0) {
-            rattrapageSeances.forEach(seance => {
+          seances.forEach(seance => {
+            if (this.shouldShowSeance(seance)) {
               filteredSchedule[day][time]!.push({
                 ...seance,
-                //isRattrapage: true
+                isRattrapage: true,
+                name: `[Rattrapage] ${seance.name}`
               });
-            });
-          }
+            }
+          });
         });
       }
     });
 
     return filteredSchedule;
   }
-  getSession(day: string, time: string): Seance[] {
-    const sessions: Seance[] = [];
 
-    if (this.schedule[day]) {
-      Object.keys(this.schedule[day]).forEach(group => {
-        if (this.getDisplayedGroup().includes(group)) {
-          const seances = this.schedule[day][group][time];
-          if (seances) {
-            seances.forEach(seance => {
-              if (
-                (this.showTD && seance.type === 'TD') ||
-                (this.showTP && seance.type === 'TP') ||
-                seance.type === 'COURS'
-              ) {
-                sessions.push(seance);
-              }
-            });
-          }
-        }
-      });
-    }
+  private shouldShowSeance(seance: Seance): boolean {
+    const typeCondition = (
+      (this.showTD && seance.type === 'TD') ||
+      (this.showTP && seance.type === 'TP') ||
+      seance.type === 'COURS'
+    );
 
-    return sessions;
+    const weekCondition = this.selectedWeek === 'all' ||
+      (this.selectedWeek === 'even' && seance.biWeekly) ||
+      (this.selectedWeek === 'odd' && !seance.biWeekly);
+
+    return typeCondition && weekCondition;
   }
 
+  getDisplayedGroup(): string[] {
+    const groups: string[] = [];
+
+    switch (this.selectedGroup) {
+      case 'ING1_INFO_TD1 || ING1_INFO_TD2':
+        groups.push('ING1_INFO_TD1 || ING1_INFO_TD2');
+        break;
+      case 'ING1_INFO_TD1':
+        groups.push('ING1_INFO_TD1', 'ING1_INFO_TD1 || ING1_INFO_TD2', 'ING1_INFO');
+        break;
+      case 'ING1_INFO_TD2':
+        groups.push('ING1_INFO_TD2', 'ING1_INFO_TD1 || ING1_INFO_TD2', 'ING1_INFO');
+        break;
+      case 'ING1_INFO':
+        groups.push('ING1_INFO_TD1', 'ING1_INFO_TD1 || ING1_INFO_TD2', 'ING1_INFO');
+        break;
+    }
+
+    return groups;
+  }
+
+  getActivityColor(biweekly: boolean | undefined): string {
+    return biweekly ? '#B0B8C7' : 'transparent';
+  }
+
+  getTypeColor(type: string | undefined): string {
+    switch (type) {
+      case 'TD': return '#5603ad';
+      case 'TP': return '#2a9d8f';
+      case 'COURS': return '#ee4266';
+      default: return 'transparent';
+    }
+  }
+
+  getSessionStyle(seance: Seance): { [key: string]: string } {
+    return {
+      backgroundColor: this.getActivityColor(seance.biWeekly),
+      borderColor: this.getTypeColor(seance.type),
+      borderWidth: '2px',
+      borderStyle: 'solid',
+      borderLeftWidth: seance.isRattrapage ? '8px' : '2px',
+      opacity: seance.isRattrapage ? '0.9' : '1'
+    };
+  }
+
+  getSessionTextStyle(seance: Seance): { [key: string]: string } {
+    return {
+      color: seance.isRattrapage ? '#E63946' : 'inherit',
+      fontWeight: seance.isRattrapage ? 'bold' : 'normal'
+    };
+  }
+
+  toggleTD(): void {
+    this.showTD = !this.showTD;
+    this.updateFilteredSchedule();
+  }
+
+  toggleTP(): void {
+    this.showTP = !this.showTP;
+    this.updateFilteredSchedule();
+  }
+
+  setSelectedWeek(week: string): void {
+    this.selectedWeek = week;
+    this.updateFilteredSchedule();
+  }
+
+  setSelectedGroup(group: string): void {
+    this.selectedGroup = group;
+    this.updateFilteredSchedule();
+  }
+
+  private updateFilteredSchedule(): void {
+    // Trigger change detection by reassigning the filtered schedule
+    const filtered = this.getFilteredSchedule();
+    // You might want to emit this to a BehaviorSubject if needed
+  }
+
+  navigateToSchedule(): void {
+    this.router.navigate(['schedule']);
+  }
+
+  getCurrentDateTime(): string {
+    return this.currentDateTime;
+  }
+
+  getCurrentUser(): string {
+    return this.currentUser;
+  }
+
+
+
+  /**
+   * Scroll methods for mobile navigation
+   */
+  scrollLeft(): void {
+    const container = document.querySelector('.schedule-container');
+    if (container) {
+      container.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  }
+
+  scrollRight(): void {
+    const container = document.querySelector('.schedule-container');
+    if (container) {
+      container.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  }
 }

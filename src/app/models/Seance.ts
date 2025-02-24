@@ -8,6 +8,7 @@ export interface Seance {
   professor: string;
   groupe: string;
   biWeekly: boolean;
+  isRattrapage?: boolean;
 }
 
 // SeanceConflict Interface
