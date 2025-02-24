@@ -300,4 +300,5 @@ export class ProposeRattrapageComponent implements OnInit, OnDestroy {
 
 
   protected readonly formatDate = formatDate;
+  currentUser='douaa';
 }

@@ -5,6 +5,8 @@ import { ScheduleService } from '../schedule-service.service';
 import { SalleList, SalleSchedule } from '../models/Salle';
 import { Seance } from '../models/Seance';
 import { RoomService } from '../rooms.service';
+import {Subscription} from 'rxjs';
+import {RattrapageService} from '../rattrapage.service';
 
 @Component({
   selector: 'app-rooms',
@@ -17,7 +19,8 @@ export class RoomsComponent implements OnInit {
   readonly days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
   readonly times = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
   readonly types = ['COURS', 'TD', 'TP', 'SEMINAIRE'];
-
+  rattrapageSchedule: RattrapageSchedule = {};
+  private subscriptions = new Subscription();
   // Component state
   selectedDay: string = '';
   selectedTime: string = '';
@@ -43,7 +46,8 @@ export class RoomsComponent implements OnInit {
     private router: Router,
     private salleScheduleService: ScheduleService,
     private injector: Injector,
-    private roomService: RoomService
+    private roomService: RoomService,
+    private rattrapageService:RattrapageService
   ) {}
 
   /**
@@ -52,8 +56,23 @@ export class RoomsComponent implements OnInit {
   ngOnInit(): void {
     this.initializeRoomService();
     this.loadRoomData();
+    this.loadRattrapageSchedule();
   }
-
+  /**
+   * Load rattrapage schedule
+   */
+  private loadRattrapageSchedule(): void {
+    this.subscriptions.add(
+      this.rattrapageService.getRattrapageSchedule().subscribe({
+        next: (schedule) => {
+          this.rattrapageSchedule = schedule;
+        },
+        error: (error) => {
+          console.error('Error loading rattrapage schedule:', error);
+        }
+      })
+    );
+  }
   /**
    * Initialize empty schedule structure
    */
@@ -84,16 +103,6 @@ export class RoomsComponent implements OnInit {
         console.error('Error loading rooms:', error);
       }
     });
-  }
-
-  /**
-   * Check if a room is available at a specific time
-   */
-  isSalleAvailable(salle: string, day: string, time: string, niveau: string): boolean {
-    const salleData = this.salles[salle];
-    if (!salleData?.schedule) return true;
-
-    return !(salleData.schedule[day]?.[niveau]?.[time]?.length > 0);
   }
 
   /**
@@ -230,10 +239,32 @@ export class RoomsComponent implements OnInit {
   }
 
   /**
-   * Get sessions for a specific time slot
+   * Get all sessions including rattrapages for a specific time slot
    */
   getSessions(salle: string, day: string, time: string, niveau: string): Seance[] {
-    return this.salles[salle]?.schedule[day]?.[niveau]?.[time] || [];
+    const regularSessions = this.salles[salle]?.schedule[day]?.[niveau]?.[time] || [];
+    const rattrapageSessions = this.rattrapageSchedule[day]?.[time]?.filter(
+      session => session.room === salle
+    ) || [];
+
+    return [...regularSessions, ...rattrapageSessions];
+  }
+
+  /**
+   * Check if a room is available (including rattrapage sessions)
+   */
+  isSalleAvailable(salle: string, day: string, time: string, niveau: string): boolean {
+    const regularSessions = this.salles[salle]?.schedule[day]?.[niveau]?.[time]?.length > 0;
+    const rattrapageSessions = this.rattrapageSchedule[day]?.[time]?.some(
+      session => session.room === salle
+    );
+
+    return !(regularSessions || rattrapageSessions);
+  }
+
+  // Add to existing ngOnDestroy or create it if it doesn't exist
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   /**

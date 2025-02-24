@@ -110,7 +110,7 @@ export class ProfessorsService {
       return throwError(() => new Error(`Professor ${profCode} not found`));
     }
 
-    if (!this.isTimeSlotAvailable(prof.schedule, day, niveau, time)) {
+    if (!this.isTimeSlotAvailable(prof.schedule, day, time)) {
       return throwError(() => new Error('Time slot not available'));
     }
 
@@ -170,13 +170,13 @@ export class ProfessorsService {
   /**
    * Check time slot availability
    */
-  private isTimeSlotAvailable(
+  isTimeSlotAvailable(
     schedule: Schedule,
     day: string,
-    niveau: string,
     time: string
   ): boolean {
-    return !schedule?.[day]?.[niveau]?.[time]?.length;
+    // Check if the professor has any sessions at this time slot
+    return ! (schedule?.[day]?.[time]) ;
   }
 
   /**
@@ -200,7 +200,7 @@ export class ProfessorsService {
         if (!prof) return [];
 
         return days.flatMap(day =>
-          times.filter(time => this.isTimeSlotAvailable(prof.schedule, day, niveau, time))
+          times.filter(time => this.isTimeSlotAvailable(prof.schedule, day, time))
             .map(time => ({day, time}))
         );
       })

@@ -19,7 +19,8 @@ export class ConflictService {
         room: 'A101',
         type: 'COURS',
         professor: 'Dr. Smith',
-        groupe: 'MATH101'
+        groupe: 'MATH101',
+        biWeekly:false
       },
       seance2: {
         name: 'Physics 201',
@@ -27,7 +28,8 @@ export class ConflictService {
         room: 'A101',
         type: 'TD',
         professor: 'Dr. Johnson',
-        groupe: 'PHYS201'
+        groupe: 'PHYS201',
+        biWeekly:false
       },
       day: 'LUNDI',
       time: '8:30-10:00',
@@ -40,7 +42,8 @@ export class ConflictService {
         room: 'B201',
         type: 'TP',
         professor: 'Dr. Brown',
-        groupe: 'CHEM301'
+        groupe: 'CHEM301',
+        biWeekly:false
       },
       seance2: {
         name: 'Biology 202',
@@ -48,7 +51,8 @@ export class ConflictService {
         room: 'B202',
         type: 'COURS',
         professor: 'Dr. Brown',
-        groupe: 'BIO202'
+        groupe: 'BIO202',
+        biWeekly:false
       },
       day: 'MARDI',
       time: '8:30-10:00',

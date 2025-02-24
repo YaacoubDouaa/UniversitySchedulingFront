@@ -1,146 +1,253 @@
-import {Component, Injector} from '@angular/core';
-import {ProfList, ProfSchedule} from '../models/Professors';
-import {Router} from '@angular/router';
-import {SalleList, SalleSchedule} from '../models/Salle';
-import {ScheduleService} from '../schedule-service.service';
-import {Seance} from '../models/Seance';
-import {RoomService} from '../rooms.service';
-import {ProfessorsService} from '../professors.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { ProfList } from '../models/Professors';
+import { Schedule } from '../models/Schedule';
+import { Seance } from '../models/Seance';
+import { ProfessorsService } from '../professors.service';
 
 @Component({
   selector: 'app-professors',
   standalone: false,
-
   templateUrl: './professors.component.html',
-  styleUrl: './professors.component.css'
+  styleUrls: ['./professors.component.scss']
 })
-export class ProfessorsComponent {
-  days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'];
-  times = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
-  types=['COURS','TD'];
+export class ProfessorsComponent implements OnInit, OnDestroy {
+  /**
+   * System Configuration
+   */
+  private readonly currentDateTime = '2025-02-24 23:11:43';
+  private readonly currentUser = 'YaacoubDouaa';
+
+  /**
+   * Constants
+   */
+  readonly days: string[] = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+  readonly times: string[] = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
+  readonly types: string[] = ['COURS', 'TD', 'TP'];
+  readonly niveaux: string[] = ['ING1_INFO', 'ING2_INFO', 'ING3_INFO'];
+
+  /**
+   * Component State
+   */
+  profs: ProfList = {};
+  selectedProf: string = '';
   selectedDay: string = '';
   selectedTime: string = '';
   selectedType: string = '';
+  selectedFrequency: 'weekly' | 'biweekly' = 'weekly';
+  isLoading: boolean = false;
+
+  /**
+   * Modal State
+   */
   showModal: boolean = false;
-  private selectedFrequency: string = "weekly";
   selectedActivity: {
     seance: Seance;
     day: string;
     time: string;
+    niveau: string;
   } | null = null;
-  profs: ProfList = {};
-  profSchedule: SalleSchedule = {
-    LUNDI: {},
-    MARDI: {},
-    MERCREDI: {},
-    JEUDI: {},
-    VENDREDI: {},
-    SAMEDI: {},
-    DIMANCHE: {}
-  };
 
+  /**
+   * Subscriptions
+   */
+  private subscriptions = new Subscription();
 
-constructor(private router: Router, private profScheduleService: ScheduleService,private profService: ProfessorsService, private injector:Injector) {}
+  constructor(
+    private router: Router,
+    private professorsService: ProfessorsService
+  ) {}
+
   ngOnInit(): void {
-// Lazy injection of the service
-    this.profService = this.injector.get(ProfessorsService);
-    // Subscribe to get the latest schedule data
-    this.profService.getProfs().subscribe((profList:ProfList) => {
-      this.profs = profList;
-      console.log(this.profs); // Just to confirm it's working
-    });
-  }
-  isProfAvailable(name: string, day: string, time: string): boolean {
-    const disponibilite = this.profs[name].schedule;
-
-    return !(disponibilite[day] && disponibilite[day][time] );}
-
-  getSalleColor(salle: string, day: string, time: string,type:string): string {
-    return this.isProfAvailable(salle, day, time) ? '#d4edda' : '#f8d7da';
-  }
-  onSelectProf(profSchedule:  ProfSchedule) {
-    this.profScheduleService.changeSchedule(profSchedule);
-    this.router.navigate(['/room-schedule']);
+    this.loadProfessors();
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 
-  openAddModal(day: string, time: string): void {
-    this.selectedActivity = {
-      seance: { name: '', id: 0, room: '', type: 'COURS', professor: '', groupe: '', biWeekly: this.selectedFrequency === 'biweekly' },
+  /**
+   * Load professors data
+   */
+  private loadProfessors(): void {
+    this.isLoading = true;
+    this.subscriptions.add(
+      this.professorsService.getProfs().subscribe({
+        next: (profList: ProfList) => {
+          this.profs = profList;
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading professors:', error);
+          this.isLoading = false;
+        }
+      })
+    );
+  }
+
+  /**
+   * Check professor availability
+   */
+  isProfAvailable(profCode: string, day: string, time: string): boolean {
+    return this.professorsService.isTimeSlotAvailable(
+      this.profs[profCode]?.schedule || {},
       day,
       time
-    };
-    this.showModal = true;
+    );
   }
 
-  saveAddChanges(): void {
-    if (this.selectedActivity && this.profSchedule) {
-      const { day, time, seance } = this.selectedActivity;
-
-      if (!this.profSchedule[day]) this.profSchedule[day] = {};
-      if (!this.profSchedule[day][time]) this.profSchedule[day][time] = {};
-
-      const niveau = seance.groupe || 'Default';
-      this.profSchedule[day][time][niveau] = seance;
-    }
-    this.showModal = false;
+  /**
+   * Get cell color based on availability
+   */
+  getProfColor(profCode: string, day: string, time: string, niveau: string): string {
+    return this.isProfAvailable(profCode, day, time) ?
+      'bg-green-100 dark:bg-green-900/30' :
+      'bg-red-100 dark:bg-red-900/30';
   }
 
-  openEditModal(seance: Seance | null, day: string, time: string) {
+  /**
+   * Navigate to professor schedule
+   */
+  viewProfSchedule(profCode: string): void {
+    this.subscriptions.add(
+      this.professorsService.getProfessorSchedule(profCode).subscribe(schedule => {
+        if (schedule) {
+          this.router.navigate(['/prof-schedule', profCode]);
+        }
+      })
+    );
+  }
+
+  /**
+   * Modal Management - Add
+   */
+  openAddModal(day: string, time: string, niveau: string): void {
     this.selectedActivity = {
-      seance: seance ? { ...seance } : { name: '',id:0, room: '', type: 'COURS', professor: '', groupe: '',biWeekly: this.selectedFrequency==='biweekly' },
+      seance: {
+        id: Math.floor(Math.random() * 1000000),
+        name: '',
+        room: '',
+        type: 'COURS',
+        professor: '',
+        groupe: niveau,
+        biWeekly: this.selectedFrequency === 'biweekly'
+      },
       day,
       time,
-
+      niveau
     };
     this.showModal = true;
   }
 
+  /**
+   * Save new session
+   */
+  saveAddChanges(): void {
+    if (!this.selectedActivity || !this.selectedProf) return;
 
-  saveEditChanges(): void {
-    if (this.selectedActivity && this.profSchedule) {
-      const { day, time, seance } = this.selectedActivity;
+    const { day, time, niveau, seance } = this.selectedActivity;
 
-      if (this.profSchedule[day] && this.profSchedule[day][time]) {
-        const niveau = seance.groupe|| 'Default';
-        this.profSchedule[day][time][niveau] = seance;
-      }
-    }
-    this.showModal = false;
+    this.subscriptions.add(
+      this.professorsService.addSession(
+        this.selectedProf,
+        day,
+        niveau,
+        time,
+        seance
+      ).subscribe({
+        next: () => {
+          this.showModal = false;
+          this.loadProfessors();
+        },
+        error: (error) => {
+          console.error('Error adding session:', error);
+        }
+      })
+    );
   }
 
-  openDeleteModal(seance: Seance, day: string, time: string): void {
-    this.selectedActivity = { seance, day, time };
+  /**
+   * Modal Management - Edit
+   */
+  openEditModal(seance: Seance, day: string, time: string, niveau: string): void {
+    this.selectedActivity = {
+      seance: { ...seance },
+      day,
+      time,
+      niveau
+    };
     this.showModal = true;
   }
 
-  saveDeleteChanges(): void {
-    if (this.selectedActivity && this.profSchedule) {
-      const { day, time, seance } = this.selectedActivity;
-
-      const niveaux = Object.keys(this.profSchedule[day]?.[time] || {});
-      niveaux.forEach(niveau => {
-        if (this.profSchedule![day][time][niveau]?.id === seance.id) {
-          delete this.profSchedule![day][time][niveau];
-        }
-      });
-    }
-    this.showModal = false;
+  /**
+   * Modal Management - Delete
+   */
+  openDeleteModal(seance: Seance, day: string, time: string, niveau: string): void {
+    this.selectedActivity = {
+      seance,
+      day,
+      time,
+      niveau
+    };
+    this.showModal = true;
   }
 
-  closeModal(event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
+  /**
+   * Delete session
+   */
+  saveDeleteChanges(): void {
+    if (!this.selectedActivity || !this.selectedProf) return;
+
+    const { day, time, niveau, seance } = this.selectedActivity;
+
+    this.subscriptions.add(
+      this.professorsService.removeSession(
+        this.selectedProf,
+        day,
+        niveau,
+        time,
+        seance.id
+      ).subscribe({
+        next: () => {
+          this.showModal = false;
+          this.loadProfessors();
+        },
+        error: (error) => {
+          console.error('Error deleting session:', error);
+        }
+      })
+    );
+  }
+
+  /**
+   * Modal Management - Close
+   */
+  closeModal(): void {
+    this.showModal = false;
     this.selectedActivity = null;
   }
 
-  openViewModal(prof: string, day: string, time: string) {
-    if (this.profs[prof]?.schedule[day]?.[time]) {
-      console.log('Opening view modal:', this.profs[prof].schedule[day][time]);
-    } else {
-      console.log('No session found for the selected time slot.');
+  /**
+   * View session details
+   */
+  viewSessionDetails(profCode: string, day: string, time: string, niveau: string): void {
+    const prof = this.profs[profCode];
+    if (prof?.schedule[day]?.[niveau]?.[time]) {
+      // Handle viewing session details
+      console.log('Session details:', prof.schedule[day][niveau][time]);
     }
+  }
+
+  /**
+   * Get system state
+   */
+  getCurrentDateTime(): string {
+    return this.currentDateTime;
+  }
+
+  getCurrentUser(): string {
+    return this.currentUser;
   }
 
   protected readonly Object = Object;
