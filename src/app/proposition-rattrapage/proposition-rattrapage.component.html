@@ -13,7 +13,7 @@
               ></i-feather>
             </div>
 
-            <!-- Visible Title -->
+            <!-- Title -->
             <h1 class="text-xl font-bold text-primary dark:text-white">
               Rattrapage Manager
             </h1>
@@ -22,13 +22,15 @@
       </div>
     </div>
   </nav>
+
   <div class="container py-6 space-y-6">
     <!-- Statistics Cards -->
     <div class="grid gap-4 md:grid-cols-3 mb-6">
+      <!-- Pending Card -->
       <div class="bg-card rounded-lg p-4 shadow-sm border border-border hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between">
           <div class="space-y-1">
-            <p class="text-sm font-medium text-muted-foreground">Pending</p>
+            <p class="text-sm font-medium text-muted-foreground">En attente</p>
             <h3 class="text-2xl font-bold text-orange-500">{{ getPendingCount() }}</h3>
           </div>
           <div class="rounded-full bg-orange-100 p-3">
@@ -37,10 +39,11 @@
         </div>
       </div>
 
+      <!-- Confirmed Card -->
       <div class="bg-card rounded-lg p-4 shadow-sm border border-border hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between">
           <div class="space-y-1">
-            <p class="text-sm font-medium text-muted-foreground">Confirmed</p>
+            <p class="text-sm font-medium text-muted-foreground">Confirmé</p>
             <h3 class="text-2xl font-bold text-green-500">{{ getConfirmedCount() }}</h3>
           </div>
           <div class="rounded-full bg-green-100 p-3">
@@ -49,11 +52,12 @@
         </div>
       </div>
 
+      <!-- Refused Card -->
       <div class="bg-card rounded-lg p-4 shadow-sm border border-border hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between">
           <div class="space-y-1">
-            <p class="text-sm font-medium text-muted-foreground">Refused</p>
-            <h3 class="text-2xl font-bold text-red-500">{{getRefusedCount()}}</h3>
+            <p class="text-sm font-medium text-muted-foreground">Refusé</p>
+            <h3 class="text-2xl font-bold text-red-500">{{ getRefusedCount() }}</h3>
           </div>
           <div class="rounded-full bg-red-100 p-3">
             <i-feather name="x-circle" class="h-6 w-6 text-red-500"></i-feather>
@@ -62,19 +66,16 @@
       </div>
     </div>
 
-    <!-- Enhanced Filter Section -->
-
-    <!-- Add this date filter section -->
+    <!-- Filter Section -->
     <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
       <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-
         <!-- Date Range Pickers -->
         <div class="flex flex-1 items-center gap-4">
           <mat-form-field class="flex-1">
             <mat-label>Date de début</mat-label>
             <input matInput [matDatepicker]="startPicker"
                    [formControl]="startDate"
-                   (dateChange)="onDateChange()">
+                   (dateChange)="applyFilters()">
             <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
             <mat-datepicker #startPicker></mat-datepicker>
           </mat-form-field>
@@ -84,11 +85,12 @@
             <input matInput [matDatepicker]="endPicker"
                    [formControl]="endDate"
                    [min]="startDate.value"
-                   (dateChange)="onDateChange()">
+                   (dateChange)="applyFilters()">
             <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
             <mat-datepicker #endPicker></mat-datepicker>
           </mat-form-field>
         </div>
+
         <!-- Filter Actions -->
         <div class="flex items-center gap-2">
           <button mat-flat-button color="primary" (click)="applyFilters()"
@@ -104,43 +106,45 @@
         </div>
       </div>
     </div>
-    <!-- Enhanced Rattrapage Cards with Color Schemes -->
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <div *ngFor="let proposition of propositions"
-           class="group rounded-lg border bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-200"
-           [ngClass]="{
-         'border-l-4 border-l-orange-500': proposition.status === 'En attente',
-         'border-l-4 border-l-green-500': proposition.status === 'Confirmé',
-         'border-l-4 border-l-red-500': proposition.status === 'Refusé'
-       }"
-           [@fadeInOut]>
-        <div class="p-6 space-y-4">
-          <!-- Status Badge and Header -->
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold group-hover:text-primary transition-colors">{{proposition.name}}</h3>
-            <div class="flex items-center space-x-2">
-          <span [ngClass]="{
-            'bg-orange-100 text-orange-700': proposition.status === 'En attente',
-            'bg-green-100 text-green-700': proposition.status === 'Confirmé',
-            'bg-red-100 text-red-700': proposition.status === 'Refusé'
-          }" class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium" (click)="updateStatus(proposition.id,proposition.status)">
-            <i-feather [name]="getStatusIcon(proposition.status)" class="h-4 w-4 mr-1"></i-feather>
-            {{proposition.status}}
-          </span>
 
-              <!-- Reset Status Button -->
+    <!-- Proposition Cards -->
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div *ngFor="let proposition of filteredPropositions"
+           class="group rounded-lg border bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-200"
+           [ngClass]="{'border-l-4': true,
+                      'border-l-orange-500': proposition.status === 'En attente',
+                      'border-l-green-500': proposition.status === 'Confirmé',
+                      'border-l-red-500': proposition.status === 'Refusé'}"
+           [@fadeInOut]>
+
+        <!-- Card Content -->
+        <div class="p-6 space-y-4">
+          <!-- Header -->
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold group-hover:text-primary transition-colors">
+              {{proposition.name}}
+            </h3>
+            <!-- Status Badge -->
+            <div class="flex items-center space-x-2">
+              <span [ngClass]="getStatusClasses(proposition.status)"
+                    class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium">
+                <i-feather [name]="getStatusIcon(proposition.status)" class="h-4 w-4 mr-1"></i-feather>
+                {{proposition.status}}
+              </span>
+
+              <!-- Reset Button -->
               <button *ngIf="proposition.status !== 'En attente'"
                       (click)="reinitialiser(proposition.id)"
                       class="inline-flex items-center justify-center rounded-full w-6 h-6
-                         bg-gray-100 hover:bg-gray-200 text-gray-600
-                         transition-colors duration-200"
+                             bg-gray-100 hover:bg-gray-200 text-gray-600
+                             transition-colors duration-200"
                       title="Reset status">
                 <i-feather name="refresh-cw" class="h-3 w-3"></i-feather>
               </button>
             </div>
           </div>
 
-          <!-- Info Grid with Enhanced Colors -->
+          <!-- Info Grid -->
           <div class="grid grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
             <div class="space-y-2">
               <p class="text-sm text-gray-600 dark:text-gray-300 flex items-center">
@@ -164,80 +168,85 @@
             </div>
           </div>
 
-          <!-- Room Selection with Enhanced Styling -->
+          <!-- Room Selection -->
           <div *ngIf="proposition.status === 'Confirmé'"
-               class="bg-green-50 dark:bg-green-900/20 rounded-md p-3 space-y-2 border border-green-100 dark:border-green-800">
+               class="bg-green-50 dark:bg-green-900/20 rounded-md p-3 space-y-2 border border
+-green-100 dark:border-green-800">
             <div class="flex items-center justify-between">
-              <label class="text-sm font-medium text-green-700 dark:text-green-300">Room Assignment</label>
+              <label class="text-sm font-medium text-green-700 dark:text-green-300">
+                Assignation de salle
+              </label>
               <span *ngIf="proposition.salle"
                     class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-            Assigned
-          </span>
+                Assignée
+              </span>
             </div>
 
+            <!-- Room Selector -->
             <select *ngIf="!proposition.salle"
-                    (change)="assignRoom($event, proposition.id)"
+                    (change)="assignRoom($event, proposition)"
                     class="w-full h-9 rounded-md border border-green-200 bg-white dark:bg-gray-800 px-3 text-sm
-                       focus:border-green-500 focus:ring-1 focus:ring-green-500">
-              <option value="">Select a room</option>
+                           focus:border-green-500 focus:ring-1 focus:ring-green-500">
+              <option value="">Sélectionner une salle</option>
               <option *ngFor="let room of availableRooms" [value]="room">
                 {{room}}
               </option>
             </select>
 
+            <!-- Assigned Room Display -->
             <div *ngIf="proposition.salle"
                  class="flex items-center justify-between">
-          <span class="text-sm text-green-700 dark:text-green-300">
-            <i-feather name="home" class="inline h-4 w-4 mr-1"></i-feather>
-            {{proposition.salle}}
-          </span>
+              <span class="text-sm text-green-700 dark:text-green-300">
+                <i-feather name="home" class="inline h-4 w-4 mr-1"></i-feather>
+                {{proposition.salle}}
+              </span>
               <button (click)="changeRoom(proposition)"
                       class="text-xs text-green-600 hover:text-green-700 hover:underline">
-                Change
+                Changer
               </button>
             </div>
           </div>
 
-          <!-- Action Buttons with Enhanced Styling -->
+          <!-- Action Buttons -->
           <div class="flex justify-end space-x-2 pt-2">
             <button *ngIf="proposition.status === 'En attente'"
                     (click)="openConfirmationDialog('reject', proposition)"
                     class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4
-                       border border-red-200 text-red-700 bg-red-50
-                       hover:bg-red-100 hover:border-red-300 transition-colors
-                       focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                           border border-red-200 text-red-700 bg-red-50
+                           hover:bg-red-100 hover:border-red-300 transition-colors
+                           focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
               <i-feather name="x-circle" class="h-4 w-4 mr-2"></i-feather>
-              Reject
+              Refuser
             </button>
             <button *ngIf="proposition.status === 'En attente'"
                     (click)="openConfirmationDialog('confirm', proposition)"
                     class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4
-                       bg-green-600 text-white hover:bg-green-700 transition-colors
-                       focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                           bg-green-600 text-white hover:bg-green-700 transition-colors
+                           focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
               <i-feather name="check-circle" class="h-4 w-4 mr-2"></i-feather>
-              Confirm
+              Confirmer
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Enhanced Empty State -->
-    <div *ngIf="propositions.length === 0"
+    <!-- Empty State -->
+    <div *ngIf="filteredPropositions.length === 0"
          class="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 text-center">
       <div class="rounded-full bg-primary/10 p-4">
         <i-feather name="calendar" class="h-8 w-8 text-primary"></i-feather>
       </div>
-      <h3 class="mt-4 text-xl font-semibold">No Rattrapages Found</h3>
-      <p class="mt-2 text-sm text-muted-foreground">No make-up exam requests match your current filters.</p>
+      <h3 class="mt-4 text-xl font-semibold">Aucun rattrapage trouvé</h3>
+      <p class="mt-2 text-sm text-muted-foreground">
+        Aucune demande de rattrapage ne correspond à vos filtres actuels.
+      </p>
       <button (click)="resetFilters()"
               class="mt-4 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4
                      border border-input bg-background hover:bg-accent hover:text-accent-foreground">
         <i-feather name="refresh-cw" class="h-4 w-4 mr-2"></i-feather>
-        Reset Filters
+        Réinitialiser les filtres
       </button>
     </div>
   </div>
-
-
 </div>

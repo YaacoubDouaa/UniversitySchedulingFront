@@ -7,7 +7,7 @@ export interface Seance {
   type: 'COURS' | 'TD' | 'TP'|string;
   professor: string;
   groupe: string;
-  biWeekly?: boolean;
+  biWeekly: boolean;
 }
 
 // SeanceConflict Interface

@@ -1,23 +1,26 @@
-import {Component, Injector, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import {PropositionDeRattrapage} from '../models/Notifications';
-import {Seance} from '../models/Seance';
-import {RattrapageService} from '../rattrapage.service';
-import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
-import {NotificationService} from '../notifications.service';
-import {Salle} from '../models/Salle';
-import {FormControl} from '@angular/forms';
-import {animate, style, transition, trigger} from '@angular/animations';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { FormControl } from '@angular/forms';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { Subscription } from 'rxjs';
+import { PropositionDeRattrapage } from '../models/Notifications';
+import { RattrapageService } from '../rattrapage.service';
+import { NotificationService } from '../notifications.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { PropositionsDeRattrapageService } from '../propositions-de-rattrapage.service';
+
 interface StatusIcon {
   icon: string;
   color: string;
   bgColor: string;
+  message: string;
 }
+
 @Component({
   selector: 'app-proposition-rattrapage',
   templateUrl: './proposition-rattrapage.component.html',
   styleUrls: ['./proposition-rattrapage.component.css'],
-  standalone: false,
+  standalone:false,
   animations: [
     trigger('fadeInOut', [
       transition(':enter', [
@@ -36,73 +39,155 @@ interface StatusIcon {
     ])
   ]
 })
-export class PropositionRattrapageComponent implements OnInit {
-  searchControl = new FormControl('');
-  sortControl = new FormControl('date');
-  filterStatus = new FormControl('all');
-  isDarkMode = false;
-  propositions: PropositionDeRattrapage[] = [
-    {
-      id: 1,
-      date: '2025-03-10',
-      reason: 'Maladie',
-      status: 'En attente',
-      enseignantId: 101,
-      type: 'COURS',
-      name: 'Mathématiques',
-      niveau: 'ING_1'
-    },
-    {
-      id: 2,
-      date: '2025-03-12',
-      reason: 'Voyage académique',
-      status: 'En attente',
-      enseignantId: 102,
-      type: 'COURS',
-      name: 'Physique',
-      niveau: 'ING_1'
-    },
+/**
+ * Component for managing makeup session propositions
+ * Handles the display, filtering, and actions for makeup session requests
+ */
+export class PropositionRattrapageComponent implements OnInit, OnDestroy {
+  /**
+   * System configuration
+   * Stores current date/time and user information
+   */
+  private readonly currentDateTime = '2025-02-24 20:07:27';
+  private readonly currentUser = 'YaacoubDouaa';
+  private readonly ADMIN_ID = 1; // ID used for sending administrative notifications
+
+  /**
+   * Form Controls
+   * Handle user input for filtering and sorting propositions
+   */
+  searchControl = new FormControl('');        // Text search input
+  sortControl = new FormControl('date');      // Sort order selection
+  filterStatus = new FormControl('all');      // Status filter selection
+  startDate = new FormControl<Date | null>(null);  // Date range start
+  endDate = new FormControl<Date | null>(null);    // Date range end
+
+  /**
+   * Component State
+   * Manages the visual and data state of the component
+   */
+  isDarkMode = false;  // Tracks dark/light theme
+  propositions: PropositionDeRattrapage[] = [];          // All propositions
+  filteredPropositions: PropositionDeRattrapage[] = [];  // Filtered view
+  private propositionsSubscription?: Subscription;        // Cleanup reference
+
+  /**
+   * Display Configuration
+   * Defines the structure and options for the UI
+   */
+    // Table columns to display
+  displayedColumns: string[] = [
+    'id', 'date', 'reason', 'status', 'enseignantId',
+    'type', 'niveau', 'salle', 'actions'
   ];
 
-  displayedColumns: string[] = ['id', 'date', 'reason', 'status', 'enseignantId', 'type', 'niveau', 'actions'];
-  sallesList: Salle[] = [];
-  private rattrapageScheduleMap = new Map<number, { day: string, time: string, seanceId: number }>();
-  // Form controls
-  startDate = new FormControl<Date | null>(null);
-  endDate = new FormControl<Date | null>(null);
+  // Available rooms for assignment
+  availableRooms = [
+    'Room A101', 'Room B202', 'Room C303',
+    'Room D404', 'Room E505'
+  ];
 
+  /**
+   * Status Styling Configuration
+   * Defines visual appearance and messages for each status
+   */
+  statusIcons: { [key: string]: StatusIcon } = {
+    'En attente': {
+      icon: 'clock',
+      color: 'text-orange-700',
+      bgColor: 'bg-orange-100',
+      message: 'est en attente de confirmation'
+    },
+    'Confirmé': {
+      icon: 'check-circle',
+      color: 'text-green-700',
+      bgColor: 'bg-green-100',
+      message: 'a été confirmée'
+    },
+    'Refusé': {
+      icon: 'x-circle',
+      color: 'text-red-700',
+      bgColor: 'bg-red-100',
+      message: 'a été refusée'
+    }
+  };
+
+  /**
+   * Component Constructor
+   * Initializes services and sets up initial state
+   */
   constructor(
+    private propositionsService: PropositionsDeRattrapageService,
     private rattrapageService: RattrapageService,
     private notificationService: NotificationService,
-    private dialog: MatDialog,injector:Injector
-  ) { // Initialize with current date range
-    // Initialize with default dates
+    private dialog: MatDialog
+  ) {
+    this.initializeDateRange();
+    this.setupFilterSubscriptions();
+  }
+
+  /**
+   * Lifecycle Hooks
+   * Handle component initialization and cleanup
+   */
+  ngOnInit(): void {
+    this.loadPropositions();
+  }
+
+  ngOnDestroy(): void {
+    this.propositionsSubscription?.unsubscribe();
+  }
+
+  /**
+   * Date Range Initialization
+   * Sets up default date range for filtering (last 30 days)
+   */
+  private initializeDateRange(): void {
     const today = new Date();
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(today.getDate() - 30);
-
     this.startDate.setValue(thirtyDaysAgo);
     this.endDate.setValue(today);
   }
 
-  availableRooms = [
-    'Room A101',
-    'Room B202',
-    'Room C303',
-    'Room D404',
-    'Room E505',
-  ];
-  ngOnInit() {
-    // You can load propositions from a service here if needed
-    this.propositions.forEach(prop => {
-      this.notificationService.addNotification(`New make-up session proposal: ${prop.name} on ${prop.date}`, 'info', prop.enseignantId, 0);
-    });
+  /**
+   * Filter Subscriptions Setup
+   * Establishes reactive filtering based on user input
+   */
+  private setupFilterSubscriptions(): void {
+    // Apply filters whenever any filter control changes
+    this.searchControl.valueChanges.subscribe(() => this.applyFilters());
+    this.filterStatus.valueChanges.subscribe(() => this.applyFilters());
+    this.startDate.valueChanges.subscribe(() => this.applyFilters());
+    this.endDate.valueChanges.subscribe(() => this.applyFilters());
   }
 
+  /**
+   * Data Loading
+   * Fetches and maintains proposition data
+   */
+  private loadPropositions(): void {
+    this.propositionsSubscription = this.propositionsService.propositions$
+      .subscribe(propositions => {
+        this.propositions = propositions;
+        this.applyFilters();
+      });
+  }
+
+  /**
+   * Confirmation Dialog
+   * Handles user confirmation for status changes
+   */
   openConfirmationDialog(action: string, prop: PropositionDeRattrapage): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '300px',
-      data: {action, proposition: prop}
+      width: '400px',
+      data: {
+        action,
+        proposition: prop,
+        title: `${action === 'confirm' ? 'Confirmer' : 'Refuser'} la séance de rattrapage`,
+        message: `Êtes-vous sûr de vouloir ${action === 'confirm' ? 'confirmer' : 'refuser'}
+                 la séance de rattrapage pour ${prop.name}?`
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -116,164 +201,136 @@ export class PropositionRattrapageComponent implements OnInit {
     });
   }
 
-  confirmRattrapage(prop: PropositionDeRattrapage) {
+  /**
+   * Status Management Methods
+   * Handle proposition status changes and notifications
+   */
+  confirmRattrapage(prop: PropositionDeRattrapage): void {
     if (prop && prop.status === 'En attente') {
-      prop.status = 'Confirmé';
-      const dateObj = new Date(prop.date);
-      const day = dateObj.toLocaleDateString('fr-FR', {weekday: 'long'}).toUpperCase();
-      const time = '10:15-11:45';
-
-      const seance: Seance = {
-        name: prop.name,
-        id: Math.floor(Math.random() * 1000),
-        room: '',
-        type: prop.type,
-        professor: `Enseignant ${prop.enseignantId}`,
-        groupe: prop.niveau,
-        biWeekly: false
-      };
-prop.status = 'Confirmé'
-      this.rattrapageService.addRattrapageSeance(day, time, seance);
-    }
-    this.notificationService.addNotification(`Make-up session confirmed: ${prop.name} on ${prop.date}`, 'success', prop.enseignantId, 0);
-
-  }
-  changeRoom(proposition: any) {
-    proposition.salle = null;
-    // Add your room change logic here
-  }
-  rejectRattrapage(id: number) {
-    this.propositions = this.propositions.map(prop =>
-      prop.id === id ? {...prop, status: 'Refusé'} : prop
-    );
-    const refusedProp = this.propositions.find(prop => prop.id === id);
-    if (refusedProp) {
-      refusedProp.status = 'Refusé'
-      this.notificationService.addNotification(`Make-up session rejected: ${refusedProp.name} on ${refusedProp.date}`, 'error', refusedProp.enseignantId, 0);
-    }
-  }
-
-  reinitialiser(id: number) {
-    this.propositions = this.propositions.map(prop =>
-      prop.id === id ? {...prop, status: 'En attente'} : prop
-    );
-  }
-
-  assignRoom(event: Event, propId: number) {
-    const target = event.target as HTMLInputElement;
-    const newSalle = target.value;
-
-    // Get the stored mapping for this proposition
-    const scheduleInfo = this.rattrapageScheduleMap.get(propId);
-
-    if (!scheduleInfo) {
-      this.notificationService.addNotification('Cannot update salle: session mapping not found', 'error', 0, 0);
-      return;
-    }
-
-    const { day, time, seanceId } = scheduleInfo;
-
-    // Update the salle
-    const success = this.rattrapageService.updateSeanceSalle(
-      day,
-      time,
-      seanceId,
-      newSalle
-    );
-
-    if (success) {
-      // Update the proposition's salle in the local array
-      this.propositions = this.propositions.map(prop =>
-        prop.id === propId ? { ...prop, salle: newSalle } : prop
+      this.propositionsService.confirmRattrapage(prop);
+      this.notificationService.addNotification(
+        `Votre demande de rattrapage pour ${prop.name} a été confirmée`,
+        'success',
+        prop.enseignantId,
+        this.ADMIN_ID
       );
-
-      this.notificationService.addNotification(`Salle updated to ${newSalle}`, 'success', 0, 0);
-
-    } else {
-      this.notificationService.addNotification('Failed to update salle', 'error', 0, 0);
     }
   }
-  toggleDarkMode() {
+
+  rejectRattrapage(id: number): void {
+    const prop = this.propositions.find(p => p.id === id);
+    if (prop) {
+      this.propositionsService.rejectRattrapage(id);
+      this.notificationService.addNotification(
+        `Votre demande de rattrapage pour ${prop.name} a été refusée`,
+        'error',
+        prop.enseignantId,
+        this.ADMIN_ID
+      );
+    }
+  }
+
+  reinitialiser(id: number): void {
+    const prop = this.propositions.find(p => p.id === id);
+    if (prop) {
+      this.propositionsService.reinitialiser(id);
+      this.notificationService.addNotification(
+        `Votre demande de rattrapage pour ${prop.name} a été remise en attente`,
+        'info',
+        prop.enseignantId,
+        this.ADMIN_ID
+      );
+    }
+  }
+
+  /**
+   * Room Assignment
+   * Handles room assignment and related notifications
+   */
+  assignRoom(event: Event, prop: PropositionDeRattrapage): void {
+    const target = event.target as HTMLSelectElement;
+    const newRoom = target.value;
+
+    this.propositionsService.assignRoom(prop.id, newRoom);
+    this.notificationService.addNotification(
+      `La salle ${newRoom} a été assignée à votre rattrapage de ${prop.name}`,
+      'info',
+      prop.enseignantId,
+      this.ADMIN_ID
+    );
+  }
+
+  /**
+   * Filter Application
+   * Applies all active filters to the propositions list
+   */
+  applyFilters(): void {
+    let filtered = [...this.propositions];
+
+    // Apply text search filter
+    const searchTerm = this.searchControl.value?.toLowerCase();
+    if (searchTerm) {
+      filtered = filtered.filter(prop =>
+        prop.name.toLowerCase().includes(searchTerm) ||
+        prop.reason.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Apply status filter
+    const status = this.filterStatus.value;
+    if (status && status !== 'all') {
+      filtered = filtered.filter(prop => prop.status === status);
+    }
+
+    // Apply date range filter
+    const start = this.startDate.value;
+    const end = this.endDate.value;
+    if (start && end) {
+      filtered = filtered.filter(prop => {
+        const propDate = new Date(prop.date);
+        return propDate >= start && propDate <= end;
+      });
+    }
+
+    this.filteredPropositions = filtered;
+  }
+
+  /**
+   * Filter Reset
+   * Resets all filters to their default values
+   */
+  resetFilters(): void {
+    this.searchControl.setValue('');
+    this.filterStatus.setValue('all');
+    this.initializeDateRange();
+  }
+
+  /**
+   * Theme Management
+   * Handles dark/light theme toggling
+   */
+  toggleDarkMode(): void {
     this.isDarkMode = !this.isDarkMode;
     document.documentElement.classList.toggle('dark');
   }
-// Add this method to filter by date range
-  applyDateFilter() {
-    const start = this.startDate.value ? new Date(this.startDate.value) : null;
-    const end = this.endDate.value ? new Date(this.endDate.value) : null;
-    const status = this.filterStatus.value;
 
-    this.propositions = this.propositions.filter(prop => {
-      const propDate = new Date(prop.date);
-      const matchesDate = (!start || propDate >= start) && (!end || propDate <= end);
-      const matchesStatus = status === 'all' || prop.status === status;
-      return matchesDate && matchesStatus;
-    });
-  }
-  // Get propositions for a specific date range
-  getPropositionsInDateRange(startDate: Date, endDate: Date): PropositionDeRattrapage[] {
-    return this.propositions.filter(prop => {
-      const propDate = new Date(prop.date);
-      return propDate >= startDate && propDate <= endDate;
-    });
+  /**
+   * Status Display Helpers
+   * Provide visual styling and icons for status display
+   */
+  getStatusClasses(status: string): string {
+    const statusIcon = this.statusIcons[status];
+    return statusIcon ? `${statusIcon.color} ${statusIcon.bgColor}` : 'text-gray-700 bg-gray-100';
   }
 
-  // updateStatus(id: number, newStatus: string): void {
-  //   this.propositions = this.propositions.map(prop =>
-  //     prop.id === id ? { ...prop, status: newStatus } : prop
-  //   );
-  //
-  //   // Get the updated proposition
-  //   const updatedProp = this.propositions.find(prop => prop.id === id);
-  //
-  //   if (updatedProp) {
-  //     // Determine notification type based on status
-  //     const notificationType = newStatus === 'Confirmé' ? 'success' :
-  //       newStatus === 'Refusé' ? 'error' : 'info';
-  //
-  //     // Create appropriate notification message
-  //     const message = `Proposition ${updatedProp.name} ${
-  //       newStatus === 'Confirmé' ? 'acceptée' :
-  //         newStatus === 'Refusé' ? 'refusée' :
-  //           'remise en attente'
-  //     }`;
-  //
-  //     // Send notification
-  //     this.notificationService.addNotification(
-  //       message,
-  //       notificationType,
-  //       updatedProp.enseignantId,
-  //       0
-  //     );
-  //   }
-  // }
-  // Update reset filters method
-
-
-
-  private loadPropositions() {
-
-  }
-
-//design
-
-  getStatusColor(status: string): string {
-    switch (status.toLowerCase()) {
-      case 'En attente': return 'bg-orange-100 text-orange-700';
-      case 'Confirmé': return 'bg-green-100 text-green-700';
-      case 'Refuseé': return 'bg-red-100 text-red-700';
-      default: return 'bg-gray-100 text-gray-700';
-    }
-  }
   getStatusIcon(status: string): string {
-    switch (status.toLowerCase()) {
-      case 'En attente': return 'clock';
-      case 'Confirmé': return 'check-circle';
-      case 'Refusé': return 'x-circle';
-      default: return 'help-circle';
-    }
+    return this.statusIcons[status]?.icon || 'help-circle';
   }
 
+  /**
+   * Status Count Methods
+   * Calculate counts for different proposition statuses
+   */
   getPendingCount(): number {
     return this.propositions.filter(p => p.status === 'En attente').length;
   }
@@ -286,84 +343,39 @@ prop.status = 'Confirmé'
     return this.propositions.filter(p => p.status === 'Refusé').length;
   }
 
-  applyFilters() {
-
+  /**
+   * System State Getters
+   * Provide access to system state information
+   */
+  getCurrentDateTime(): string {
+    return this.currentDateTime;
   }
 
-  onStatusChange() {
-
+  getCurrentUser(): string {
+    return this.currentUser;
   }
 
-  onDateChange() {
+  /**
+   * Change Room Assignment
+   * Resets the room assignment for a proposition and notifies the user
+   * @param proposition The proposition whose room assignment should be changed
+   */
+  changeRoom(proposition: PropositionDeRattrapage): void {
+    // Store the old room for notification
+    const oldRoom = proposition.salle;
 
-  }
+    // Reset the room in the local proposition
+    proposition.salle = undefined;
 
-  resetFilters() {
+    // Update through service
+    this.propositionsService.assignRoom(proposition.id, '');
 
-  }
-
-  // Status icon mapping
-  private statusIcons: { [key: string]: StatusIcon } = {
-    'En attente': {
-      icon: 'clock',
-      color: 'text-orange-700',
-      bgColor: 'bg-orange-100'
-    },
-    'Confirmé': {
-      icon: 'check-circle',
-      color: 'text-green-700',
-      bgColor: 'bg-green-100'
-    },
-    'Refusé': {
-      icon: 'x-circle',
-      color: 'text-red-700',
-      bgColor: 'bg-red-100'
-    }
-  };
-
-
-  getStatusClasses(status: string): string {
-    const statusIcon = this.statusIcons[status];
-    return statusIcon ? `${statusIcon.color} ${statusIcon.bgColor}` : 'text-gray-700 bg-gray-100';
-  }
-
-  // Updated updateStatus function
-  updateStatus(id: number, currentStatus: string): void {
-    // Cycle through statuses: En attente -> Confirmé -> Refusé -> En attente
-    const statusOrder = ['En attente', 'Confirmé', 'Refusé'];
-    const currentIndex = statusOrder.indexOf(currentStatus);
-    const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
-
-    this.propositions = this.propositions.map(prop =>
-      prop.id === id ? { ...prop, status: nextStatus } : prop
+    // Send notification about room change
+    this.notificationService.addNotification(
+      `La salle ${oldRoom} a été libérée pour le rattrapage de ${proposition.name}`,
+      'info',
+      proposition.enseignantId,
+      this.ADMIN_ID
     );
-
-    const updatedProp = this.propositions.find(prop => prop.id === id);
-    if (updatedProp) {
-      // Get icon for notification
-      const statusIcon = this.getStatusIcon(nextStatus);
-
-      // Create notification message with icon
-      const message = `${updatedProp.name} - Status updated to ${nextStatus}`;
-
-      // Determine notification type
-      const notificationType = nextStatus === 'Confirmé' ? 'success' :
-        nextStatus === 'Refusé' ? 'error' : 'info';
-
-      this.notificationService.addNotification(
-        message,
-        notificationType,
-        updatedProp.enseignantId,
-        0
-      );
-    }
   }
-
-  // Helper function to get the next status
-  getNextStatus(currentStatus: string): string {
-    const statusOrder = ['En attente', 'Confirmé', 'Refusé'];
-    const currentIndex = statusOrder.indexOf(currentStatus);
-    return statusOrder[(currentIndex + 1) % statusOrder.length];
-  }
-
 }

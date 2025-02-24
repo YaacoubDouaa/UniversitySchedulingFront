@@ -1,20 +1,25 @@
 import { Injectable } from '@angular/core';
-import {PropositionDeRattrapage} from './models/Notifications';
-import {Seance} from './models/Seance';
-import {RattrapageService} from './rattrapage.service';
-import {NotificationService} from './notifications.service';
-import {BehaviorSubject, map, Observable} from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
+import { PropositionDeRattrapage } from './models/Notifications';
+import { Seance } from './models/Seance';
+import { RattrapageService } from './rattrapage.service';
+import { NotificationService } from './notifications.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PropositionsDeRattrapageService {
-  private propositionsSubject = new BehaviorSubject<any[]>([]);
-  private propositionsByIdSubject = new BehaviorSubject<any[]>([]);
+  /**
+   * System state
+   */
+  private readonly currentDateTime = '2025-02-24 19:54:21';
+  private readonly currentUser = 'YaacoubDouaa';
+  private readonly currentUserId = '3';
 
-  propositions$ = this.propositionsSubject.asObservable();
-
-  propositions: PropositionDeRattrapage[] = [
+  /**
+   * Initial propositions data
+   */
+  private readonly initialPropositions: PropositionDeRattrapage[] = [
     {
       id: 1,
       date: '2025-03-10',
@@ -23,7 +28,7 @@ export class PropositionsDeRattrapageService {
       enseignantId: 101,
       type: 'COURS',
       name: 'Mathématiques',
-      niveau: 'ING_1'
+      niveau: 'ING1_INFO'
     },
     {
       id: 2,
@@ -31,113 +36,220 @@ export class PropositionsDeRattrapageService {
       reason: 'Voyage académique',
       status: 'En attente',
       enseignantId: 102,
-      type: 'COURS',
+      type: 'TD',
       name: 'Physique',
-      niveau: 'ING_1'
-    },
+      niveau: 'ING2_INFO'
+    }
   ];
 
-propositionsById$ = this.propositionsSubject.asObservable();
-  constructor(private rattrapageService: RattrapageService, private notificationService: NotificationService) {
-    // Initialize with empty array
-    this.propositionsSubject.next(this.propositions);
-  }
-  addProposition(proposition: any) {
+  /**
+   * State management
+   */
+  private propositionsSubject = new BehaviorSubject<PropositionDeRattrapage[]>(this.initialPropositions);
+  propositions$ = this.propositionsSubject.asObservable();
+
+  /**
+   * Schedule mapping
+   */
+  private rattrapageScheduleMap = new Map<number, {
+    day: string;
+    time: string;
+    seanceId: number;
+  }>();
+
+  constructor(
+    private rattrapageService: RattrapageService,
+    private notificationService: NotificationService
+  ) {}
+
+  /**
+   * Add new proposition
+   */
+  addProposition(proposition: PropositionDeRattrapage): void {
     const current = this.propositionsSubject.value;
-    this.propositionsSubject.next([proposition, ...current]);
+    const newProposition = {
+      ...proposition,
+      id: Math.max(...current.map(p => p.id), 0) + 1,
+      status: 'En attente'
+    };
+    this.propositionsSubject.next([newProposition, ...current]);
   }
 
-  updateProposition(id: number, updates: any) {
+  /**
+   * Update proposition
+   */
+  updateProposition(id: number, updates: Partial<PropositionDeRattrapage>): void {
     const current = this.propositionsSubject.value;
-    const updated = current.map(prop =>
-      prop.id === id ? { ...prop, ...updates } : prop
+    this.propositionsSubject.next(
+      current.map(prop => prop.id === id ? { ...prop, ...updates } : prop)
     );
-    this.propositionsSubject.next(updated);
   }
-  confirmRattrapage(prop: PropositionDeRattrapage) {
-    if (prop && prop.status === 'En attente') {
-      prop.status = 'Confirmé';
-      const dateObj = new Date(prop.date);
-      const day = dateObj.toLocaleDateString('fr-FR', {weekday: 'long'}).toUpperCase();
-      const time = '10:15-11:45';
 
-      const seance: Seance = {
-        name: prop.name,
-        id: Math.floor(Math.random() * 1000),
-        room: '',
-        type: prop.type,
-        professor: `Enseignant ${prop.enseignantId}`,
-        groupe: prop.niveau,
-        biWeekly: false
-      };
-      prop.status = 'Confirmé'
-      this.rattrapageService.addRattrapageSeance(day, time, seance);
+  /**
+   * Confirm makeup session
+   */
+  confirmRattrapage(proposition: PropositionDeRattrapage): void {
+    if (!proposition || proposition.status !== 'En attente') {
+      this.notificationService.addNotification(
+        'Invalid proposition or status',
+        'error',
+        proposition?.enseignantId || 0,
+        0
+      );
+      return;
     }
-    this.notificationService.addNotification(`Make-up session confirmed: ${prop.name} on ${prop.date}`, 'success', prop.enseignantId, 0);
 
+    const seance: Seance = {
+      id: this.generateSeanceId(),
+      name: proposition.name,
+      room: proposition.salle || '',
+      type: proposition.type,
+      professor: `Enseignant ${proposition.enseignantId}`,
+      groupe: proposition.niveau,
+      biWeekly: false
+    };
+
+    const dateObj = new Date(proposition.date);
+    const day = this.getDayName(dateObj);
+    const time = this.getDefaultTimeSlot(dateObj);
+
+    this.rattrapageService.addRattrapageSeance(day, time, seance).subscribe({
+      next: () => {
+        this.updateProposition(proposition.id, { status: 'Confirmé' });
+
+        this.rattrapageScheduleMap.set(proposition.id, {
+          day,
+          time,
+          seanceId: seance.id
+        });
+
+        this.notificationService.addNotification(
+          `Make-up session confirmed: ${proposition.name} on ${proposition.date}`,
+          'success',
+          proposition.enseignantId,
+          0
+        );
+      },
+      error: (error) => {
+        this.notificationService.addNotification(
+          `Failed to create makeup session: ${error.message}`,
+          'error',
+          proposition.enseignantId,
+          0
+        );
+      }
+    });
   }
-  changeRoom(proposition: any) {
-    proposition.salle = null;
-    // Add your room change logic here
-  }
-  rejectRattrapage(id: number) {
-    this.propositions = this.propositions.map(prop =>
-      prop.id === id ? {...prop, status: 'Refusé'} : prop
-    );
-    const refusedProp = this.propositions.find(prop => prop.id === id);
-    if (refusedProp) {
-      refusedProp.status = 'Refusé'
-      this.notificationService.addNotification(`Make-up session rejected: ${refusedProp.name} on ${refusedProp.date}`, 'error', refusedProp.enseignantId, 0);
+
+  /**
+   * Reject makeup session
+   */
+  rejectRattrapage(id: number): void {
+    const proposition = this.propositionsSubject.value.find(p => p.id === id);
+    if (proposition) {
+      this.updateProposition(id, { status: 'Refusé' });
+
+      this.notificationService.addNotification(
+        `Make-up session rejected: ${proposition.name} on ${proposition.date}`,
+        'error',
+        proposition.enseignantId,
+        0
+      );
     }
   }
 
-  reinitialiser(id: number) {
-    this.propositions = this.propositions.map(prop =>
-      prop.id === id ? {...prop, status: 'En attente'} : prop
-    );
+  /**
+   * Reset proposition status
+   */
+  reinitialiser(id: number): void {
+    this.updateProposition(id, { status: 'En attente' });
   }
-  private rattrapageScheduleMap = new Map<number, { day: string, time: string, seanceId: number }>();
 
-  assignRoom(event: Event, propId: number) {
-    const target = event.target as HTMLInputElement;
-    const newSalle = target.value;
-
-    // Get the stored mapping for this proposition
-    const scheduleInfo = this.rattrapageScheduleMap.get(propId);
-
+  /**
+   * Assign room to session
+   */
+  assignRoom(propositionId: number, newRoom: string): void {
+    const scheduleInfo = this.rattrapageScheduleMap.get(propositionId);
     if (!scheduleInfo) {
-      this.notificationService.addNotification('Cannot update salle: session mapping not found', 'error', 0, 0);
+      this.notificationService.addNotification(
+        'Cannot update room: session mapping not found',
+        'error',
+        0,
+        0
+      );
       return;
     }
 
     const { day, time, seanceId } = scheduleInfo;
 
-    // Update the salle
-    const success = this.rattrapageService.updateSeanceSalle(
-      day,
-      time,
-      seanceId,
-      newSalle
-    );
-
-    if (success) {
-      // Update the proposition's salle in the local array
-      this.propositions = this.propositions.map(prop =>
-        prop.id === propId ? { ...prop, salle: newSalle } : prop
-      );
-
-      this.notificationService.addNotification(`Salle updated to ${newSalle}`, 'success', 0, 0);
-
-    } else {
-      this.notificationService.addNotification('Failed to update salle', 'error', 0, 0);
-    }
+    this.rattrapageService.updateSeanceSalle(day, time, seanceId, newRoom).subscribe({
+      next: () => {
+        this.updateProposition(propositionId, { salle: newRoom });
+        this.notificationService.addNotification(
+          `Room updated to ${newRoom}`,
+          'success',
+          0,
+          0
+        );
+      },
+      error: (error) => {
+        this.notificationService.addNotification(
+          `Failed to update room: ${error.message}`,
+          'error',
+          0,
+          0
+        );
+      }
+    });
   }
 
-
-  getPropositionById(id:string): Observable<PropositionDeRattrapage | undefined> {
+  /**
+   * Get proposition by ID
+   */
+  getPropositionById(id: string): Observable<PropositionDeRattrapage | undefined> {
     return this.propositions$.pipe(
-      map(propositions => propositions.find(prop => prop.prof.codeEnseignet === id))
+      map(propositions => propositions.find(p => p.enseignantId.toString() === id))
     );
   }
 
+  /**
+   * Generate unique seance ID
+   */
+  private generateSeanceId(): number {
+    return Math.floor(Math.random() * 10000) + 1;
+  }
+
+  /**
+   * Get day name in French
+   */
+  private getDayName(date: Date): string {
+    const days = ['DIMANCHE', 'LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+    return days[date.getDay()];
+  }
+
+  /**
+   * Get default time slot based on date
+   */
+  private getDefaultTimeSlot(date: Date): string {
+    const hour = date.getHours();
+    if (hour < 10) return '08:30-10:00';
+    if (hour < 12) return '10:15-11:45';
+    if (hour < 14) return '13:00-14:30';
+    if (hour < 16) return '14:45-16:15';
+    return '16:30-18:00';
+  }
+
+  /**
+   * Get current date and time
+   */
+  getCurrentDateTime(): string {
+    return this.currentDateTime;
+  }
+
+  /**
+   * Get current user
+   */
+  getCurrentUser(): string {
+    return this.currentUser;
+  }
 }

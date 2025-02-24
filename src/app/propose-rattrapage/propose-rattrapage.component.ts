@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { Subscription } from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {PropositionsDeRattrapageService} from '../propositions-de-rattrapage.service';
 import {NotificationService} from '../notifications.service';
 import {formatDate} from 'date-fns';
@@ -19,6 +19,7 @@ export class ProposeRattrapageComponent implements OnInit, OnDestroy {
   activeTab: TabType = 'new';
   showConfirmDialog = false;
   propositions: any[] = [];
+  propositionsById: any[] = [];
   private subscription = new Subscription();
 
   readonly courseTypes = ['COURS', 'TD', 'TP'];
@@ -44,6 +45,13 @@ export class ProposeRattrapageComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.propositionsService.propositions$.subscribe(props => {
         this.propositions = props;
+      })
+    );
+
+    // Subscribe to propositionsById changes
+    this.subscription.add(
+      this.propositionsService.propositionsById$.subscribe(props => {
+        this.propositionsById = props;
       })
     );
   }

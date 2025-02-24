@@ -1,4 +1,5 @@
 import {Seance} from './Seance';
+import {Schedule} from './Schedule';
 
 // export interface Salle {
 //   name: string;
@@ -28,5 +29,5 @@ export interface Salle {
   name: string;
   type: string;
   capacite: number;
-  schedule: SalleSchedule;
+  schedule: Schedule;
 }

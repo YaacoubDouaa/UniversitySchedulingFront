@@ -1,12 +1,10 @@
-import {Component, Injector} from '@angular/core';
+import { Component, Injector, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
-import {RattrapageSchedule, Schedule} from '../models/Schedule';
+import { RattrapageSchedule, Schedule } from '../models/Schedule';
 import { ScheduleService } from '../schedule-service.service';
 import { SalleList, SalleSchedule } from '../models/Salle';
 import { Seance } from '../models/Seance';
-import {RattrapageService} from '../rattrapage.service';
-import {RoomService} from '../rooms.service';
+import { RoomService } from '../rooms.service';
 
 @Component({
   selector: 'app-rooms',
@@ -14,128 +12,235 @@ import {RoomService} from '../rooms.service';
   templateUrl: './rooms.component.html',
   styleUrls: ['./rooms.component.css']
 })
-export class RoomsComponent {
-  days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'];
-  times = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
-  types = ['COURS', 'TD'];
+export class RoomsComponent implements OnInit {
+  // Constants for scheduling
+  readonly days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+  readonly times = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
+  readonly types = ['COURS', 'TD', 'TP', 'SEMINAIRE'];
+
+  // Component state
   selectedDay: string = '';
   selectedTime: string = '';
   selectedType: string = '';
+  selectedNiveau: string = '';
+  private selectedFrequency: 'weekly' | 'biweekly' = 'weekly';
   showModal: boolean = false;
-  private selectedFrequency: string = "weekly";
-  salleSchedule: SalleSchedule = {
-    LUNDI: {},
-    MARDI: {},
-    MERCREDI: {},
-    JEUDI: {},
-    VENDREDI: {},
-    SAMEDI: {},
-    DIMANCHE: {}
-  };
+  protected showAddModal: boolean = false;
+
+  // Data structures
+  salles: SalleList = {};
+  salleSchedule: Schedule = this.initializeEmptySchedule();
+
+  // Currently selected activity for modal operations
   selectedActivity: {
     seance: Seance;
     day: string;
     time: string;
+    niveau?: string;
   } | null = null;
 
-  protected showAddModal: boolean = false;
-salles:SalleList={}
+  constructor(
+    private router: Router,
+    private salleScheduleService: ScheduleService,
+    private injector: Injector,
+    private roomService: RoomService
+  ) {}
 
-
-  constructor(private router: Router, private salleScheduleService: ScheduleService, private injector:Injector,private roomService:RoomService) { }
+  /**
+   * Initialize component and fetch room data
+   */
   ngOnInit(): void {
-// Lazy injection of the service
+    this.initializeRoomService();
+    this.loadRoomData();
+  }
+
+  /**
+   * Initialize empty schedule structure
+   */
+  private initializeEmptySchedule(): Schedule {
+    return this.days.reduce((acc, day) => ({
+      ...acc,
+      [day]: {}
+    }), {});
+  }
+
+  /**
+   * Initialize room service using injector
+   */
+  private initializeRoomService(): void {
     this.roomService = this.injector.get(RoomService);
-    // Subscribe to get the latest schedule data
-    this.roomService.getSalles().subscribe((sallesList:SalleList) => {
-      this.salles = sallesList;
-      console.log(this.salles); // Just to confirm it's working
+  }
+
+  /**
+   * Load room data from service
+   */
+  private loadRoomData(): void {
+    this.roomService.getSalles().subscribe({
+      next: (sallesList: SalleList) => {
+        this.salles = sallesList;
+        console.log('Rooms loaded:', this.salles);
+      },
+      error: (error) => {
+        console.error('Error loading rooms:', error);
+      }
     });
   }
-  isSalleAvailable(salle: string, day: string, time: string): boolean {
-    const disponibilite = this.salles[salle].schedule;
-    return !(disponibilite[day] && disponibilite[day][time]);
+
+  /**
+   * Check if a room is available at a specific time
+   */
+  isSalleAvailable(salle: string, day: string, time: string, niveau: string): boolean {
+    const salleData = this.salles[salle];
+    if (!salleData?.schedule) return true;
+
+    return !(salleData.schedule[day]?.[niveau]?.[time]?.length > 0);
   }
 
-  onSelectSalle(salleSchedule: SalleSchedule) {
+  /**
+   * Handle room selection
+   */
+  onSelectSalle(salleSchedule: Schedule): void {
     this.salleScheduleService.changeSchedule(salleSchedule);
     this.salleSchedule = salleSchedule;
     this.router.navigate(['/room-schedule']);
   }
 
-  getSalleColor(salle: string, day: string, time: string, type: string): string {
-    return this.isSalleAvailable(salle, day, time) ? '#d4edda' : '#f8d7da';
+  /**
+   * Get color coding for room availability
+   */
+  getSalleColor(salle: string, day: string, time: string, niveau: string): string {
+    return this.isSalleAvailable(salle, day, time, niveau)
+      ? '#d4edda'  // Available - Green
+      : '#f8d7da'; // Occupied - Red
   }
 
+  /**
+   * Filter rooms by type
+   */
   shouldDisplaySalle(salle: any): boolean {
-    if (!this.selectedType || this.selectedType === '') {
-      return true;
-    }
+    if (!this.selectedType) return true;
     return salle.type === this.selectedType;
   }
 
-  openAddModal(day: string, time: string): void {
+  /**
+   * Open modal for adding new session
+   */
+  openAddModal(day: string, time: string, niveau: string): void {
     this.selectedActivity = {
-      seance: { name: '', id: 0, room: '', type: 'COURS', professor: '', groupe: '', biWeekly: this.selectedFrequency === 'biweekly' },
-      day,
-      time
-    };
-    this.showModal = true;
-  }
-
-  saveAddChanges(): void {
-    if (this.selectedActivity) {
-      const { day, time, seance } = this.selectedActivity;
-      this.roomService.addSeance(day, time, seance);
-      this.showModal = false;
-    }
-  }
-
-  openEditModal(seance: Seance | null, day: string, time: string) {
-    this.selectedActivity = {
-      seance: seance ? { ...seance } : { name: '',id:0, room: '', type: 'COURS', professor: '', groupe: '',biWeekly: this.selectedFrequency==='biweekly' },
+      seance: {
+        id: Math.random(),
+        name: '',
+        room: '',
+        type: 'COURS',
+        professor: '',
+        groupe: niveau,
+        biWeekly: this.selectedFrequency === 'biweekly'
+      },
       day,
       time,
-
+      niveau
     };
     this.showModal = true;
   }
 
-
-  saveEditChanges(): void {
+  /**
+   * Save new session
+   */
+  saveAddChanges(): void {
     if (this.selectedActivity) {
-      const { day, time, seance } = this.selectedActivity;
-      this.roomService.editSeance(day, time, seance);
-      this.showModal = false;
+      const { day, time, seance, niveau } = this.selectedActivity;
+      if (niveau) {
+        this.roomService.addSeance(day, time, niveau, seance);
+        this.showModal = false;
+        this.selectedActivity = null;
+      }
     }
   }
 
-  openDeleteModal(seance: Seance, day: string, time: string): void {
-    this.selectedActivity = { seance, day, time };
+  /**
+   * Open modal for editing session
+   */
+  openEditModal(seance: Seance, day: string, time: string, niveau: string): void {
+    this.selectedActivity = {
+      seance: { ...seance },
+      day,
+      time,
+      niveau
+    };
     this.showModal = true;
   }
 
-  saveDeleteChanges(): void {
+  /**
+   * Save edited session
+   */
+  saveEditChanges(): void {
     if (this.selectedActivity) {
-      const { day, time, seance } = this.selectedActivity;
-      this.roomService.deleteSeance(day, time, seance);
-      this.showModal = false;
+      const { day, time, seance, niveau } = this.selectedActivity;
+      if (niveau) {
+        this.roomService.editSeance(day, time, niveau, seance, 0);
+        this.showModal = false;
+        this.selectedActivity = null;
+      }
     }
   }
 
+  /**
+   * Open modal for deleting session
+   */
+  openDeleteModal(seance: Seance, day: string, time: string, niveau: string): void {
+    this.selectedActivity = { seance, day, time, niveau };
+    this.showModal = true;
+  }
+
+  /**
+   * Confirm session deletion
+   */
+  saveDeleteChanges(): void {
+    if (this.selectedActivity) {
+      const { day, time, seance, niveau } = this.selectedActivity;
+      if (niveau) {
+        this.roomService.deleteSeance(day, time, niveau, seance);
+        this.showModal = false;
+        this.selectedActivity = null;
+      }
+    }
+  }
+
+  /**
+   * Close modal dialog
+   */
   closeModal(event?: Event): void {
     if (event) {
       event.stopPropagation();
     }
+    this.showModal = false;
     this.selectedActivity = null;
   }
 
-  openViewModal(salle: string, day: string, time: string) {
-    if (this.salles[salle]?.schedule[day]?.[time]) {
-      console.log('Opening view modal:', this.salles[salle].schedule[day][time]);
+  /**
+   * Open modal for viewing session details
+   */
+  openViewModal(salle: string, day: string, time: string, niveau: string): void {
+    const sessions = this.salles[salle]?.schedule[day]?.[niveau]?.[time];
+    if (sessions?.length) {
+      console.log('Sessions for selected time slot:', sessions);
     } else {
-      console.log('No session found for the selected time slot.');
+      console.log('No sessions found for the selected time slot.');
     }
+  }
+
+  /**
+   * Get sessions for a specific time slot
+   */
+  getSessions(salle: string, day: string, time: string, niveau: string): Seance[] {
+    return this.salles[salle]?.schedule[day]?.[niveau]?.[time] || [];
+  }
+
+  /**
+   * Validate session data
+   */
+  private validateSession(seance: Seance): boolean {
+    return !!(seance.name && seance.room && seance.professor && seance.groupe);
   }
 
   protected readonly Object = Object;

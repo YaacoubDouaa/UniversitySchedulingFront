@@ -1,13 +1,10 @@
 import {Personne} from './Users';
 import {Seance} from './Seance';
+import {Schedule} from './Schedule';
 export interface ProfList{
   [name: string]: Prof;
 }
-export interface ProfSchedule{
-  [day: string]: {
-    [time: string]:{[niveau:string] : Seance;}
-  };
-}
+
 
 
 export interface EnseignantDTO {
@@ -29,7 +26,7 @@ export interface Prof {
   name: string;
   codeEnseignant: string;
   heures: number;
-  schedule: ProfSchedule;
+  schedule: Schedule;
   totalScheduledHours?: number;
   currentWeekSessions?: Seance[];
   upcomingSessions?: Array<Seance & { day: string; time: string }>;
