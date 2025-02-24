@@ -18,7 +18,6 @@ interface NavItem {
     FeatherModule,
     NgIf,
     NgForOf,
-    NgOptimizedImage
   ],
   templateUrl: './side-bar.component.html'
 })
@@ -36,6 +35,7 @@ export class SidebarComponent {
     { icon: 'message-circle', label: 'Messages', route: '/messages' }, // Added messaging
 
   ];
+  currentUser='Douaa';
 
   toggleSidebar(): void {
     this.isOpen = !this.isOpen;

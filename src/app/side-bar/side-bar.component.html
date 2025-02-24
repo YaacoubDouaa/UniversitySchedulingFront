@@ -32,14 +32,30 @@
     </nav>
 
     <!-- Bottom section -->
-    <div class="p-4 border-t border-gray-700" *ngIf="isOpen">
-      <div class="flex items-center">
-        <img ngSrc="assets/avatar.jpg" alt="" class="h-8 w-8 rounded-full">
-        <div class="ml-3">
-          <p class="text-sm font-medium text-white">John Doe</p>
-          <p class="text-xs text-gray-400">Administrateur</p>
+
+    <!-- Bottom section -->
+    <div class="border-t border-gray-700">
+
+
+      <!-- User Profile -->
+      <div class="p-4" *ngIf="isOpen">
+        <div class="flex items-center">
+          <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+            <span class="text-white font-bold text-sm">{{currentUser[0]}}</span>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-white">{{currentUser}}</p>
+            <p class="text-xs text-gray-400">Professor</p>
+          </div>
         </div>
       </div>
+
+      <!-- Logout Button -->
+      <button
+              [class.justify-center]="!isOpen"
+              class="w-full flex items-center px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-gray-700 transition-colors">
+        <i-feather name="log-out" class="h-5 w-5"></i-feather>
+        <span *ngIf="isOpen" class="ml-3">Logout</span>
+      </button>
     </div>
-  </div>
-</aside>
+  </div></aside>

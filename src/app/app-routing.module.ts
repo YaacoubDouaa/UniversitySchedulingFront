@@ -36,7 +36,7 @@ const routes: Routes = [ { path: '', component: DashboardComponent },
   {
     path: 'professor',
     component: ProfessorSpaceComponent},
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: '', redirectTo: 'profdashboard', pathMatch: 'full' },
       { path: 'profdashboard', component: ProfessorDashboardComponent },
       { path: 'profschedule', component: ProfessorViewScheduleComponent },
       { path: 'propose-rattrapage', component: ProposeRattrapageComponent }

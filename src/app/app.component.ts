@@ -57,7 +57,7 @@ import {animate, style, transition, trigger} from '@angular/animations';
       this.isSidebarOpen = !this.isSidebarOpen;
     }
 
-    navigateToMessages(event?: Event): void {
+     navigateToMessages(event?: Event): void {
       if (event) {
         event.preventDefault();
       }
