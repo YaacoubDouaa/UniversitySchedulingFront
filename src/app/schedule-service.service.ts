@@ -28,6 +28,7 @@ export class ScheduleService {
    * Current user's login information
    */
   private currentUser = 'YaacoubDouaa';
+  currentDisponibilite: any;
 
   /**
    * Validates if a new session can be added to a specific time slot
@@ -203,4 +204,73 @@ export class ScheduleService {
       }
     }
   }
+
+  /**
+   * Update an existing session
+   * @param day Day of the week
+   * @param time Time slot
+   * @param group Student group
+   * @param updatedSeance Updated session details
+   */
+  updateSession(day: string, time: string, group: string, updatedSeance: Seance): Observable<boolean> {
+    try {
+      const schedule = this.scheduleSubject.getValue();
+
+      if (!schedule[day]?.[group]?.[time]) {
+        return throwError(() => new Error('Session not found'));
+      }
+
+      const sessions = schedule[day][group][time];
+      const index = sessions.findIndex(s => s.id === updatedSeance.id);
+
+      if (index === -1) {
+        return throwError(() => new Error('Session not found'));
+      }
+
+      // Update session
+      sessions[index] = updatedSeance;
+      this.scheduleSubject.next({ ...schedule });
+
+      return of(true);
+    } catch (error) {
+      return throwError(() => new Error('Failed to update session'));
+    }
+  }
+
+  /**
+   * Delete a session from the schedule
+   * @param day Day of the week
+   * @param time Time slot
+   * @param group Student group
+   * @param seanceId Session ID to delete
+   */
+  deleteSession(day: string, time: string, group: string, seanceId: number): Observable<boolean> {
+    try {
+      const schedule = this.scheduleSubject.getValue();
+
+      if (!schedule[day]?.[group]?.[time]) {
+        return throwError(() => new Error('Session not found'));
+      }
+
+      const sessions = schedule[day][group][time];
+      const index = sessions.findIndex(s => s.id === seanceId);
+
+      if (index === -1) {
+        return throwError(() => new Error('Session not found'));
+      }
+
+      // Remove session
+      sessions.splice(index, 1);
+
+      // Clean up empty structures
+      this.cleanupSchedule(schedule, day, group, time);
+
+      this.scheduleSubject.next({ ...schedule });
+
+      return of(true);
+    } catch (error) {
+      return throwError(() => new Error('Failed to delete session'));
+    }
+  }
+
 }

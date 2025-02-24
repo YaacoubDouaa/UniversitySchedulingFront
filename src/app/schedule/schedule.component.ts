@@ -1,17 +1,24 @@
-import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
-import {FormControl} from '@angular/forms';
-import {map, Observable, startWith} from 'rxjs';
-import {Seance} from '../models/Seance';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormControl } from '@angular/forms';
+import { Observable, Subscription, startWith, map } from 'rxjs';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { Seance } from '../models/Seance';
 import {RattrapageSchedule, Schedule} from '../models/Schedule';
 import {RattrapageService} from '../rattrapage.service';
-import { Injector } from '@angular/core';
-import {animate, style, transition, trigger} from '@angular/animations';
+import {ScheduleService} from '../schedule-service.service';
+
+
+/**
+ * Schedule Management Component
+ * Handles the display and management of both regular and makeup sessions
+ * Integrates with ScheduleService and RattrapageService for data management
+ */
 @Component({
   selector: 'app-schedule',
-  standalone: false,
   templateUrl: './schedule.component.html',
   styleUrls: ['./schedule.component.css'],
+  standalone:false,
   animations: [
     trigger('fadeOut', [
       transition(':enter', [
@@ -23,296 +30,186 @@ import {animate, style, transition, trigger} from '@angular/animations';
       ])
     ])
   ]
-
 })
-export class ScheduleComponent implements OnInit {
+export class ScheduleComponent implements OnInit, OnDestroy {
+  /**
+   * System State Configuration
+   * Stores current system time and user information
+   */
+  private readonly currentDateTime = '2025-02-24 20:42:07';
+  private readonly currentUser = 'YaacoubDouaa';
 
+  /**
+   * Schedule Configuration
+   * Basic setup for schedule display
+   */
   days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
-  showModal = true;
   timeSlots = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
+  groupOptions = ['ING1_INFO', 'ING1_INFO_TD1', 'ING1_INFO_TD2', 'ING1_INFO_TD1 || ING1_INFO_TD2'];
 
+  /**
+   * UI State Management
+   * Controls visibility and state of UI components
+   */
+  showModal = true;
+  showAdd = false;
+  showDeleteModal = false;
+  showTD = true;
+  showTP = true;
+  selectedGroup = '';
+  displayedGroup: string[] = [];
+  fullText = 'Schedule Manager';
+  displayText = '';
+
+  /**
+   * Schedule State Management
+   * Maintains the current state of regular and makeup schedules
+   */
+  private scheduleSubscription?: Subscription;
+  private rattrapageSubscription?: Subscription;
+  private schedule: Schedule = {};
+  private rattrapageSchedule: RattrapageSchedule = {};
+  private idCounter = 20;
+
+  /**
+   * Activity Management
+   * Handles currently selected or targeted activities
+   */
   selectedActivity: {
     seance: Seance;
     day: string;
     time: string;
   } | null = null;
-  showTD = true;
-  showTP = true;
-  showAdd:boolean=false;
-  showDeleteModal=false
+
   seanceToDelete: {
     id: number;
     day: string;
     group: string;
     time: string;
   } | null = null;
-  schedule: Schedule = {
-    LUNDI: {
-      ING1_INFO: {
-        '8:30-10:00': [{
-          name: 'Ch-Ingénierie et interprétabilité des systèmes informatiques',
-          id: 1,
-          groupe: 'ING1_INFO',
-          room: 'A-8',
-          type: 'COURS',
-          professor: 'Sara MTIW',
-          biWeekly: false
-        }]
-      },
-      ING1_INFO_TD1: {
-        '10:15-11:45': [{
-          name: 'TD-Algèbre certification 2',
-          id: 2,
-          groupe: 'ING1_INFO_TD1',
-          room: 'A-32',
-          type: 'TD',
-          professor: 'Soumaya BEN AICHA',
-          biWeekly: false
-        }],
-        '13:00-14:30': [{
-          name: 'TD-HDIG-Ingénierie et interprétabilité des systèmes informatiques',
-          id: 3,
-          groupe: 'ING1_INFO_TD1',
-          room: 'A-32',
-          type: 'TD',
-          professor: 'Sara MTIW',
-          biWeekly: false
-        }],
-        '14:45-16:15': [{
-          name: 'TD-HDIG-Preuve de programmes',
-          id: 4,
-          groupe: 'ING1_INFO_TD1',
-          room: 'A-32',
-          type: 'TD',
-          professor: 'Lassâad HAMEL',
-          biWeekly: false
-        }]
-      }
-    },
-    MARDI: {
-      ING1_INFO: {
-        '8:30-10:00': [{
-          name: 'Ch-Optimisation combinatoire',
-          id: 5,
-          groupe: 'ING1_INFO',
-          room: 'C-61',
-          type: 'COURS',
-          professor: 'Abir BEN DHIHA',
-          biWeekly: false
-        }]
-      },
-      ING1_INFO_TD1: {
-        '14:45-16:15': [{
-          name: 'TD-Français - certification 2',
-          id: 6,
-          groupe: 'ING1_INFO_TD1',
-          room: 'C-13',
-          type: 'TD',
-          professor: 'Hadda SMIDA',
-          biWeekly: false
-        }]
-      }
-    },
-    MERCREDI: {
-      ING1_INFO: {
-        '14:45-16:15': [{
-          name: 'Ch-Conception et analyse dalgorithmes',
-          id: 7,
-          groupe: 'ING1_INFO',
-          room: 'A-8',
-          type: 'COURS',
-          professor: 'Abir GHNIMI',
-          biWeekly: false
-        }]
-      },
-      ING1_INFO_TD1: {
-        '8:30-10:00': [{
-          name: 'TD-Optimisation combinatoire',
-          id: 8,
-          groupe: 'ING1_INFO_TD1',
-          room: 'A-13',
-          type: 'TD',
-          professor: 'Abir BEN DHIHA',
-          biWeekly: false
-        }],
-        '10:15-11:45': [{
-          name: 'TD-Conception et analyse dalgorithmes',
-          id: 9,
-          groupe: 'ING1_INFO_TD1',
-          room: 'A-34',
-          type: 'TD',
-          professor: 'Mariem GUIS',
-          biWeekly: false
-        }]
-      }
-    },
-    JEUDI: {
-      ING1_INFO: {
-        '13:00-14:30': [{
-          name: 'Ch-Intelligence Artificielle',
-          id: 10,
-          groupe: 'ING1_INFO',
-          room: 'A-8',
-          type: 'COURS',
-          professor: 'Abir GHNIMI',
-          biWeekly: false
-        }],
-        '14:45-16:15': [{
-          name: 'Ch-Types de données et preuve de programmes',
-          id: 11,
-          groupe: 'ING1_INFO',
-          room: 'A-8',
-          type: 'COURS',
-          professor: 'Ali KANOUN',
-          biWeekly: false
-        }],
-        '16:30-18:00': [{
-          name: 'CB-Preuve de programmes',
-          id: 12,
-          groupe: 'ING1_INFO',
-          room: 'A-32',
-          type: 'COURS',
-          professor: 'Ali KANOUN'
-        }]
-      },
-      ING1_INFO_TD1: {
-        '10:15-11:45': [{
-          name: 'TP-Techniques dapprentissage automatique',
-          id: 13,
-          groupe: 'ING1_INFO_TD1',
-          room: 'A-13',
-          type: 'TP',
-          professor: 'Mariem GARA',
-          biWeekly: false
-        }]
-      }
-    },
-    VENDREDI: {
-      'ING1_INFO_TD1 || ING1_INFO_TD2': {
-        '10:15-11:45': [{
-          name: 'TD-Techniques de communication',
-          id: 14,
-          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
-          room: 'C-15',
-          type: 'TD',
-          professor: 'Abir BERIDA',
-          biWeekly: true
-        }, {
-          name: 'TD-Techniques de communication',
-          id: 15,
-          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
-          room: 'C-15',
-          type: 'TD',
-          professor: 'Abir BERIDA',
-          biWeekly: true
-        }],
-        '14:45-16:15': [{
-          name: 'TP-3H00-3.15-Fondements de lintelligence Artificielle',
-          id: 16,
-          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
-          room: 'A-32',
-          type: 'TP',
-          professor: 'Manel MEJ',
-          biWeekly: true
-        }],
-        '16:30-18:00': [{
-          name: 'TP-3H00-3.15-frama-C et la preuve de programmes',
-          id: 17,
-          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
-          room: 'A-32',
-          type: 'TP',
-          professor: 'Sara MEJ',
-          biWeekly: true
-        }]
-      }
-    },
-    SAMEDI: {
-      ING1_INFO: {
-        '8:30-10:00': [{
-          name: 'Ch-Processus stochastique',
-          id: 18,
-          groupe: 'ING1_INFO',
-          room: 'C-61',
-          type: 'COURS',
-          professor: 'Sara MTIW'
-        }]
-      },
-      ING1_INFO_TD1: {
-        '14:45-16:15': [{
-          name: 'TD-3H00-3.15-Processus stochastique',
-          id: 19,
-          groupe: 'ING1_INFO_TD1 || ING1_INFO_TD2',
-          room: 'A-32',
-          type: 'TD',
-          professor: 'Sara MEJ'
-        }],
-        '8:30-10:00': [{
-          name: 'Ch-Processus stochastique',
-          id: 20,
-          groupe: 'ING1_INFO',
-          room: 'C-61',
-          type: 'TP',
-          professor: 'Sara MTIW'
-        }]
-      }
-    }
-  };
-  idCounter: number = 20;
 
-
-
-  // FormControl for autocomplete
+  /**
+   * Form Controls
+   * Manages form inputs for session creation/editing
+   */
   nameControl = new FormControl('');
   roomControl = new FormControl('');
   typeControl = new FormControl('');
   professorControl = new FormControl('');
-  frequencyControl= new FormControl('');
+  frequencyControl = new FormControl('');
+  selectedFrequency = '';
 
-  filteredNames: Observable<string[]>;
-  filteredRooms: Observable<string[]>;
-  filteredTypes: Observable<string[]>;
-  filteredFrequency: Observable<string[]>;
-  filteredProf: Observable<string[]>;
-
-  // Dummy options for autocomplete
+  /**
+   * Autocomplete Options
+   * Predefined options for form inputs
+   */
   nameOptions: string[] = ['Math Class', 'History Class', 'Physics Class', 'Chemistry Class'];
   roomOptions: string[] = ['A-101', 'A-102', 'A-201', 'B-101'];
   typeOptions: string[] = ['COURS', 'TD', 'TP'];
   frequencyOptions: string[] = ['biweekly', 'weekly'];
   profOptions: string[] = ['prof1', 'prof2', 'prof3'];
-  selectedFrequency:string='';
-  // Initialize rattrapageSchedule as an empty object instead of null
-  rattrapageSchedule: RattrapageSchedule = {};
-  private fullText='Schedule Manager';
-  protected displayText='';
 
+  /**
+   * Filtered Observables
+   * Handles autocomplete filtering for form inputs
+   */
+  filteredNames: Observable<string[]> = this.createFilteredObservable(this.nameOptions);
+  filteredRooms: Observable<string[]> = this.createFilteredObservable(this.roomOptions);
+  filteredTypes: Observable<string[]> = this.createFilteredObservable(this.typeOptions);
+  filteredFrequency: Observable<string[]> = this.createFilteredObservable(this.frequencyOptions);
+  filteredProf: Observable<string[]> = this.createFilteredObservable(this.profOptions);
+  /**
+   * Creates a filtered observable for autocomplete
+   * @param options Array of options to filter from
+   * @returns Observable of filtered strings
+   */
+  private createFilteredObservable(options: string[]): Observable<string[]> {
+    return new Observable<string[]>(subscriber => {
+      subscriber.next(options);
+      subscriber.complete();
+    });
+  }
 
-  constructor(private router: Router,private rattrapageService: RattrapageService, private injector:Injector) {
+  /**
+   * Component Constructor
+   * Initializes services and sets up initial state
+   */
+  constructor(
+    private router: Router,
+    private scheduleService: ScheduleService,
+    private rattrapageService: RattrapageService
+  ) {
+    this.initializeFilteredObservables();
+  }
 
-    // Setup filtering for the autocomplete inputs
+  /**
+   * Initialize filtered observables for autocomplete inputs
+   */
+  private initializeFilteredObservables(): void {
     this.filteredNames = this.nameControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filter(value, this.nameOptions))
     );
+
     this.filteredRooms = this.roomControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filter(value, this.roomOptions))
     );
+
     this.filteredTypes = this.typeControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filter(value, this.typeOptions))
     );
-    this.filteredFrequency = this.typeControl.valueChanges.pipe(
+
+    this.filteredFrequency = this.frequencyControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filter(value, this.frequencyOptions))
     );
-    this.filteredProf = this.typeControl.valueChanges.pipe(
+
+    this.filteredProf = this.professorControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filter(value, this.profOptions))
     );
-
   }
-  private animateText() {
+
+
+  /**
+   * Lifecycle Hooks
+   * Handle component initialization and cleanup
+   */
+  ngOnInit(): void {
+    this.initializeSubscriptions();
+    this.animateText();
+  }
+
+  ngOnDestroy(): void {
+    this.scheduleSubscription?.unsubscribe();
+    this.rattrapageSubscription?.unsubscribe();
+  }
+
+  /**
+   * Initialize Service Subscriptions
+   * Sets up data streams from services
+   */
+  private initializeSubscriptions(): void {
+    this.scheduleSubscription = this.scheduleService.currentSchedule
+      .subscribe(schedule => {
+        this.schedule = schedule;
+      });
+
+    this.rattrapageSubscription = this.rattrapageService.getRattrapageSchedule()
+      .subscribe(schedule => {
+        this.rattrapageSchedule = schedule;
+      });
+  }
+
+// ... [Previous code remains the same]
+
+  /**
+   * Title Animation
+   * Animates the display of the component title
+   */
+  private animateText(): void {
     let currentIndex = 0;
     const interval = setInterval(() => {
       if (currentIndex < this.fullText.length) {
@@ -324,181 +221,125 @@ export class ScheduleComponent implements OnInit {
     }, 100);
   }
 
-  ngOnInit(): void {
-// Lazy injection of the service
-    this.rattrapageService = this.injector.get(RattrapageService);
-    // Subscribe to get the latest schedule data
-    this.rattrapageService.getRattrapageSchedule().subscribe((schedule: RattrapageSchedule) => {
-      this.rattrapageSchedule = schedule;
-      console.log(this.rattrapageSchedule); // Just to confirm it's working
-    });
-    this.animateText();
-  }
-
-  private _filter(value: string | null, options: string[]): string[] {
-    const filterValue = value ? value.toLowerCase() : ''; // Handle null or undefined values
-    return options.filter(option => option.toLowerCase().includes(filterValue));
-  }
-
-  openAddModal(day: string, time: string) {
-    this.selectedActivity = null;
+  /**
+   * Modal Management Methods
+   * Handle the opening, closing, and state management of modals
+   */
+  openAddModal(day: string, time: string): void {
     this.selectedActivity = {
-      seance: { name: '', id:0 , room: '', type: 'COURS', professor: '', groupe: '', biWeekly: true},
+      seance: {
+        name: '',
+        id: this.idCounter + 1,
+        room: '',
+        type: 'COURS',
+        professor: '',
+        groupe: this.selectedGroup,
+        biWeekly: false
+      },
       day,
       time
     };
     this.showModal = false;
+    this.showAdd = true;
   }
 
-  saveAddChanges() {
-    if (this.selectedActivity) {
-      const { day, time, seance } = this.selectedActivity;
-      let group = Object.keys(this.schedule[day]).find(grp => this.schedule[day][grp][time]);
-
-      seance.biWeekly = this.selectedFrequency === 'biweekly';
-      seance.id=this.idCounter++;
-      if (!group) {
-        group = this.selectedGroup;
-
-        if (!this.schedule[day][group]) {
-          this.schedule[day][group] = {};
-        }
-
-        if (!this.schedule[day][group][time]) {
-          this.schedule[day][group][time] = [];
-        }
-      }
-
-      const timeSlotSeances = this.schedule[day][group][time];
-
-      // Count the number of biweekly and weekly seances in the current time slot
-      const biWeeklyCount = timeSlotSeances.filter((s: any) => s.biWeekly).length;
-      const weeklyCount = timeSlotSeances.filter((s: any) => !s.biWeekly).length;
-      if (biWeeklyCount==2)
-      {  alert("Cannot add seance: This time slot already contains the maximum allowed seances.");}
-      // Check if the seance already exists
-      const existingSeance = timeSlotSeances.find((s: any) => s.id === seance.id);
-
-      // Validation Rules
-      if (existingSeance) {
-        // Update existing seance if needed
-        Object.assign(existingSeance, seance);
-      } else if (
-        (biWeeklyCount === 1 && seance.biWeekly) ||
-        (biWeeklyCount === 0 && weeklyCount === 0)
-      ) {
-        // Add if only one biweekly exists and new is biweekly, or if it's an empty slot
-        timeSlotSeances.push(seance);
-      } else {
-        // Show warning if adding is not allowed
-        alert("Cannot add seance: This time slot already contains the maximum allowed seances.");
-      }
-    }
-    this.closeModal();
-  }
-
-  openEditModal(seance: Seance | null, day: string, time: string) {
+  openEditModal(seance: Seance, day: string, time: string): void {
     this.selectedActivity = {
-      seance: seance ? { ...seance } : { name: '',id:0, room: '', type: 'COURS', professor: '', groupe: '',biWeekly: this.selectedFrequency==='biweekly' },
+      seance: { ...seance },
       day,
-      time,
-
+      time
     };
+    this.selectedFrequency = seance.biWeekly ? 'biweekly' : 'weekly';
     this.showModal = true;
   }
 
   closeModal(event?: Event): void {
     if (event) {
-      event.stopPropagation(); // Prevent closing when clicking inside the modal
+      event.stopPropagation();
     }
     this.selectedActivity = null;
+    this.showModal = false;
+    this.showAdd = false;
   }
 
-  saveChanges() {
-    if (this.selectedActivity) {
-      const { day, time, seance } = this.selectedActivity;
-      seance.biWeekly = this.selectedFrequency==='biweekly';
-      const group = Object.keys(this.schedule[day]).find(grp => this.schedule[day][grp][time]);
-      if (group) {
-        const seanceIndex = this.schedule[day][group][time].findIndex(s => s.id === seance.id);
-        if (seanceIndex !== -1) {
-          // Update the existing seance with the new one
-          this.schedule[day][group][time][seanceIndex] = seance;
-        } else {
-          // If the seance does not exist, add it to the list
-          this.schedule[day][group][time].push(seance);
+  /**
+   * Schedule Management Methods
+   * Handle CRUD operations for schedule entries
+   */
+  saveAddChanges(): void {
+    if (!this.selectedActivity || !this.selectedGroup) return;
+
+    const { day, time, seance } = this.selectedActivity;
+    seance.biWeekly = this.selectedFrequency === 'biweekly';
+    seance.id = ++this.idCounter;
+    seance.groupe = this.selectedGroup;
+
+    this.scheduleService.addSession(day, time, this.selectedGroup, seance)
+      .subscribe({
+        next: () => {
+          this.closeModal();
+        },
+        error: (error) => {
+          alert(`Failed to add session: ${error.message}`);
         }
-      }
-    }
-    this.closeModal();
+      });
   }
-  openDeleteModal(id: number, day: string, group: string, time: string) {
+
+  saveEditChanges(): void {
+    if (!this.selectedActivity) return;
+
+    const { day, time, seance } = this.selectedActivity;
+    seance.biWeekly = this.selectedFrequency === 'biweekly';
+
+    this.scheduleService.updateSession(day, time, seance.groupe, seance)
+      .subscribe({
+        next: () => {
+          this.closeModal();
+        },
+
+      });
+  }
+
+  /**
+   * Delete Management Methods
+   * Handle deletion of schedule entries
+   */
+  openDeleteModal(id: number, day: string, group: string, time: string): void {
     this.showDeleteModal = true;
     this.seanceToDelete = { id, day, group, time };
-
   }
 
-  confirmDelete() {
-    if (this.seanceToDelete) {
-      const { id, day, group, time } = this.seanceToDelete;
-      this.deleteSeance(id, day, group, time);
-    }
-    this.closeDeleteModal();
+  confirmDelete(): void {
+    if (!this.seanceToDelete) return;
+
+    const { id, day, group, time } = this.seanceToDelete;
+
+    this.scheduleService.deleteSession(day, time, group, id)
+      .subscribe({
+        next: () => {
+          this.closeDeleteModal();
+        },
+
+      });
   }
 
-  closeDeleteModal() {
+  closeDeleteModal(): void {
     this.showDeleteModal = false;
     this.seanceToDelete = null;
   }
 
-  deleteSeance(seanceId: number, day: string, group: string, time: string) {
-    const seances = this.schedule[day][group][time];
-    const seanceIndex = seances.findIndex(s => s.id === seanceId);
-
-    if (seanceIndex !== -1) {
-      seances.splice(seanceIndex, 1);
-    }
-
-  }
-
-
-  navigateToView() {
-    this.router.navigate(['/view']);
-  }
-
-
-  selectedGroup: string = '';
-  displayedGroup: string[] = [];
-  getDisplayedGroup(): string[] {
-    this.displayedGroup = [];
-    if (this.selectedGroup === 'ING1_INFO_TD1 || ING1_INFO_TD2') {
-      this.displayedGroup.push('ING1_INFO_TD1 || ING1_INFO_TD2');
-    } else if (this.selectedGroup === 'ING1_INFO_TD1') {
-      this.displayedGroup.push('ING1_INFO_TD1', 'ING1_INFO_TD1 || ING1_INFO_TD2','ING1_INFO');
-    } else if (this.selectedGroup === 'ING1_INFO_TD2') {
-      this.displayedGroup.push('ING1_INFO_TD2', 'ING1_INFO_TD1 || ING1_INFO_TD2','ING1_INFO');
-    }
-    if(this.selectedGroup === 'ING1_INFO') {this.displayedGroup.push('ING1_INFO_TD1', 'ING1_INFO_TD1 || ING1_INFO_TD2','ING1_INFO');}
-    return this.displayedGroup;
-  }
-  onBlur(): void {
-    // Optionally, set a timeout to allow the list to close after a small delay
-    setTimeout(() => {
-      // Logic to close the list (if your autocomplete dropdown is handled by a component)
-      // For instance, in case of mat-autocomplete, you could manually trigger its close action
-    }, 100);
-  }
-
-
-  groupOptions: string[] = ['ING1_INFO','ING1_INFO_TD1', 'ING1_INFO_TD2','ING1_INFO_TD1 || ING1_INFO_TD2'];
-
-
-
+  /**
+   * Schedule Display Methods
+   * Handle the filtering and display of schedule entries
+   */
   getFilteredSchedule(): { [day: string]: { [time: string]: Seance[] | null } } {
     const filteredSchedule: { [day: string]: { [time: string]: Seance[] | null } } = {};
 
+    // Process regular schedule
     this.days.forEach(day => {
       filteredSchedule[day] = {};
+
+      // Filter normal sessions
       Object.keys(this.schedule[day] || {}).forEach(group => {
         if (this.getDisplayedGroup().includes(group)) {
           Object.keys(this.schedule[day]?.[group] || {}).forEach(time => {
@@ -508,14 +349,11 @@ export class ScheduleComponent implements OnInit {
                 filteredSchedule[day][time] = [];
               }
               seances.forEach(seance => {
-                if (
-                  seance && (
-                    (this.showTD && seance.type === 'TD') ||
-                    (this.showTP && seance.type === 'TP') ||
-                    seance.type === 'COURS'
-                  )
-                ) {
-                  filteredSchedule[day][time]!.push(seance);
+                if (this.shouldShowSeance(seance)) {
+                  filteredSchedule[day][time]!.push({
+                    ...seance,
+                    isRattrapage: false
+                  });
                 }
               });
             }
@@ -523,79 +361,122 @@ export class ScheduleComponent implements OnInit {
         }
       });
 
-      // Add rattrapage seances with more robust checks
-      if (this.rattrapageSchedule?.[day]) {
-        Object.keys(this.rattrapageSchedule[day]).forEach(time => {
+      // Process rattrapage sessions
+      if (this.rattrapageSchedule[day]) {
+        Object.entries(this.rattrapageSchedule[day]).forEach(([time, seances]) => {
           if (!filteredSchedule[day][time]) {
             filteredSchedule[day][time] = [];
           }
 
-          // Only add rattrapage seances if they're valid
-          const rattrapageSeances = this.rattrapageSchedule[day]?.[time];
-          if (Array.isArray(rattrapageSeances) && rattrapageSeances.length > 0) {
-            rattrapageSeances.forEach(seance => {
+          seances.forEach(seance => {
+            if (this.shouldShowSeance(seance)) {
               filteredSchedule[day][time]!.push({
                 ...seance,
-                 //isRattrapage: true
+                isRattrapage: true,
+                name: `[Rattrapage] ${seance.name}`
               });
-            });
-          }
+            }
+          });
         });
       }
     });
 
     return filteredSchedule;
   }
-  getTypeClass(type: string): string {
-    switch (type.toLowerCase()) {
-      case 'cours':
-        return 'session-type-cours';
-      case 'td':
-        return 'session-type-td';
-      case 'tp':
-        return 'session-type-tp';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  }
-  get sessionName(): string {
-    return this.selectedActivity?.seance?.name || '';
-  }
-  get sessionId(): number | undefined {
-    return this.selectedActivity?.seance?.id;
-  }
-  getSelectedActivityName(): string {
-    return this.selectedActivity && this.selectedActivity.seance ? this.selectedActivity.seance.name : '';
+
+  /**
+   * Helper Methods
+   * Utility functions for schedule management
+   */
+  private shouldShowSeance(seance: Seance): boolean {
+    return (
+      (this.showTD && seance.type === 'TD') ||
+      (this.showTP && seance.type === 'TP') ||
+      seance.type === 'COURS'
+    );
   }
 
-  setSelectedActivityName(name: string): void {
-    if (this.selectedActivity && this.selectedActivity.seance) {
-      this.selectedActivity.seance.name = name;
+  private _filter(value: string | null, options: string[]): string[] {
+    const filterValue = value ? value.toLowerCase() : '';
+    return options.filter(option =>
+      option.toLowerCase().includes(filterValue)
+    );
+  }
+
+  /**
+   * Group Management Methods
+   * Handle group filtering and display
+   */
+  getDisplayedGroup(): string[] {
+    const groups: string[] = [];
+
+    switch (this.selectedGroup) {
+      case 'ING1_INFO_TD1 || ING1_INFO_TD2':
+        groups.push('ING1_INFO_TD1 || ING1_INFO_TD2');
+        break;
+      case 'ING1_INFO_TD1':
+        groups.push('ING1_INFO_TD1', 'ING1_INFO_TD1 || ING1_INFO_TD2', 'ING1_INFO');
+        break;
+      case 'ING1_INFO_TD2':
+        groups.push('ING1_INFO_TD2', 'ING1_INFO_TD1 || ING1_INFO_TD2', 'ING1_INFO');
+        break;
+      case 'ING1_INFO':
+        groups.push('ING1_INFO_TD1', 'ING1_INFO_TD1 || ING1_INFO_TD2', 'ING1_INFO');
+        break;
+    }
+
+    return groups;
+  }
+
+  /**
+   * Styling Methods
+   * Handle visual presentation of schedule elements
+   */
+  getTypeClass(type: string): string {
+    switch (type.toLowerCase()) {
+      case 'cours': return 'session-type-cours';
+      case 'td': return 'session-type-td';
+      case 'tp': return 'session-type-tp';
+      default: return 'bg-gray-100 text-gray-800';
     }
   }
-  getActivityColor(biWeekly: boolean|undefined): string {
-    return biWeekly
-      ? 'rgba(219, 234, 254, 0.8)' // Light blue for bi-weekly
-      : 'rgba(243, 244, 246, 0.8)'; // Light gray for regular
+
+  getActivityColor(biWeekly: boolean | undefined): string {
+    return biWeekly ? '#B0B8C7' : 'transparent';
   }
 
   getCourseIcon(type: string): string {
     switch (type) {
-      case 'COURS':
-        return 'book';
-      case 'TD':
-        return 'edit-3';
-      case 'TP':
-        return 'monitor';
-      default:
-        return 'circle';
+      case 'COURS': return 'book';
+      case 'TD': return 'edit-3';
+      case 'TP': return 'monitor';
+      default: return 'circle';
     }
   }
-  saveEditChanges() {
 
+  /**
+   * Navigation Methods
+   */
+  navigateToView(): void {
+    this.router.navigate(['/view']);
+  }
+
+  /**
+   * Getters and System State Methods
+   */
+  get sessionName(): string {
+    return this.selectedActivity?.seance?.name || '';
+  }
+
+  get sessionId(): number | undefined {
+    return this.selectedActivity?.seance?.id;
+  }
+
+  getCurrentDateTime(): string {
+    return this.currentDateTime; // Returns: 2025-02-24 20:44:58
+  }
+
+  getCurrentUser(): string {
+    return this.currentUser; // Returns: YaacoubDouaa
   }
 }
-
-
-
-
