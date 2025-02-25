@@ -281,9 +281,7 @@ export class ScheduleService {
     return this.currentDisponibilite;
   }
 
-  changeSchedule(salleSchedule: Schedule) {
 
-  }
 
   /**
    * Gets a snapshot of the current schedule
@@ -327,6 +325,27 @@ export class ScheduleService {
     }
   }
 
+  /**
+   * Changes the current schedule and updates all subscribers
+   * @param salleSchedule The new schedule to set
+   */
+  changeSchedule(salleSchedule: Schedule): void {
+    try {
+      // Update the schedule subject with the new schedule
+      this.scheduleSubject.next({ ...salleSchedule });
 
+      // Update current disponibilite
+      this.currentDisponibilite = of(salleSchedule);
 
+      // Log success
+      console.log('Schedule updated successfully:', {
+        timestamp: this.getCurrentDateTime(),
+        user: this.getCurrentUser()
+      });
+    } catch (error) {
+      // Log error
+      console.error('Error changing schedule:', error);
+      throw new Error('Failed to change schedule');
+    }
+  }
 }
