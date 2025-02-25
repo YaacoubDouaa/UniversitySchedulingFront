@@ -7,6 +7,7 @@ import { Seance } from '../models/Seance';
 import {RattrapageSchedule, Schedule} from '../models/Schedule';
 import {RattrapageService} from '../rattrapage.service';
 import {ScheduleService} from '../schedule-service.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 
 /**
@@ -60,8 +61,8 @@ export class ScheduleComponent implements OnInit, OnDestroy {
    * UI State Management
    * Controls visibility and state of UI components
    */
-  showModal = true;
-  showAdd = false;
+  showModal = false;
+
   showDeleteModal = false;
   showTD = true;
   showTP = true;
@@ -210,6 +211,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     private scheduleService: ScheduleService,
     private rattrapageService: RattrapageService,
     private cdRef: ChangeDetectorRef,
+    private snackBar: MatSnackBar, // Add this
   ) {
     this.initializeFilteredObservables();
   }
@@ -348,43 +350,143 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Schedule Management Methods
-   * Handle CRUD operations for schedule entries
+   * Save new session with validation and warning messages
    */
   saveAddChanges(): void {
+    // Validation checks with specific error messages
+    if (!this.selectedActivity || !this.selectedGroup) {
+      // Show warning message for missing group
+      if (!this.selectedGroup) {
+        this.showWarningMessage('Please select a group before adding a session.');
+        return;
+      }
 
-    if (!this.selectedActivity || !this.selectedGroup) return;
+      // Show warning message for missing activity details
+      if (!this.selectedActivity) {
+        this.showWarningMessage('Please fill in session details before saving.');
+        return;
+      }
+      return;
+    }
 
+    // Validate required fields
     const { day, time, seance } = this.selectedActivity;
+    if (!seance.name || !seance.professor || !seance.type) {
+      this.showWarningMessage('Please fill in all required fields (Name, Professor, Type).');
+      return;
+    }
+
+    // Proceed with save if validation passes
     seance.biWeekly = this.selectedFrequency === 'biweekly';
     seance.id = ++this.idCounter;
     seance.groupe = this.selectedGroup;
 
     this.scheduleService.addSession(day, time, this.selectedGroup, seance)
       .subscribe({
-        next: () => {
-
+        next: (success) => {
+          if (success) {
+            // Show success message
+            this.showSuccessMessage('Session added successfully!');
+            this.refreshData();
+            this.closeModal();
+          }
         },
+        error: (error) => {
+          // Show error message
+          this.showErrorMessage('Failed to add session. Please try again.');
+          console.error('Error adding session:', error);
+        }
       });
-    this.refreshData();
-    this.closeModal();
   }
 
+  /**
+   * Warning message display
+   * Add these methods to your component
+   */
+  private showWarningMessage(message: string): void {
+    // Using MatSnackBar (if you're using Angular Material)
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      panelClass: ['warning-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
+
+  }
+
+  /**
+   * Success message display
+   */
+  private showSuccessMessage(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: ['success-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
+  }
+
+  /**
+   * Error message display
+   */
+  private showErrorMessage(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      panelClass: ['error-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
+  }
+
+  /**
+   * Save edited session with validation and warning messages
+   */
   saveEditChanges(): void {
-    if (!this.selectedActivity) return;
+    // Validate selected activity exists
+    if (!this.selectedActivity) {
+      this.showWarningMessage('No session selected for editing.');
+      return;
+    }
 
     const { day, time, seance } = this.selectedActivity;
+
+    // Validate required fields
+    if (!seance.name || !seance.professor || !seance.type || !seance.groupe) {
+      this.showWarningMessage('Please fill in all required fields (Name, Professor, Type, Group).');
+      return;
+    }
+
+    // Set frequency
     seance.biWeekly = this.selectedFrequency === 'biweekly';
 
+    // Update session
     this.scheduleService.updateSession(day, time, seance.groupe, seance)
       .subscribe({
-        next: () => {
-        },
-      });
-    this.refreshData();
-    this.closeModal();
-  }
+        next: (success) => {
+          if (success) {
+            // Show success message
+            this.showSuccessMessage('Session updated successfully!');
 
+            // Get latest schedule
+            this.scheduleService.getSchedule().subscribe(schedule => {
+              this.schedule = { ...schedule };
+              this.cdRef.detectChanges();
+            });
+
+            this.closeModal();
+          }
+        },
+        error: (error) => {
+          // Show error message
+          this.showErrorMessage('Failed to update session. Please try again.');
+          console.error('Error updating session:', error);
+        },
+        complete: () => {
+          // Force refresh
+          this.cdRef.detectChanges();
+        }
+      });
+  }
   /**
    * Delete Management Methods
    * Handle deletion of schedule entries
@@ -456,7 +558,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
           }
 
           seances.forEach(seance => {
-            if (seance.groupe==this.selectedGroup && this.shouldShowSeance(seance)) {
+            if (this.shouldShowSeance(seance)  &&  seance.groupe==this.selectedGroup) {
               filteredSchedule[day][time]!.push({
                 ...seance,
                 isRattrapage: true,

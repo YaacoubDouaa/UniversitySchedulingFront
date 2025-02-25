@@ -109,7 +109,7 @@
 
     <!-- Proposition Cards -->
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <div *ngFor="let proposition of filteredPropositions"
+      <div *ngFor="let proposition of propositions"
            class="group rounded-lg border bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-200"
            [ngClass]="{'border-l-4': true,
                       'border-l-orange-500': proposition.status === 'En attente',
@@ -232,7 +232,7 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="filteredPropositions.length === 0"
+    <div *ngIf="propositions.length === 0"
          class="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 text-center">
       <div class="rounded-full bg-primary/10 p-4">
         <i-feather name="calendar" class="h-8 w-8 text-primary"></i-feather>

@@ -26,12 +26,12 @@ export class SidebarComponent {
 
   @Input() navItems: NavItem[] = [
     { icon: 'grid', label: 'Tableau de Bord', route: '/', active: true },
-    { icon: 'calendar', label: 'Emploi du Temps', route: '/schedule' },
+    { icon: 'calendar', label: 'Emploi des groupes', route: '/schedule' },
+    { icon: 'book', label: 'Emploi Global', route: '/global' },
     { icon: 'alert-triangle', label: 'Conflits', route: '/conflict' },
     { icon: 'refresh-cw', label: 'Rattrapages', route: '/rattrapage' },
-    { icon: 'users', label: 'Professeurs', route: '/profs' },
-    { icon: 'book', label: 'Cours', route: '/global' },
-    { icon: 'map-pin', label: 'Salles', route: '/rooms' },
+    { icon: 'users', label: 'Disponiblité des Professeurs', route: '/profs' },
+    { icon: 'map-pin', label: 'Disponiblité des Salles', route: '/rooms' },
     { icon: 'message-circle', label: 'Messages', route: '/messages' }, // Added messaging
 
   ];
