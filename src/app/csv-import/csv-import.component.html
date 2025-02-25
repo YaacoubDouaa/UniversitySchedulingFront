@@ -1,67 +1,301 @@
-<mat-stepper #stepper>
-  <mat-step [stepControl]="uploadForm">
-    <ng-template matStepLabel>Upload CSV</ng-template>
-    <form [formGroup]="uploadForm">
-      <input type="file" (change)="onFileSelected($event)" accept=".csv" #fileInput style="display: none;">
-      <button mat-raised-button color="primary" (click)="fileInput.click()">Choose File</button>
-      <p *ngIf="file">Selected file: {{ file.name }}</p>
-      <div>
-        <button mat-button matStepperNext (click)="parseFile()" [disabled]="!file">Next</button>
-      </div>
-    </form>
-  </mat-step>
-
-  <mat-step [stepControl]="mappingForm">
-    <ng-template matStepLabel>Preview & Process</ng-template>
-    <div *ngIf="isProcessing">
-      <mat-progress-bar mode="determinate" [value]="processingProgress"></mat-progress-bar>
-      <p>Processing file... {{ processingProgress }}%</p>
-    </div>
-    <div *ngIf="!isProcessing && previewData.data.length > 0">
-      <h3>Preview</h3>
-      <mat-table [dataSource]="previewData">
-        <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
-          <mat-header-cell *matHeaderCellDef>{{ column }}</mat-header-cell>
-          <mat-cell *matCellDef="let element">{{ element[column] }}</mat-cell>
-        </ng-container>
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-      </mat-table>
-
-      <form [formGroup]="mappingForm">
-        <h3>Map Fields</h3>
-        <div *ngFor="let column of displayedColumns">
-          <mat-form-field>
-            <mat-label>{{ column }}</mat-label>
-            <mat-select [formControlName]="column">
-              <mat-option value="">Ignore</mat-option>
-              <mat-option value="day">Day</mat-option>
-              <mat-option value="time">Time</mat-option>
-              <mat-option value="course">Course</mat-option>
-              <mat-option value="professor">Professor</mat-option>
-              <mat-option value="room">Room</mat-option>
-            </mat-select>
-          </mat-form-field>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+  <div class="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+    <!-- Header -->
+    <div class="bg-primary/10 dark:bg-primary/5 p-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex items-center space-x-4">
+        <div class="p-2 bg-primary/20 rounded-lg">
+          <i-feather name="file-text" class="h-6 w-6 text-primary"></i-feather>
         </div>
-      </form>
-
-      <div>
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button matStepperNext (click)="mapFields()">Next</button>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">CSV Import</h1>
       </div>
+      <p class="mt-2 text-gray-600 dark:text-gray-400">Import your schedule data from a CSV file</p>
     </div>
-  </mat-step>
 
-  <mat-step>
-    <ng-template matStepLabel>Save & Generate</ng-template>
-    <p>Your schedule has been processed and is ready to be saved.</p>
-    <div>
-      <button mat-raised-button color="primary" (click)="saveSchedule()">Save Schedule</button>
-      <button mat-raised-button color="accent" (click)="downloadJson()">Download JSON</button>
+    <!-- Stepper -->
+    <div class="p-6">
+      <mat-stepper #stepper linear>
+        <!-- Step 1: Upload File -->
+        <mat-step [stepControl]="uploadForm">
+          <ng-template matStepLabel>Upload CSV</ng-template>
+          <form [formGroup]="uploadForm" class="space-y-6">
+            <!-- File Upload Area -->
+            <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-primary dark:hover:border-primary transition-colors cursor-pointer" (click)="fileInput.click()">
+              <input type="file" (change)="onFileSelected($event)" accept=".csv" #fileInput style="display: none;">
+              <div class="flex flex-col items-center">
+                <i-feather name="upload-cloud" class="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4"></i-feather>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Drop your CSV file here</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">or click to browse files</p>
+              </div>
+            </div>
+
+            <!-- Has Header Row Toggle -->
+            <div class="flex items-center space-x-2">
+              <mat-checkbox formControlName="hasHeader" [checked]="hasHeaderRow" (change)="toggleHeaderRow($event)">
+                <span class="text-gray-700 dark:text-gray-300">File has header row</span>
+              </mat-checkbox>
+              <i-feather name="info" class="h-4 w-4 text-gray-400 cursor-help" matTooltip="Enable if your CSV file has column headers in the first row"></i-feather>
+            </div>
+
+            <!-- File Info Card -->
+            <div *ngIf="fileInfo" class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 space-y-4">
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center space-x-2">
+                <i-feather name="file" class="h-5 w-5 text-primary"></i-feather>
+                <span>File Information</span>
+              </h3>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Name:</span>
+                    <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo.name }}</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Size:</span>
+                    <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo.size }}</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Type:</span>
+                    <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo.type }}</span>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Last Modified:</span>
+                    <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo.lastModified }}</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Est. Rows:</span>
+                    <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo.rowCount }}</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Columns:</span>
+                    <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo.columnCount }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end space-x-3">
+              <button mat-button matStepperNext (click)="parseFile()"
+                      [disabled]="!file || isProcessing"
+                      class="px-6 py-2 flex items-center space-x-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                <span>Parse File</span>
+                <i-feather name="arrow-right" class="h-4 w-4"></i-feather>
+              </button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- Step 2: Preview & Map Fields -->
+        <mat-step [stepControl]="mappingForm">
+          <ng-template matStepLabel>Map Fields</ng-template>
+
+          <!-- Processing Indicator -->
+          <div *ngIf="isProcessing" class="py-8">
+            <div class="mb-4">
+              <mat-progress-bar mode="determinate" [value]="processingProgress" color="primary"></mat-progress-bar>
+            </div>
+            <p class="text-center text-gray-600 dark:text-gray-400">Processing file... {{ processingProgress }}%</p>
+          </div>
+
+          <!-- Validation Errors -->
+          <div *ngIf="validationErrors.length > 0" class="mb-6">
+            <div class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 p-4 rounded-md">
+              <div class="flex items-center space-x-3">
+                <i-feather name="alert-triangle" class="h-5 w-5 text-red-500"></i-feather>
+                <h3 class="text-lg font-medium text-red-800 dark:text-red-200">Validation Issues</h3>
+              </div>
+              <ul class="list-disc ml-8 mt-2">
+                <li *ngFor="let error of validationErrors" class="text-sm text-red-700 dark:text-red-300">
+                  {{ error }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Preview Table -->
+          <div *ngIf="!isProcessing && previewData.data.length > 0" class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+              <i-feather name="eye" class="h-5 w-5 text-primary"></i-feather>
+              <span>Data Preview</span>
+            </h3>
+
+            <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  <th *ngFor="let column of displayedColumns" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {{ column }}
+                  </th>
+                </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tr *ngFor="let row of previewData.data">
+                  <td *ngFor="let column of displayedColumns" class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                    {{ row[column] }}
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="text-right mt-2">
+              <span class="text-xs text-gray-500 dark:text-gray-400">Showing first 5 rows of {{ parsedData.length }}</span>
+            </div>
+          </div>
+
+          <!-- Field Mapping Form -->
+          <div *ngIf="!isProcessing && displayedColumns.length > 0">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+              <i-feather name="map" class="h-5 w-5 text-primary"></i-feather>
+              <span>Map Fields</span>
+            </h3>
+
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Map each column in your CSV file to the corresponding field in the schedule system
+            </p>
+
+            <form [formGroup]="mappingForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <mat-form-field *ngFor="let column of displayedColumns" appearance="outline">
+                <mat-label>{{ column }}</mat-label>
+                <mat-select [formControlName]="column">
+                  <mat-option value="">Ignore</mat-option>
+                  <mat-option value="day">Day</mat-option>
+                  <mat-option value="time">Time</mat-option>
+                  <mat-option value="course">Course</mat-option>
+                  <mat-option value="professor">Professor</mat-option>
+                  <mat-option value="room">Room</mat-option>
+                  <mat-option value="groupe">Group</mat-option>
+                  <mat-option value="type">Type</mat-option>
+                  <mat-option value="biWeekly">Bi-Weekly</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </form>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex justify-between mt-6">
+            <button mat-button matStepperPrevious class="px-6 py-2 flex items-center space-x-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+              <i-feather name="arrow-left" class="h-4 w-4"></i-feather>
+              <span>Back</span>
+            </button>
+
+            <button mat-button matStepperNext (click)="mapFields()"
+                    [disabled]="isProcessing"
+                    class="px-6 py-2 flex items-center space-x-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+              <span>Map Fields</span>
+              <i-feather name="arrow-right" class="h-4 w-4"></i-feather>
+            </button>
+          </div>
+        </mat-step>
+
+        <!-- Step 3: Save & Generate -->
+        <mat-step>
+          <ng-template matStepLabel>Save & Export</ng-template>
+
+          <!-- Success Message -->
+          <div class="mb-8">
+            <div class="bg-green-50 dark:bg-green-900/30 border-l-4 border-green-500 p-4 rounded-md">
+              <div class="flex items-center space-x-3">
+                <i-feather name="check-circle" class="h-5 w-5 text-green-500"></i-feather>
+                <h3 class="text-lg font-medium text-green-800 dark:text-green-200">Data Processed Successfully</h3>
+              </div>
+              <p class="mt-2 text-sm text-green-700 dark:text-green-300">
+                Your schedule data has been processed and is ready to be saved.
+              </p>
+            </div>
+          </div>
+
+          <!-- Import Statistics -->
+          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6 mb-8">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center space-x-2 mb-4">
+              <i-feather name="bar-chart-2" class="h-5 w-5 text-primary"></i-feather>
+              <span>Import Statistics</span>
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Records:</span>
+                <span class="text-sm text-gray-900 dark:text-white">{{ parsedData.length }}</span>
+              </div>
+
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">File Name:</span>
+                <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo?.name || 'N/A' }}</span>
+              </div>
+
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">File Size:</span>
+                <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo?.size || 'N/A' }}</span>
+              </div>
+
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Import Date:</span>
+                <span class="text-sm text-gray-900 dark:text-white">{{ getCurrentDateTime() }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <button mat-raised-button color="primary" (click)="saveSchedule()"
+                    class="py-3 flex items-center justify-center space-x-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all shadow-md">
+              <i-feather name="save" class="h-5 w-5"></i-feather>
+              <span>Save to System</span>
+            </button>
+
+            <button mat-raised-button color="accent" (click)="downloadJson()"
+                    class="py-3 flex items-center justify-center space-x-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-all shadow-md">
+              <i-feather name="download" class="h-5 w-5"></i-feather>
+              <span>Export as JSON</span>
+            </button>
+          </div>
+
+          <!-- Additional Export Options -->
+          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6">
+            <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3 flex items-center space-x-2">
+              <i-feather name="download-cloud" class="h-4 w-4 text-primary"></i-feather>
+              <span>Additional Options</span>
+            </h4>
+
+            <div class="flex flex-wrap gap-3">
+              <button mat-stroked-button (click)="stepper.reset()"
+                      class="px-4 py-2 flex items-center space-x-2 border border-red-300 dark:border-red-600 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-all">
+                <i-feather name="refresh-cw" class="h-4 w-4"></i-feather>
+                <span>Start Over</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="flex justify-between">
+            <button mat-button matStepperPrevious
+                    class="px-6 py-2 flex items-center space-x-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+              <i-feather name="arrow-left" class="h-4 w-4"></i-feather>
+              <span>Back</span>
+            </button>
+
+            <button mat-button (click)="stepper.reset()"
+                    class="px-6 py-2 flex items-center space-x-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+              <i-feather name="x" class="h-4 w-4"></i-feather>
+              <span>Cancel</span>
+            </button>
+          </div>
+        </mat-step>
+      </mat-stepper>
     </div>
-    <div>
-      <button mat-button matStepperPrevious>Back</button>
-      <button mat-button (click)="stepper.reset()">Reset</button>
+  </div>
+
+  <!-- System Info Footer -->
+  <div class="bg-gray-50 dark:bg-gray-800 p-4 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <i-feather name="clock" class="h-3 w-3"></i-feather>
+      <span>{{ getCurrentDateTime() }}</span>
     </div>
-  </mat-step>
-</mat-stepper>
+    <div class="flex items-center space-x-2">
+      <i-feather name="user" class="h-3 w-3"></i-feather>
+      <span>{{ getCurrentUser() }}</span>
+    </div>
+  </div>
+</div>
