@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { Schedule } from './models/Schedule';
 import { Seance } from './models/Seance';
+import {demoSchedule} from './initialData';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class ScheduleService {
    * BehaviorSubject to manage and broadcast schedule state changes
    * Initialized with an empty schedule object
    */
-  private scheduleSubject = new BehaviorSubject<Schedule>({});
+  private scheduleSubject = new BehaviorSubject<Schedule>(demoSchedule);
 
   /**
    * Public Observable for components to subscribe to schedule changes

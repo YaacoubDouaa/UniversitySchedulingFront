@@ -195,13 +195,12 @@
     </div>
 
     <!-- Modal -->
-    <ng-container *ngIf="showAddModal">
+    <ng-container *ngIf="showModal">
       <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
            (click)="closeModal($event)">
         <mat-card class="w-full max-w-lg bg-white dark:bg-gray-800 shadow-xl"
                   (click)="$event.stopPropagation()">
-          <!-- Modal content remains the same, just ensure niveau is passed in the form -->
-          <!-- ... -->
+
         </mat-card>
       </div>
     </ng-container>
