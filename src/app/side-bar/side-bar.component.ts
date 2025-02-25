@@ -33,7 +33,7 @@ export class SidebarComponent {
     { icon: 'users', label: 'Disponiblité des Professeurs', route: '/profs' },
     { icon: 'map-pin', label: 'Disponiblité des Salles', route: '/rooms' },
     { icon: 'message-circle', label: 'Messages', route: '/messages' }, // Added messaging
-
+    { icon: 'file-plus', label: 'Import csv', route: '/import' },
   ];
   @Input() currentUser='Douaa';
 

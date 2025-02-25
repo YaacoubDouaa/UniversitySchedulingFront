@@ -38,7 +38,6 @@ import {ScheduleService} from './schedule-service.service';
 import {RoomScheduleComponent} from './room-schedule/room-schedule.component';
 import { ViewRoomsComponent } from './view-rooms/view-rooms.component';
 import { ProfessorsComponent } from './professors/professors.component';
-import { ProfScheduleComponent } from './prof-schedule/prof-schedule.component';
 import { GlobalScheduleComponent } from './global-schedule/global-schedule.component';
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {MatDivider, MatDividerModule} from '@angular/material/divider';
@@ -98,7 +97,6 @@ import { ProfEditScheduleComponent } from './prof-edit-schedule/prof-edit-schedu
     ScheduleComponent,
     ViewRoomsComponent,
     ProfessorsComponent,
-    ProfScheduleComponent,
     RoomScheduleComponent,
     GlobalScheduleComponent,
     PropositionRattrapageComponent,
