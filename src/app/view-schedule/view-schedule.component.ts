@@ -1,12 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import {map, Observable, startWith, Subscription} from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { RattrapageSchedule, Schedule } from '../models/Schedule';
 import { Seance } from '../models/Seance';
 import { RattrapageService } from '../rattrapage.service';
 import {ScheduleService} from '../schedule-service.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 
 @Component({
@@ -33,69 +34,242 @@ import {ScheduleService} from '../schedule-service.service';
   ]
 })
 export class ViewScheduleComponent implements OnInit, OnDestroy {
-  // System Configuration
-  private readonly currentDateTime = '2025-02-24 20:26:26';
+  /**
+   * System State Configuration
+   * Stores current system time and user information
+   */
+  private readonly currentDateTime = '2025-02-24 20:42:07';
   private readonly currentUser = 'YaacoubDouaa';
 
-  // Component Configuration
-  days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
-  timeSlots = ['08:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
-  groupOptions = ['ING1_INFO', 'ING1_INFO_TD1', 'ING1_INFO_TD2', 'ING1_INFO_TD1 || ING1_INFO_TD2'];
+  /**
+   * UI State Management
+   * Controls visibility and state of UI components
+   */
+  showModal = false;
 
-  // UI State
-  fullText = 'Schedule Manager';
-  displayText = '';
+  showDeleteModal = false;
   showTD = true;
   showTP = true;
-  selectedWeek = 'all';
   selectedGroup = '';
-  isDarkMode = false;
+  fullText = 'Schedule Manager';
+  displayText = '';
+  /**
+   * Schedule Configuration
+   * Basic setup for schedule display
+   */
+  days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+  timeSlots = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
+  groupOptions = ['ING1_INFO', 'ING1_INFO_TD1', 'ING1_INFO_TD2', 'ING1_INFO_TD1 || ING1_INFO_TD2'];
 
-  // Schedule State
-  private normalSchedule: Schedule = {};
+  /**
+   * Schedule State Management
+   * Maintains the current state of regular and makeup schedules
+   */
+  private scheduleSubscription?: Subscription;
+  private rattrapageSubscription?: Subscription;
+  private schedule: Schedule = {};
   private rattrapageSchedule: RattrapageSchedule = {};
-  private subscriptions: Subscription[] = [];
+  private idCounter = 20;
+  /**
+   * Activity Management
+   * Handles currently selected or targeted activities
+   */
+    // Initialize selected activity with default values
+  selectedActivity:  {
+    seance: {
+      id: number,
+      name: string,
+      type:  "COURS" | "TD" | "TP" | string,
+      professor: string,
+      groupe: string,
+      room: string,
+      biWeekly: boolean,
+      // Add any other required Seance properties with default values
+    },
+    day: string,
+    time:string
+  } = {
+    seance: {
+      id: 0,
+      name: '',
+      type: '',
+      professor: '',
+      groupe: '',
+      room: '',
+      biWeekly: false,
+      // Add any other required Seance properties with default values
+    },
+    day: '',
+    time: ''
+  };
 
-  // Form Controls
-  filterGroup = new FormControl('');
-  filterWeek = new FormControl('all');
-  searchControl = new FormControl('');
+  /**
+   * Form Controls
+   * Manages form inputs for session creation/editing
+   */
+  nameControl = new FormControl('');
+  roomControl = new FormControl('');
+  typeControl = new FormControl('');
+  professorControl = new FormControl('');
+  frequencyControl = new FormControl('');
+  selectedFrequency = '';
 
+  /**
+   * Reset selected activity to default state
+   */
+  resetSelectedActivity(): void {
+    this.selectedActivity = {
+      seance: {
+        id: 0,
+        name: '',
+        type: '',
+        professor: '',
+        groupe: '',
+        room: '',
+        biWeekly: false
+      },
+      day: '',
+      time: ''
+    };
+  }
+  seanceToDelete: {
+    id: number;
+    day: string;
+    group: string;
+    time: string;
+  } | null = null;
+
+  /**
+   * Helper method to reset deletion state
+   */
+  resetSeanceToDelete(): void {
+    this.seanceToDelete = null;
+    /**
+     * Form Controls
+     * Manages form inputs for session creation/editing
+     */
+    let nameControl = new FormControl('');
+    let roomControl = new FormControl('');
+    let typeControl = new FormControl('');
+    let professorControl = new FormControl('');
+    let frequencyControl = new FormControl('');
+    let selectedFrequency = '';
+  }
+  /**
+   * Autocomplete Options
+   * Predefined options for form inputs
+   */
+  nameOptions: string[] = ['Math Class', 'History Class', 'Physics Class', 'Chemistry Class'];
+  roomOptions: string[] = ['A-101', 'A-102', 'A-201', 'B-101'];
+  typeOptions: string[] = ['COURS', 'TD', 'TP'];
+  frequencyOptions: string[] = ['biweekly', 'weekly'];
+  profOptions: string[] = ['prof1', 'prof2', 'prof3'];
+
+  /**
+   * Filtered Observables
+   * Handles autocomplete filtering for form inputs
+   */
+  filteredNames: Observable<string[]> = this.createFilteredObservable(this.nameOptions);
+  filteredRooms: Observable<string[]> = this.createFilteredObservable(this.roomOptions);
+  filteredTypes: Observable<string[]> = this.createFilteredObservable(this.typeOptions);
+  filteredFrequency: Observable<string[]> = this.createFilteredObservable(this.frequencyOptions);
+  filteredProf: Observable<string[]> = this.createFilteredObservable(this.profOptions);
+  /**
+   * Creates a filtered observable for autocomplete
+   * @param options Array of options to filter from
+   * @returns Observable of filtered strings
+   */
+  private createFilteredObservable(options: string[]): Observable<string[]> {
+    return new Observable<string[]>(subscriber => {
+      subscriber.next(options);
+      subscriber.complete();
+    });
+  }
+
+  /**
+   * Component Constructor
+   * Initializes services and sets up initial state
+   */
   constructor(
     private router: Router,
+    private scheduleService: ScheduleService,
     private rattrapageService: RattrapageService,
-    private scheduleService: ScheduleService
-  ) {}
-
-  ngOnInit(): void {
-    this.initializeSubscriptions();
-    this.animateText();
+    private cdRef: ChangeDetectorRef,
+    private snackBar: MatSnackBar, // Add this
+  ) {
+    this.initializeFilteredObservables();
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-  }
+  /**
+   * Initialize filtered observables for autocomplete inputs
+   */
+  private initializeFilteredObservables(): void {
+    this.filteredNames = this.nameControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value, this.nameOptions))
+    );
 
-  private initializeSubscriptions(): void {
-    // Subscribe to schedule services
-    this.subscriptions.push(
-      this.scheduleService.currentSchedule.subscribe(schedule => {
-        this.normalSchedule = schedule;
-        this.updateFilteredSchedule();
-      }),
+    this.filteredRooms = this.roomControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value, this.roomOptions))
+    );
 
-      this.rattrapageService.getRattrapageSchedule().subscribe(schedule => {
-        this.rattrapageSchedule = schedule;
-        this.updateFilteredSchedule();
-      }),
+    this.filteredTypes = this.typeControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value, this.typeOptions))
+    );
 
-      // Subscribe to filter changes
-      this.filterGroup.valueChanges.subscribe(() => this.updateFilteredSchedule()),
-      this.filterWeek.valueChanges.subscribe(() => this.updateFilteredSchedule()),
-      this.searchControl.valueChanges.subscribe(() => this.updateFilteredSchedule())
+    this.filteredFrequency = this.frequencyControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value, this.frequencyOptions))
+    );
+
+    this.filteredProf = this.professorControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value, this.profOptions))
     );
   }
 
+
+  /**
+   * Lifecycle Hooks
+   * Handle component initialization and cleanup
+   */
+  ngOnInit(): void {
+
+    this.initializeSubscriptions();
+    this.animateText();
+    // Initial data load
+    this.refreshData();
+  }
+
+  ngOnDestroy(): void {
+    this.scheduleSubscription?.unsubscribe();
+
+  }
+
+  /**
+   * Initialize Service Subscriptions
+   * Sets up data streams from services
+   */
+  private initializeSubscriptions(): void {
+    this.scheduleSubscription = this.scheduleService.currentSchedule
+      .subscribe(schedule => {
+        this.schedule = schedule;
+      });
+
+    this.rattrapageSubscription = this.rattrapageService.getRattrapageSchedule()
+      .subscribe(schedule => {
+        this.rattrapageSchedule = schedule;
+      });
+  }
+
+// ... [Previous code remains the same]
+
+  /**
+   * Title Animation
+   * Animates the display of the component title
+   */
   private animateText(): void {
     let currentIndex = 0;
     const interval = setInterval(() => {
@@ -108,17 +282,26 @@ export class ViewScheduleComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
+
+
+
+  /**
+   * Schedule Display Methods
+   * Handle the filtering and display of schedule entries
+   */
   getFilteredSchedule(): { [day: string]: { [time: string]: Seance[] | null } } {
+
     const filteredSchedule: { [day: string]: { [time: string]: Seance[] | null } } = {};
 
+    // Process regular schedule
     this.days.forEach(day => {
       filteredSchedule[day] = {};
 
-      // Process normal sessions
-      Object.keys(this.normalSchedule[day] || {}).forEach(group => {
+      // Filter normal sessions
+      Object.keys(this.schedule[day] || {}).forEach(group => {
         if (this.getDisplayedGroup().includes(group)) {
-          Object.keys(this.normalSchedule[day]?.[group] || {}).forEach(time => {
-            const seances = this.normalSchedule[day]?.[group]?.[time];
+          Object.keys(this.schedule[day]?.[group] || {}).forEach(time => {
+            const seances = this.schedule[day]?.[group]?.[time];
             if (seances) {
               if (!filteredSchedule[day][time]) {
                 filteredSchedule[day][time] = [];
@@ -144,7 +327,7 @@ export class ViewScheduleComponent implements OnInit, OnDestroy {
           }
 
           seances.forEach(seance => {
-            if (this.shouldShowSeance(seance)) {
+            if (this.shouldShowSeance(seance)  &&  seance.groupe==this.selectedGroup) {
               filteredSchedule[day][time]!.push({
                 ...seance,
                 isRattrapage: true,
@@ -159,20 +342,29 @@ export class ViewScheduleComponent implements OnInit, OnDestroy {
     return filteredSchedule;
   }
 
+  /**
+   * Helper Methods
+   * Utility functions for schedule management
+   */
   private shouldShowSeance(seance: Seance): boolean {
-    const typeCondition = (
+    return (
       (this.showTD && seance.type === 'TD') ||
       (this.showTP && seance.type === 'TP') ||
       seance.type === 'COURS'
     );
-
-    const weekCondition = this.selectedWeek === 'all' ||
-      (this.selectedWeek === 'even' && seance.biWeekly) ||
-      (this.selectedWeek === 'odd' && !seance.biWeekly);
-
-    return typeCondition && weekCondition;
   }
 
+  private _filter(value: string | null, options: string[]): string[] {
+    const filterValue = value ? value.toLowerCase() : '';
+    return options.filter(option =>
+      option.toLowerCase().includes(filterValue)
+    );
+  }
+
+  /**
+   * Group Management Methods
+   * Handle group filtering and display
+   */
   getDisplayedGroup(): string[] {
     const groups: string[] = [];
 
@@ -194,73 +386,69 @@ export class ViewScheduleComponent implements OnInit, OnDestroy {
     return groups;
   }
 
-  getActivityColor(biweekly: boolean | undefined): string {
-    return biweekly ? '#B0B8C7' : 'transparent';
-  }
-
-  getTypeColor(type: string | undefined): string {
-    switch (type) {
-      case 'TD': return '#5603ad';
-      case 'TP': return '#2a9d8f';
-      case 'COURS': return '#ee4266';
-      default: return 'transparent';
+  /**
+   * Styling Methods
+   * Handle visual presentation of schedule elements
+   */
+  getTypeClass(type: string): string {
+    switch (type.toLowerCase()) {
+      case 'cours': return 'session-type-cours';
+      case 'td': return 'session-type-td';
+      case 'tp': return 'session-type-tp';
+      default: return 'bg-gray-100 text-gray-800';
     }
   }
 
-  getSessionStyle(seance: Seance): { [key: string]: string } {
-    return {
-      backgroundColor: this.getActivityColor(seance.biWeekly),
-      borderColor: this.getTypeColor(seance.type),
-      borderWidth: '2px',
-      borderStyle: 'solid',
-      borderLeftWidth: seance.isRattrapage ? '8px' : '2px',
-      opacity: seance.isRattrapage ? '0.9' : '1'
-    };
+  getActivityColor(biWeekly: boolean | undefined): string {
+    return biWeekly ? '#B0B8C7' : 'transparent';
   }
 
-  getSessionTextStyle(seance: Seance): { [key: string]: string } {
-    return {
-      color: seance.isRattrapage ? '#E63946' : 'inherit',
-      fontWeight: seance.isRattrapage ? 'bold' : 'normal'
-    };
+  getCourseIcon(type: string): string {
+    switch (type) {
+      case 'COURS': return 'book';
+      case 'TD': return 'edit-3';
+      case 'TP': return 'monitor';
+      default: return 'circle';
+    }
   }
 
-  toggleTD(): void {
-    this.showTD = !this.showTD;
-    this.updateFilteredSchedule();
-  }
-
-  toggleTP(): void {
-    this.showTP = !this.showTP;
-    this.updateFilteredSchedule();
-  }
-
-  setSelectedWeek(week: string): void {
-    this.selectedWeek = week;
-    this.updateFilteredSchedule();
-  }
-
-  setSelectedGroup(group: string): void {
-    this.selectedGroup = group;
-    this.updateFilteredSchedule();
-  }
-
-  private updateFilteredSchedule(): void {
-    // Trigger change detection by reassigning the filtered schedule
-    const filtered = this.getFilteredSchedule();
-    // You might want to emit this to a BehaviorSubject if needed
-  }
-
+  /**
+   * Navigation Methods
+   */
   navigateToSchedule(): void {
-    this.router.navigate(['schedule']);
+    this.router.navigate(['/schedule']);
+  }
+
+  /**
+   * Getters and System State Methods
+   */
+  get sessionName(): string {
+    return this.selectedActivity?.seance?.name || '';
+  }
+
+  get sessionId(): number | undefined {
+    return this.selectedActivity?.seance?.id;
   }
 
   getCurrentDateTime(): string {
-    return this.currentDateTime;
+    return this.currentDateTime; // Returns: 2025-02-24 20:44:58
   }
 
   getCurrentUser(): string {
-    return this.currentUser;
+    return this.currentUser; // Returns: YaacoubDouaa
+  }
+
+
+
+  /**
+   * Refresh data after changes
+   */
+  private refreshData(): void {
+    // Refresh schedule
+    this.initializeSubscriptions();
+
+    // Force UI update
+    this.cdRef.detectChanges();
   }
 
 
@@ -281,4 +469,5 @@ export class ViewScheduleComponent implements OnInit, OnDestroy {
       container.scrollBy({ left: 200, behavior: 'smooth' });
     }
   }
+
 }
