@@ -62,7 +62,6 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
 import {MatTooltip} from '@angular/material/tooltip';
 import { ProfessorSpaceComponent } from './professor-space/professor-space.component';
 import { ProfessorDashboardComponent } from './professor-dashboard/professor-dashboard.component';
-import { ProfessorViewScheduleComponent } from './professor-view-schedule/professor-view-schedule.component';
 import { ProposeRattrapageComponent } from './propose-rattrapage/propose-rattrapage.component';
 import {
   MatDatepicker,
@@ -84,6 +83,7 @@ import {Calendar, Clock, User} from 'lucide-angular';
 import { MessagingComponent } from './messaging/messaging.component';
 import { AdministratorSpaceComponent } from './administrator-sapce/administrator-space.component';
 import {NotificationsComponent} from './notifications/notifications.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -104,9 +104,7 @@ import {NotificationsComponent} from './notifications/notifications.component';
     DashboardComponent,
     ProfessorSpaceComponent,
     ProfessorDashboardComponent,
-    ProfessorViewScheduleComponent,
     ProposeRattrapageComponent,
-    ProfessorViewScheduleComponent,
     CsvImportComponent,
     DashboardComponent,
     MessagingComponent,
@@ -214,6 +212,7 @@ import {NotificationsComponent} from './notifications/notifications.component';
     NavbarComponent,
     SidebarComponent,
     NavbarComponent,
+    MatProgressSpinner,
 
 
   ],

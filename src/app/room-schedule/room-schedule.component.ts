@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
 import { Subscription } from 'rxjs';
 import {RattrapageSchedule, Schedule} from '../models/Schedule';
 import { Seance } from '../models/Seance';
@@ -72,7 +72,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
    */
   private scheduleSubscription?: Subscription;
   rattrapageSchedule: RattrapageSchedule = {};
-  constructor(private scheduleService: ScheduleService) {}
+  constructor(private scheduleService: ScheduleService,private cdRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadSchedule();
@@ -91,6 +91,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (schedule: Schedule) => {
           this.salleSchedule = schedule;
+          this.cdRef.detectChanges(); // Manually trigger view update
           this.isLoading = false;
         },
         error: (error: Error) => {

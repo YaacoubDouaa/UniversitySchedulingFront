@@ -15,7 +15,6 @@ import {DashboardComponent} from './dashboard/dashboard.component';
 import {ProfessorSpaceComponent} from './professor-space/professor-space.component';
 import {ProfessorDashboardComponent} from './professor-dashboard/professor-dashboard.component';
 import {ProposeRattrapageComponent} from './propose-rattrapage/propose-rattrapage.component';
-import {ProfessorViewScheduleComponent} from './professor-view-schedule/professor-view-schedule.component';
 import {CsvImportComponent} from './csv-import/csv-import.component';
 import {MessagingComponent} from './messaging/messaging.component';
 import {AdministratorSpaceComponent} from './administrator-sapce/administrator-space.component';
@@ -40,7 +39,7 @@ const routes: Routes = [ { path: '', component: DashboardComponent },
     component: ProfessorSpaceComponent},
       { path: '', redirectTo: 'profdashboard', pathMatch: 'full' },
       { path: 'profdashboard', component: ProfessorDashboardComponent },
-      { path: 'profschedule', component: ProfessorViewScheduleComponent },
+      // { path: 'profschedule', component: ProfessorViewScheduleComponent },
       { path: 'propose-rattrapage', component: ProposeRattrapageComponent }
 
 

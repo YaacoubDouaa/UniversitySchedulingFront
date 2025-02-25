@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { Observable, Subscription, startWith, map } from 'rxjs';
@@ -123,11 +123,6 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   frequencyControl = new FormControl('');
   selectedFrequency = '';
 
-
-
-
-
-
   /**
    * Reset selected activity to default state
    */
@@ -213,7 +208,8 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private scheduleService: ScheduleService,
-    private rattrapageService: RattrapageService
+    private rattrapageService: RattrapageService,
+    private cdRef: ChangeDetectorRef,
   ) {
     this.initializeFilteredObservables();
   }
@@ -254,8 +250,11 @@ export class ScheduleComponent implements OnInit, OnDestroy {
    * Handle component initialization and cleanup
    */
   ngOnInit(): void {
+
     this.initializeSubscriptions();
     this.animateText();
+    // Initial data load
+    this.refreshData();
   }
 
   ngOnDestroy(): void {
@@ -329,10 +328,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     this.showModal = true;
   }
 
-  closeModal(event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
+  closeModal(): void {
     this.selectedActivity ={
       seance: {
         id: 0,
@@ -356,6 +352,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
    * Handle CRUD operations for schedule entries
    */
   saveAddChanges(): void {
+
     if (!this.selectedActivity || !this.selectedGroup) return;
 
     const { day, time, seance } = this.selectedActivity;
@@ -369,6 +366,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
 
         },
       });
+    this.refreshData();
     this.closeModal();
   }
 
@@ -383,6 +381,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
         next: () => {
         },
       });
+    this.refreshData();
     this.closeModal();
   }
 
@@ -403,6 +402,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     this.scheduleService.deleteSession(day, time, group, id)
       .subscribe({
         next: () => {
+          this.refreshData();
           this.closeDeleteModal();
         },
 
@@ -419,6 +419,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
    * Handle the filtering and display of schedule entries
    */
   getFilteredSchedule(): { [day: string]: { [time: string]: Seance[] | null } } {
+
     const filteredSchedule: { [day: string]: { [time: string]: Seance[] | null } } = {};
 
     // Process regular schedule
@@ -455,7 +456,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
           }
 
           seances.forEach(seance => {
-            if (this.shouldShowSeance(seance)) {
+            if (seance.groupe==this.selectedGroup && this.shouldShowSeance(seance)) {
               filteredSchedule[day][time]!.push({
                 ...seance,
                 isRattrapage: true,
@@ -565,4 +566,18 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   getCurrentUser(): string {
     return this.currentUser; // Returns: YaacoubDouaa
   }
+
+
+
+  /**
+   * Refresh data after changes
+   */
+  private refreshData(): void {
+    // Refresh schedule
+    this.initializeSubscriptions();
+
+    // Force UI update
+    this.cdRef.detectChanges();
+  }
+
 }

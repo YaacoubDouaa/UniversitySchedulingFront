@@ -75,19 +75,14 @@ export class RoomService {
   /**
    * Check if room is available
    */
-  isSalleAvailable(salle: string, day: string, time: string, niveau: string): Observable<boolean> {
+  isSalleAvailable(salle: string, day: string, time: string): Observable<boolean> {
     return this.getSalles().pipe(
       map(salles => {
         const salleData = salles[salle];
         if (!salleData) return true;
-
         const daySchedule = salleData.schedule[day];
         if (!daySchedule) return true;
-
-        const niveauSchedule = daySchedule[niveau];
-        if (!niveauSchedule) return true;
-
-        return !niveauSchedule[time] || niveauSchedule[time].length === 0;
+        return  !(daySchedule[time]);
       })
     );
   }

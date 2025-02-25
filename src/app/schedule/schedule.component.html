@@ -248,7 +248,7 @@
     <!-- Edit/Add Modal -->
     <div *ngIf="showModal"
          class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-         (click)="closeModal($event)">
+         (click)="closeModal()">
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full m-4 p-6"
            (click)="$event.stopPropagation()">
         <div class="flex items-center justify-between mb-6">
@@ -320,7 +320,7 @@
     <!-- Delete Confirmation Modal -->
     <div *ngIf="showDeleteModal"
          class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-         (click)="closeModal($event)">
+         (click)="closeModal()">
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full m-4 p-6"
            (click)="$event.stopPropagation()">
         <div class="text-center">
@@ -333,7 +333,7 @@
           <div class="mt-6 flex justify-end space-x-3">
             <button mat-button
                     class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                    (click)="closeModal($event)">
+                    (click)="closeModal()">
               <i-feather name="x" class="h-4 w-4"></i-feather>
               <span>Cancel</span>
             </button>

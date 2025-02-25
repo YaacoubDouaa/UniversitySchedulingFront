@@ -1,11 +1,11 @@
-import { Component, Injector, OnInit } from '@angular/core';
+import {ChangeDetectorRef, Component, Injector, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RattrapageSchedule, Schedule } from '../models/Schedule';
 import { ScheduleService } from '../schedule-service.service';
 import { SalleList, SalleSchedule } from '../models/Salle';
 import { Seance } from '../models/Seance';
 import { RoomService } from '../rooms.service';
-import {Subscription} from 'rxjs';
+import {map, Subscription} from 'rxjs';
 import {RattrapageService} from '../rattrapage.service';
 
 @Component({
@@ -42,7 +42,7 @@ export class RoomsComponent implements OnInit {
     niveau?: string;
   } | null = null;
 
-  constructor(
+  constructor(private cdRef: ChangeDetectorRef, // Inject ChangeDetectorRef
     private router: Router,
     private salleScheduleService: ScheduleService,
     private injector: Injector,
@@ -57,15 +57,37 @@ export class RoomsComponent implements OnInit {
     this.initializeRoomService();
     this.loadRoomData();
     this.loadRattrapageSchedule();
+    this.loadSchedule();
+  }
+  /**
+   * Load schedule
+   */
+  private loadSchedule(): void {
+    this.salleScheduleService=this.injector.get(ScheduleService);
+    this.subscriptions.add(
+      this.salleScheduleService.getSchedule().subscribe({
+        next: (schedule) => {
+          this.salleSchedule = schedule;
+          this.cdRef.detectChanges(); // Manually trigger view update
+
+        },
+        error: (error) => {
+          console.error('Error loading rattrapage schedule:', error);
+        }
+      })
+    );
   }
   /**
    * Load rattrapage schedule
    */
   private loadRattrapageSchedule(): void {
+    this.rattrapageService=this.injector.get(RattrapageService);
     this.subscriptions.add(
       this.rattrapageService.getRattrapageSchedule().subscribe({
         next: (schedule) => {
           this.rattrapageSchedule = schedule;
+          this.cdRef.detectChanges(); // Manually trigger view update
+
         },
         error: (error) => {
           console.error('Error loading rattrapage schedule:', error);
@@ -94,10 +116,12 @@ export class RoomsComponent implements OnInit {
    * Load room data from service
    */
   private loadRoomData(): void {
+    this.roomService=this.injector.get(RoomService);
     this.roomService.getSalles().subscribe({
       next: (sallesList: SalleList) => {
         this.salles = sallesList;
         console.log('Rooms loaded:', this.salles);
+        this.cdRef.detectChanges(); // Manually trigger view update
       },
       error: (error) => {
         console.error('Error loading rooms:', error);
@@ -154,20 +178,6 @@ export class RoomsComponent implements OnInit {
   }
 
   /**
-   * Save new session
-   */
-  saveAddChanges(): void {
-    if (this.selectedActivity) {
-      const { day, time, seance, niveau } = this.selectedActivity;
-      if (niveau) {
-        this.roomService.addSeance(day, time, niveau, seance);
-        this.showModal = false;
-        this.selectedActivity = null;
-      }
-    }
-  }
-
-  /**
    * Open modal for editing session
    */
   openEditModal(seance: Seance, day: string, time: string, niveau: string): void {
@@ -180,19 +190,6 @@ export class RoomsComponent implements OnInit {
     this.showModal = true;
   }
 
-  /**
-   * Save edited session
-   */
-  saveEditChanges(): void {
-    if (this.selectedActivity) {
-      const { day, time, seance, niveau } = this.selectedActivity;
-      if (niveau) {
-        this.roomService.editSeance(day, time, niveau, seance, 0);
-        this.showModal = false;
-        this.selectedActivity = null;
-      }
-    }
-  }
 
   /**
    * Open modal for deleting session
@@ -202,19 +199,7 @@ export class RoomsComponent implements OnInit {
     this.showModal = true;
   }
 
-  /**
-   * Confirm session deletion
-   */
-  saveDeleteChanges(): void {
-    if (this.selectedActivity) {
-      const { day, time, seance, niveau } = this.selectedActivity;
-      if (niveau) {
-        this.roomService.deleteSeance(day, time, niveau, seance);
-        this.showModal = false;
-        this.selectedActivity = null;
-      }
-    }
-  }
+
 
   /**
    * Close modal dialog
@@ -277,14 +262,7 @@ export class RoomsComponent implements OnInit {
   /**
    * Check if a room is available (including rattrapage sessions)
    */
-  isSalleAvailable(salle: string, day: string, time: string): boolean {
-    const regularSessions = this.salles[salle]?.schedule[day]?.[time];
-    const rattrapageSessions = this.rattrapageSchedule[day]?.[time]?.some(
-      session => session.room === salle
-    );
 
-    return !(regularSessions || rattrapageSessions);
-  }
 
   // Add to existing ngOnDestroy or create it if it doesn't exist
   ngOnDestroy(): void {
@@ -299,4 +277,148 @@ export class RoomsComponent implements OnInit {
   }
 
   protected readonly Object = Object;
-}
+
+
+  /**
+   * Check if a room is available (including rattrapage sessions)
+   */
+  isSalleAvailable(salle: string, day: string, time: string): boolean {
+    try {
+      // Get all sessions for the room at the specified time
+      const sessions = this.getSessions(salle, day, time);
+
+      // Room is available if there are no sessions
+      return sessions.length === 0;
+    } catch (error) {
+      console.error('Error checking room availability:', error);
+      return false; // Return false on error as a safety measure
+    }}
+
+  /**
+   * Refresh room data
+   */
+  private refreshRoomData(): void {
+    this.loadRoomData();
+    this.loadRattrapageSchedule();
+    this.loadSchedule();
+    this.cdRef.detectChanges();
+  }
+  /**
+   * Save new session with real-time updates
+   */
+  saveAddChanges(): void {
+    if (this.selectedActivity && this.selectedActivity.niveau) {
+      const { day, time, seance, niveau } = this.selectedActivity;
+      this.salleScheduleService=this.injector.get(ScheduleService);
+      this.salleScheduleService.addSession(day, time, niveau, seance).subscribe({
+        next: (success) => {
+          if (success) {
+            // Update local state
+            const currentSchedule = this.salleScheduleService.getScheduleSnapshot();
+            this.salleSchedule = { ...currentSchedule };
+
+            // Update room service state
+            this.roomService.getSalles().subscribe(sallesList => {
+              this.salles = sallesList;
+
+            });
+            this.refreshRoomData();
+            // Close modal
+            this.showModal = false;
+            this.selectedActivity = null;
+          }
+        },
+        error: (error) => {
+          console.error('Error adding session:', error);
+          // Handle error (show message to user)
+        }
+      });
+    }
+  }
+
+  /**
+   * Save edited session with real-time updates
+   */
+  saveEditChanges(): void {
+    if (this.selectedActivity && this.selectedActivity.niveau) {
+      const {day, time, seance, niveau} = this.selectedActivity;
+
+      this.salleScheduleService.updateSession(day, time, niveau, seance).subscribe({
+        next: (success) => {
+          if (success) {
+            // Update local state
+            const currentSchedule = this.salleScheduleService.getScheduleSnapshot();
+            this.salleSchedule = {...currentSchedule};
+
+            // Update room service state
+            this.roomService.getSalles().subscribe(sallesList => {
+              this.salles = sallesList;
+
+              // Force UI update
+              this.refreshRoomData();
+            });
+
+            // Close modal
+            this.showModal = false;
+            this.selectedActivity = null;
+          }
+        },
+        error: (error) => {
+          console.error('Error updating session:', error);
+          // Handle error (show message to user)
+        }
+      });
+    }
+  }
+
+  /**
+   * Save delete changes with real-time updates
+   */
+  saveDeleteChanges(): void {
+    if (this.selectedActivity && this.selectedActivity.niveau) {
+      const { day, time, seance, niveau } = this.selectedActivity;
+
+      this.salleScheduleService.deleteSession(day, time, niveau, seance.id).subscribe({
+        next: (success) => {
+          if (success) {
+            // Update local state
+            const currentSchedule = this.salleScheduleService.getScheduleSnapshot();
+            this.salleSchedule = { ...currentSchedule };
+
+            // Update room service state
+            this.roomService.getSalles().subscribe(sallesList => {
+              this.salles = sallesList;
+
+              // Force UI update
+              this.refreshRoomData();
+            });
+
+            // Close modal
+            this.showModal = false;
+            this.selectedActivity = null;
+          }
+        },
+        error: (error) => {
+          console.error('Error deleting session:', error);
+          // Handle error (show message to user)
+        }
+      });
+    }
+  }
+
+  /**
+   * Refresh data after changes
+   */
+  private refreshData(): void {
+    // Refresh schedule
+    this.loadSchedule();
+
+    // Refresh room data
+    this.loadRoomData();
+
+    // Refresh rattrapage schedule
+    this.loadRattrapageSchedule();
+
+    // Force UI update
+    this.cdRef.detectChanges();
+}}
