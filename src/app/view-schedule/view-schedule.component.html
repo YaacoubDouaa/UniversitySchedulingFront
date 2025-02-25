@@ -197,27 +197,7 @@
                       </div>
                     </div>
 
-                    <!-- Action Buttons Section -->
-                    <div class="pt-2">
-                      <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div class="flex flex-col space-y-1">
-                          <button *ngIf="seance.biWeekly"
-                                  class="w-full flex items-center justify-center space-x-1 px-2 py-1 bg-green-500 hover:bg-green-600 text-white rounded text-xs transition-colors"
-                                 >
-                            <i-feather name="plus-circle" class="h-3 w-3"></i-feather>
-                            <span>Add</span>
-                          </button>
-                          <button class="w-full flex items-center justify-center space-x-1 px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs transition-colors"
-                                >
-                            <i-feather name="trash-2" class="h-3 w-3"></i-feather>
-                            <span>Delete</span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </ng-container>
+
 
               <!-- Empty Slot -->
               <div *ngIf="!getFilteredSchedule()[day][time]"
@@ -228,7 +208,7 @@
                   <span class="text-sm text-gray-500 dark:text-gray-400">No Session</span>
                 </div>
               </div>
-            </td>
+                  </div></div></ng-container></td>
           </tr>
           </tbody>
         </table>
