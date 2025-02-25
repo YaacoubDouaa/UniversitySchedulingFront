@@ -84,6 +84,7 @@ import { MessagingComponent } from './messaging/messaging.component';
 import { AdministratorSpaceComponent } from './administrator-sapce/administrator-space.component';
 import {NotificationsComponent} from './notifications/notifications.component';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import { ProfEditScheduleComponent } from './prof-edit-schedule/prof-edit-schedule.component';
 
 @NgModule({
   declarations: [
@@ -109,7 +110,8 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
     DashboardComponent,
     MessagingComponent,
     AdministratorSpaceComponent,
-    NotificationsComponent
+    NotificationsComponent,
+    ProfEditScheduleComponent
 
   ],
   imports: [

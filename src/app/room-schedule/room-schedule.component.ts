@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, OnDestroy, ChangeDetectorRef, Input} from '@angular/core';
 import { Subscription } from 'rxjs';
 import {RattrapageSchedule, Schedule} from '../models/Schedule';
 import { Seance } from '../models/Seance';
@@ -42,7 +42,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   /**
    * Component State
    */
-  salleSchedule: Schedule | null = null;
+  @Input()  schedule: Schedule | null = null;
   selectedRoom: string = 'A101';
   selectedNiveau: string = 'ING1_INFO';
   selectedFrequency: 'weekly' | 'biweekly' = 'weekly';
@@ -90,7 +90,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
     this.scheduleSubscription = this.scheduleService.getRoomSchedule(this.selectedRoom)
       .subscribe({
         next: (schedule: Schedule) => {
-          this.salleSchedule = schedule;
+          this.schedule = schedule;
           this.cdRef.detectChanges(); // Manually trigger view update
           this.isLoading = false;
         },
@@ -111,10 +111,10 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
    * Session Management
    */
   getSessions(day: string, time: string, niveau: string): Seance[] {
-    if (!this.salleSchedule?.[day]?.[time]?.[niveau]) {
+    if (!this.schedule?.[day]?.[time]?.[niveau]) {
       return [];
     }
-    return this.salleSchedule[day][time][niveau];
+    return this.schedule[day][time][niveau];
   }
 
 

@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
   <!-- Schedule Container -->
-  <div class="schedule-container bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden" *ngIf="salleSchedule">
+  <div class="schedule-container bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden" *ngIf="schedule">
     <!-- Header -->
     <div class="bg-primary/10 dark:bg-primary/5 p-6 border-b border-gray-200 dark:border-gray-700">
       <!-- Title Section -->
@@ -148,7 +148,7 @@
   </div>
 
   <!-- No Schedule Message -->
-  <div *ngIf="!salleSchedule"
+  <div *ngIf="!schedule"
        class="flex flex-col items-center justify-center p-12 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
     <i-feather name="calendar-x" class="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4"></i-feather>
     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">No Schedule Available</h3>
@@ -157,7 +157,7 @@
 
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
     <!-- Schedule Container -->
-    <div class="schedule-container bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden" *ngIf="salleSchedule">
+    <div class="schedule-container bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden" *ngIf="schedule">
       <!-- Header -->
       <div class="bg-primary/10 dark:bg-primary/5 p-6 border-b border-gray-200 dark:border-gray-700">
         <!-- Title Section -->
@@ -305,7 +305,7 @@
     </div>
 
     <!-- No Schedule Message -->
-    <div *ngIf="!salleSchedule"
+    <div *ngIf="!schedule"
          class="flex flex-col items-center justify-center p-12 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
       <i-feather name="calendar-x" class="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4"></i-feather>
       <h3 class="text-lg font-semibold text-gray-900 dark:text-white">No Schedule Available</h3>
