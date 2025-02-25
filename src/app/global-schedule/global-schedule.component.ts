@@ -57,7 +57,7 @@ export class GlobalScheduleComponent implements OnInit {
     // Lazy injection of the service
     this.scheduleService = this.injector.get(ScheduleService);
     // Subscribe to get the latest schedule data
-    this.scheduleService.getGlobalSchedule().subscribe((schedule: Schedule) => {
+    this.scheduleService.getSchedule().subscribe((schedule: Schedule) => {
       this.schedule = schedule;
     });
   }

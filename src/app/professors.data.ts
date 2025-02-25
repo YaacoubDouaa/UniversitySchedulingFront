@@ -110,10 +110,3 @@ export const INITIAL_PROFS_LIST: ProfList = {
   }
 };
 
-export interface Schedule {
-  [day: string]: {
-    [niveau: string]: {
-      [time: string]: Seance[];
-    };
-  };
-}

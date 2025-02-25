@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Schedule } from '../models/Schedule';
+import {RattrapageSchedule, Schedule} from '../models/Schedule';
 import { Seance } from '../models/Seance';
 import { ScheduleService } from '../schedule-service.service';
 
@@ -71,7 +71,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
    * Subscription Management
    */
   private scheduleSubscription?: Subscription;
-
+  rattrapageSchedule: RattrapageSchedule = {};
   constructor(private scheduleService: ScheduleService) {}
 
   ngOnInit(): void {
@@ -116,19 +116,6 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
     return this.salleSchedule[day][time][niveau];
   }
 
-  canAddSession(day: string, time: string, niveau: string, isBiweekly: boolean): boolean {
-    if (!this.salleSchedule?.[day]?.[time]?.[niveau]) {
-      return true;
-    }
-
-    const existingSessions = this.salleSchedule[day][time][niveau];
-    const hasWeeklySession = existingSessions.some(s => !s.biWeekly);
-    const biweeklyCount = existingSessions.filter(s => s.biWeekly).length;
-
-    if (hasWeeklySession) return false;
-    if (!isBiweekly) return existingSessions.length === 0;
-    return biweeklyCount < 2;
-  }
 
   /**
    * Modal Management

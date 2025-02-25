@@ -176,7 +176,7 @@ export class ProfessorsService {
     time: string
   ): boolean {
     // Check if the professor has any sessions at this time slot
-    return ! (schedule?.[day]?.[time]) ;
+    return ! (schedule[day][time]) ;
   }
 
   /**

@@ -147,32 +147,12 @@ export class RoomService {
     }
   }
 
-  /**
-   * Get available rooms for a specific time slot
-   */
-  getAvailableRooms(day: string, time: string, niveau: string): Observable<string[]> {
-    return this.getSalles().pipe(
-      map(salles => {
-        return Object.values(salles)
-          .filter(salle => {
-            const daySchedule = salle.schedule[day];
-            if (!daySchedule) return true;
-
-            const niveauSchedule = daySchedule[niveau];
-            if (!niveauSchedule) return true;
-
-            return !niveauSchedule[time] || niveauSchedule[time].length === 0;
-          })
-          .map(salle => salle.name);
-      })
-    );
-  }
 
   /**
    * Get available rooms by type
    */
   getAvailableRoomsByType(day: string, time: string, niveau: string, type: string): Observable<string[]> {
-    return this.getAvailableRooms(day, time, niveau).pipe(
+    return this.getAvailableRooms(day, time).pipe(
       map(rooms => rooms.filter(roomName => {
         const salle = this.salles[roomName];
         return salle && salle.type === type;
@@ -253,4 +233,79 @@ export class RoomService {
       return !niveauSchedule?.[time] || niveauSchedule[time].length === 0;
     });
   }
+
+
+  /**
+   * Get available rooms for a specific time slot
+   * @param day - The day to check
+   * @param time - The time slot to check
+   * @returns Observable<string[]> - List of available room names
+   */
+  getAvailableRooms(day: string, time: string): Observable<string[]> {
+    return this.getSalles().pipe(
+      map(salles => {
+        return Object.values(salles)
+          .filter(salle => {
+            // Get the day's schedule
+            const daySchedule = salle.schedule[day];
+            if (!daySchedule) return true; // Room is available if no schedule exists for the day
+
+            // Check all niveaux for the time slot
+            return !Object.values(daySchedule).some(niveauSchedule => {
+              // Check if the time slot is occupied
+              return niveauSchedule[time]?.length > 0;
+            });
+          })
+          .map(salle => salle.name);
+      }),
+
+    );
+  }
+
+  /**
+   * Get available rooms for a specific time slot and niveau
+   * @param day - The day to check
+   * @param time - The time slot to check
+   * @param niveau - The academic level to check
+   * @returns Observable<string[]> - List of available room names
+   */
+  getAvailableRoomsForNiveau(day: string, time: string, niveau: string): Observable<string[]> {
+    return this.getSalles().pipe(
+      map(salles => {
+        return Object.values(salles)
+          .filter(salle => {
+            // Check specific niveau schedule
+            const niveauSchedule = salle.schedule[day]?.[niveau];
+            if (!niveauSchedule) return true;
+
+            // Check if time slot is available
+            return !niveauSchedule[time] || niveauSchedule[time].length === 0;
+          })
+          .map(salle => salle.name);
+      }),
+
+    );
+  }
+
+  /**
+   * Helper method to get room capacity
+   * @param roomName - Name of the room
+   * @returns Observable<number> - Room capacity
+   */
+  getRoomCapacity(roomName: string): Observable<number> {
+    return this.getSalles().pipe(
+      map(salles => {
+        const room = Object.values(salles).find(salle => salle.name === roomName);
+        if (!room) {
+          throw new Error('Room not found');
+        }
+        return room.capacite;
+      }),
+
+    );
+  }
+
+// Class-level properties
+  private readonly currentDateTime = '2025-02-25 01:08:11';
+  private readonly currentUser = 'YaacoubDouaa';
 }

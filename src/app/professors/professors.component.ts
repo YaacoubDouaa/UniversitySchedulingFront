@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit, OnDestroy, Injector} from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ProfList } from '../models/Professors';
-import { Schedule } from '../models/Schedule';
+import {RattrapageSchedule, Schedule} from '../models/Schedule';
 import { Seance } from '../models/Seance';
 import { ProfessorsService } from '../professors.service';
+import {RattrapageService} from '../rattrapage.service';
 
 @Component({
   selector: 'app-professors',
@@ -18,7 +19,7 @@ export class ProfessorsComponent implements OnInit, OnDestroy {
    */
   private readonly currentDateTime = '2025-02-24 23:11:43';
   private readonly currentUser = 'YaacoubDouaa';
-
+  rattrapageSchedule: RattrapageSchedule = {};
   /**
    * Constants
    */
@@ -35,6 +36,7 @@ export class ProfessorsComponent implements OnInit, OnDestroy {
   selectedDay: string = '';
   selectedTime: string = '';
   selectedType: string = '';
+  selectedNiveau: string='';
   selectedFrequency: 'weekly' | 'biweekly' = 'weekly';
   isLoading: boolean = false;
 
@@ -56,12 +58,84 @@ export class ProfessorsComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private professorsService: ProfessorsService
+    private professorsService: ProfessorsService,
+    private rattrapageService: RattrapageService,private injector:Injector
   ) {}
 
   ngOnInit(): void {
+    this.professorsService=this.injector.get(ProfessorsService);
+    this.rattrapageService=this.injector.get(RattrapageService);
     this.loadProfessors();
+    this.loadRattrapageSchedule();
   }
+
+  /**
+   * Load rattrapage schedule
+   */
+  private loadRattrapageSchedule(): void {
+    this.subscriptions.add(
+      this.rattrapageService.getRattrapageSchedule().subscribe({
+        next: (schedule) => {
+          this.rattrapageSchedule = schedule;
+        },
+        error: (error) => {
+          console.error('Error loading rattrapage schedule:', error);
+        }
+      })
+    );
+  }
+  /**
+   * Check professor availability (updated to include rattrapage sessions)
+   */
+  isProfAvailable(profCode: string, day: string, time: string): boolean {
+    const regularAvailability = this.professorsService.isTimeSlotAvailable(
+      this.profs[profCode]?.schedule || {},
+      day,
+      time
+    );
+
+    // Check rattrapage sessions
+    const hasRattrapageSession = this.rattrapageSchedule[day]?.[time]?.some(
+      session => session.professor === profCode
+    );
+
+    return regularAvailability && !hasRattrapageSession;
+  }
+
+
+  /**
+   * View session details (corrected to properly handle schedule structure)
+   */
+  viewSessionDetails(profCode: string, day: string, time: string): Seance[] {
+    // Get regular sessions from all niveau time slots
+    const regularSessions: Seance[] = [];
+    const profSchedule = this.profs[profCode]?.schedule[day] || {};
+
+    // Iterate over each niveau in the schedule
+    Object.values(profSchedule).forEach(niveauSchedule => {
+      if (niveauSchedule[time]) {
+        regularSessions.push(...niveauSchedule[time]);
+      }
+    });
+
+    // Get rattrapage sessions
+    const rattrapageSessions = this.rattrapageSchedule[day]?.[time]?.filter(
+      session => session.professor === profCode ||
+        session.professor === this.profs[profCode]?.name
+    ) || [];
+
+    const allSessions = [...regularSessions, ...rattrapageSessions];
+
+    if (allSessions.length > 0) {
+      console.log('All sessions:', allSessions);
+      // You can also return or process the sessions here
+      return allSessions;
+    } else {
+      console.log('No sessions found for this time slot.');
+      return [];
+    }
+  }
+
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
@@ -86,16 +160,6 @@ export class ProfessorsComponent implements OnInit, OnDestroy {
     );
   }
 
-  /**
-   * Check professor availability
-   */
-  isProfAvailable(profCode: string, day: string, time: string): boolean {
-    return this.professorsService.isTimeSlotAvailable(
-      this.profs[profCode]?.schedule || {},
-      day,
-      time
-    );
-  }
 
   /**
    * Get cell color based on availability
@@ -228,16 +292,6 @@ export class ProfessorsComponent implements OnInit, OnDestroy {
     this.selectedActivity = null;
   }
 
-  /**
-   * View session details
-   */
-  viewSessionDetails(profCode: string, day: string, time: string, niveau: string): void {
-    const prof = this.profs[profCode];
-    if (prof?.schedule[day]?.[niveau]?.[time]) {
-      // Handle viewing session details
-      console.log('Session details:', prof.schedule[day][niveau][time]);
-    }
-  }
 
   /**
    * Get system state
@@ -251,4 +305,24 @@ export class ProfessorsComponent implements OnInit, OnDestroy {
   }
 
   protected readonly Object = Object;
+
+  saveEditChanges() {
+
+  }
+  getTypeClass(type: string): string {
+    switch (type.toLowerCase()) {
+      case 'cours': return 'session-type-cours';
+      case 'td': return 'session-type-td';
+      case 'tp': return 'session-type-tp';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  }
+  getCourseIcon(type: string): string {
+    switch (type) {
+      case 'COURS': return 'book';
+      case 'TD': return 'edit-3';
+      case 'TP': return 'monitor';
+      default: return 'circle';
+    }
+  }
 }

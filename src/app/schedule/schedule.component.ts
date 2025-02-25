@@ -14,6 +14,15 @@ import {ScheduleService} from '../schedule-service.service';
  * Handles the display and management of both regular and makeup sessions
  * Integrates with ScheduleService and RattrapageService for data management
  */
+/**
+ * Interface for seance deletion
+ */
+interface SeanceToDelete {
+  id: number;
+  day: string;
+  group: string;
+  time: string;
+}
 @Component({
   selector: 'app-schedule',
   templateUrl: './schedule.component.html',
@@ -70,23 +79,38 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   private schedule: Schedule = {};
   private rattrapageSchedule: RattrapageSchedule = {};
   private idCounter = 20;
-
   /**
    * Activity Management
    * Handles currently selected or targeted activities
    */
-  selectedActivity: {
-    seance: Seance;
-    day: string;
-    time: string;
-  } | null = null;
-
-  seanceToDelete: {
-    id: number;
-    day: string;
-    group: string;
-    time: string;
-  } | null = null;
+    // Initialize selected activity with default values
+  selectedActivity:  {
+    seance: {
+      id: number,
+      name: string,
+      type:  "COURS" | "TD" | "TP" | string,
+      professor: string,
+      groupe: string,
+      room: string,
+      biWeekly: boolean,
+      // Add any other required Seance properties with default values
+    },
+    day: string,
+    time:string
+  } = {
+    seance: {
+      id: 0,
+      name: '',
+      type: '',
+      professor: '',
+      groupe: '',
+      room: '',
+      biWeekly: false,
+      // Add any other required Seance properties with default values
+    },
+    day: '',
+    time: ''
+  };
 
   /**
    * Form Controls
@@ -99,6 +123,58 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   frequencyControl = new FormControl('');
   selectedFrequency = '';
 
+
+
+
+
+
+  /**
+   * Reset selected activity to default state
+   */
+  resetSelectedActivity(): void {
+    this.selectedActivity = {
+      seance: {
+        id: 0,
+        name: '',
+        type: '',
+        professor: '',
+        groupe: '',
+        room: '',
+        biWeekly: false
+      },
+      day: '',
+      time: ''
+    };
+  }
+  seanceToDelete: {
+    id: number;
+    day: string;
+    group: string;
+    time: string;
+  } | null = null;
+  /**
+   * Helper method to set seance for deletion
+   */
+  setSeanceToDelete(seance: SeanceToDelete): void {
+    this.seanceToDelete = seance;
+  }
+
+  /**
+   * Helper method to reset deletion state
+   */
+  resetSeanceToDelete(): void {
+    this.seanceToDelete = null;
+    /**
+     * Form Controls
+     * Manages form inputs for session creation/editing
+     */
+    let nameControl = new FormControl('');
+    let roomControl = new FormControl('');
+    let typeControl = new FormControl('');
+    let professorControl = new FormControl('');
+    let frequencyControl = new FormControl('');
+    let selectedFrequency = '';
+  }
   /**
    * Autocomplete Options
    * Predefined options for form inputs
@@ -229,7 +305,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     this.selectedActivity = {
       seance: {
         name: '',
-        id: this.idCounter + 1,
+        id: 0,
         room: '',
         type: 'COURS',
         professor: '',
@@ -239,8 +315,8 @@ export class ScheduleComponent implements OnInit, OnDestroy {
       day,
       time
     };
-    this.showModal = false;
-    this.showAdd = true;
+    this.showModal = true;
+
   }
 
   openEditModal(seance: Seance, day: string, time: string): void {
@@ -257,9 +333,22 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     if (event) {
       event.stopPropagation();
     }
-    this.selectedActivity = null;
+    this.selectedActivity ={
+      seance: {
+        id: 0,
+        name: '',
+        type: '',
+        professor: '',
+        groupe: '',
+        room: '',
+        biWeekly: false,
+        // Add any other required Seance properties with default values
+      },
+      day: '',
+      time: ''
+    } ;
     this.showModal = false;
-    this.showAdd = false;
+
   }
 
   /**
@@ -277,12 +366,10 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     this.scheduleService.addSession(day, time, this.selectedGroup, seance)
       .subscribe({
         next: () => {
-          this.closeModal();
+
         },
-        error: (error) => {
-          alert(`Failed to add session: ${error.message}`);
-        }
       });
+    this.closeModal();
   }
 
   saveEditChanges(): void {
@@ -294,10 +381,9 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     this.scheduleService.updateSession(day, time, seance.groupe, seance)
       .subscribe({
         next: () => {
-          this.closeModal();
         },
-
       });
+    this.closeModal();
   }
 
   /**

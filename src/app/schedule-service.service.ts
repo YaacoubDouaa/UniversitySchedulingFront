@@ -28,7 +28,7 @@ export class ScheduleService {
    * Current user's login information
    */
   private currentUser = 'YaacoubDouaa';
-  currentDisponibilite: any;
+  currentDisponibilite: Observable<Schedule>=new Observable();
 
   /**
    * Validates if a new session can be added to a specific time slot
@@ -282,6 +282,49 @@ export class ScheduleService {
   }
 
   changeSchedule(salleSchedule: Schedule) {
-    
+
   }
+
+  /**
+   * Gets a snapshot of the current schedule
+   * @returns Schedule The current schedule value
+   */
+  getScheduleSnapshot(): Schedule {
+    return this.scheduleSubject.getValue();
+  }
+
+  /**
+   * Gets schedule for a specific day
+   * @param day The day to get schedule for
+   * @returns Observable<{[niveau: string]: {[time: string]: Seance[]}}>
+   */
+  getDaySchedule(day: string): Observable<{[niveau: string]: {[time: string]: Seance[]}}> {
+    return new Observable(observer => {
+      try {
+        const schedule = this.scheduleSubject.getValue();
+        observer.next(schedule[day] || {});
+        observer.complete();
+      } catch (error) {
+        observer.error('Failed to get day schedule');
+      }
+    });
+  }
+
+  /**
+   * Gets the current schedule state as an Observable
+   * Returns an Observable that emits the current schedule and continues to emit on changes
+   *
+   * @returns Observable<Schedule> Stream of schedule updates
+   */
+  getSchedule(): Observable<Schedule> {
+    try {
+      // Return the BehaviorSubject as an Observable
+      return this.scheduleSubject.asObservable();
+    } catch (error) {
+      console.error('Error getting schedule:', error);
+      // Return error as Observable
+      return throwError(() => new Error('Failed to retrieve schedule'));
+    }
+  }
+
 }

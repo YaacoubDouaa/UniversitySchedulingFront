@@ -105,6 +105,7 @@ export class RoomsComponent implements OnInit {
     });
   }
 
+
   /**
    * Handle room selection
    */
@@ -117,8 +118,8 @@ export class RoomsComponent implements OnInit {
   /**
    * Get color coding for room availability
    */
-  getSalleColor(salle: string, day: string, time: string, niveau: string): string {
-    return this.isSalleAvailable(salle, day, time, niveau)
+  getSalleColor(salle: string, day: string, time: string): string {
+    return this.isSalleAvailable(salle, day, time)
       ? '#d4edda'  // Available - Green
       : '#f8d7da'; // Occupied - Red
   }
@@ -237,24 +238,47 @@ export class RoomsComponent implements OnInit {
       console.log('No sessions found for the selected time slot.');
     }
   }
+  /**
+   * System Configuration
+   */
+  private readonly currentDateTime = '2025-02-25 03:34:19';
+  private readonly currentUser = 'YaacoubDouaa';
 
   /**
-   * Get all sessions including rattrapages for a specific time slot
+   * Gets all sessions (regular and makeup) for a specific room, day, and time
+   * @param salle - Room name
+   * @param day - Day of the week
+   * @param time - Time slot
+   * @returns Array of sessions for the specified parameters
    */
-  getSessions(salle: string, day: string, time: string, niveau: string): Seance[] {
-    const regularSessions = this.salles[salle]?.schedule[day]?.[niveau]?.[time] || [];
-    const rattrapageSessions = this.rattrapageSchedule[day]?.[time]?.filter(
-      session => session.room === salle
-    ) || [];
+  getSessions(salle: string, day: string, time: string): Seance[] {
+    try {
+      // Get regular sessions
+      const regularSessionsMap = this.salles?.[salle]?.schedule?.[day]?.[time] || {};
+      const regularSessions: Seance[] = Object.values(regularSessionsMap)
+        .flat()
+        .filter(Boolean);
 
-    return [...regularSessions, ...rattrapageSessions];
+      // Get makeup sessions
+      const rattrapageSessions: Seance[] = this.rattrapageSchedule?.[day]?.[time]?.filter(
+        (session: Seance) => session.room === salle
+      ) || [];
+
+      // Combine and return all sessions
+      return [...regularSessions, ...rattrapageSessions];
+    } catch (error) {
+      console.error('Error getting sessions:', error);
+      return [];
+    }
   }
+
+
 
   /**
    * Check if a room is available (including rattrapage sessions)
    */
-  isSalleAvailable(salle: string, day: string, time: string, niveau: string): boolean {
-    const regularSessions = this.salles[salle]?.schedule[day]?.[niveau]?.[time]?.length > 0;
+  isSalleAvailable(salle: string, day: string, time: string): boolean {
+    const regularSessions = this.salles[salle]?.schedule[day]?.[time];
     const rattrapageSessions = this.rattrapageSchedule[day]?.[time]?.some(
       session => session.room === salle
     );

@@ -71,7 +71,7 @@ export class DashboardComponent implements OnInit {
   private loadSchedule(): void {
     this.isLoading = true;
     const scheduleService = this.injector.get(ScheduleService);
-    scheduleService.getGlobalSchedule().subscribe({
+    scheduleService.getSchedule().subscribe({
       next: (schedule: Schedule) => {
         this.schedule = schedule;
         this.isLoading = false;

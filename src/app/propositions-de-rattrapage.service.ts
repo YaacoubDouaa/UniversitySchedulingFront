@@ -147,7 +147,8 @@ export class PropositionsDeRattrapageService {
       type: proposition.type,
       professor: `Enseignant ${proposition.enseignantId}`,
       groupe: proposition.niveau,
-      biWeekly: false
+      biWeekly: false,
+      isRattrapage:false
     };
 
     const dateObj = new Date(proposition.date);

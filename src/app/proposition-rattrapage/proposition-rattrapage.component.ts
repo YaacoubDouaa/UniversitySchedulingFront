@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit, OnDestroy, Injector} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormControl } from '@angular/forms';
 import { animate, style, transition, trigger } from '@angular/animations';
@@ -120,7 +120,8 @@ export class PropositionRattrapageComponent implements OnInit, OnDestroy {
     private propositionsService: PropositionsDeRattrapageService,
     private rattrapageService: RattrapageService,
     private notificationService: NotificationService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private injector:Injector
   ) {
     this.initializeDateRange();
     this.setupFilterSubscriptions();
@@ -131,7 +132,11 @@ export class PropositionRattrapageComponent implements OnInit, OnDestroy {
    * Handle component initialization and cleanup
    */
   ngOnInit(): void {
+
+    this.propositionsService=this.injector.get(PropositionsDeRattrapageService);
+    this.notificationService=this.injector.get(NotificationService);
     this.loadPropositions();
+    this.filteredPropositions=this.propositions;
   }
 
   ngOnDestroy(): void {
@@ -167,6 +172,7 @@ export class PropositionRattrapageComponent implements OnInit, OnDestroy {
    * Fetches and maintains proposition data
    */
   private loadPropositions(): void {
+
     this.propositionsSubscription = this.propositionsService.propositions$
       .subscribe(propositions => {
         this.propositions = propositions;
