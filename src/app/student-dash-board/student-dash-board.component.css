@@ -1,0 +1,63 @@
+/* Custom animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Utility classes */
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Card hover effects */
+.hover-card {
+  transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Custom scrollbar for notifications */
+.notifications-container {
+  scrollbar-width: thin;
+  scrollbar-color: #8d99ae #f8f9fa;
+}
+
+.notifications-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notifications-container::-webkit-scrollbar-track {
+  background: #f8f9fa;
+}
+
+.notifications-container::-webkit-scrollbar-thumb {
+  background-color: #8d99ae;
+  border-radius: 3px;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(to right, #2b2d42, #8d99ae);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

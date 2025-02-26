@@ -33,6 +33,7 @@ import {animate, style, transition, trigger} from '@angular/animations';
       content: 'Bonjour, je voudrais discuter de l\'emploi du temps...',
       time: '2 min ago'
     };
+ showNotification: boolean=false;
 
     constructor(private router: Router) {
       this.updateDateTime();
@@ -70,4 +71,8 @@ import {animate, style, transition, trigger} from '@angular/animations';
       event.stopPropagation();
       this.showMessageNotification = false;
     }
+  toggleNotification() {
+    this.showNotification = !this.showNotification;
   }
+
+}

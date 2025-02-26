@@ -75,7 +75,7 @@ import { CsvImportComponent } from './csv-import/csv-import.component';
 import {MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious} from '@angular/material/stepper';
 import {MatProgressBar} from '@angular/material/progress-bar';
 import {SidebarComponent} from './side-bar/side-bar.component';
-import {NavbarComponent} from './nav-bar/nav-bar.component';
+
 import {FeatherModule} from 'angular-feather';
 import {allIcons} from 'angular-feather/icons';
 import {Calendar, Clock, User} from 'lucide-angular';
@@ -91,6 +91,7 @@ import { TechnicienGlobalScheduleComponent } from './technicien-global-schedule/
 import { TechnicienDashBoardComponent } from './technicien-dash-board/technicien-dash-board.component';
 import { TechnicienSpaceComponent } from './technicien-space/technicien-space.component';
 import {ProfScheduleComponent} from './prof-schedule/prof-schedule.component';
+import {NavbarComponent} from './nav-bar/nav-bar.component';
 
 @NgModule({
   declarations: [
@@ -218,15 +219,16 @@ import {ProfScheduleComponent} from './prof-schedule/prof-schedule.component';
     MatStepLabel,
     MatStepperNext,
     NavbarComponent,
-    NavbarComponent,
+
     RouterModule.forRoot([
       {path: '', component: DashboardComponent}
     ]),
     FeatherModule.pick(allIcons),
-    NavbarComponent,
+
     SidebarComponent,
-    NavbarComponent,
+
     MatProgressSpinner,
+
 
 
   ],
