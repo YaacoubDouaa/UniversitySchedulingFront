@@ -10,13 +10,14 @@ import {animate, style, transition, trigger} from '@angular/animations';
   selector: 'app-nav-bar',
 
   templateUrl: './nav-bar.component.html',
-    imports: [
-        // NgClass,
-        NgIf,
-        NgForOf,
-        FeatherModule,
+  imports: [
+    // NgClass,
+    NgIf,
+    NgForOf,
+    FeatherModule,
+    NgClass,
 
-    ],
+  ],
 
   styleUrl: './nav-bar.component.css',
   animations: [
