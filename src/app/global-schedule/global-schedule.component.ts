@@ -1,14 +1,22 @@
-import { Component, OnInit, Inject, Injector } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Schedule, RattrapageSchedule } from '../models/Schedule';
 import { Seance } from '../models/Seance';
-import { Schedule } from '../models/Schedule';
-import { ScheduleService } from '../schedule-service.service';
+import {ScheduleService} from '../schedule-service.service';
+import {RattrapageService} from '../rattrapage.service';
+import {NotificationService} from '../notifications.service';
+import {APP_CONSTANTS} from '../constants';
+import {MatButton, MatIconButton} from '@angular/material/button';
+import {FeatherModule} from 'angular-feather';
+import {ReactiveFormsModule} from '@angular/forms';
+import {animate, style, transition, trigger} from '@angular/animations';
+
 
 @Component({
   selector: 'app-global-schedule',
   templateUrl: './global-schedule.component.html',
+  standalone:false,
   styleUrls: ['./global-schedule.component.css'],
-  standalone: false,
   // Animation for smooth transitions
   animations: [
     trigger('slideDown', [
@@ -23,24 +31,25 @@ import { ScheduleService } from '../schedule-service.service';
   ]
 })
 export class GlobalScheduleComponent implements OnInit {
-  // Schedule data and configuration
   schedule: Schedule | null = null;
-  days: string[] = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
-  timeSlots: string[] = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
-  allRooms: string[] = []; // Stores unique room names
+  rattrapageSchedule: RattrapageSchedule | null = null;
+  showRattrapage = false;
 
-  // User and time information
-  currentDate: string = '2025-02-26 01:16:27';
-  currentUser: string = 'YaacoubDouaa';
+  days = APP_CONSTANTS.DAYS;
+  timeSlots = APP_CONSTANTS.TIME_SLOTS;
+  currentDate = APP_CONSTANTS.CURRENT_DATE;
+  currentUser = APP_CONSTANTS.CURRENT_USER;
+  allRooms: string[] = [];
 
-  // UI state management
-  selectedTimeSlot: { day: string; time: string } | null = null;
-  isLoading: boolean = false;
+  isLoading = false;
   error: string | null = null;
 
   constructor(
     private scheduleService: ScheduleService,
-    private injector: Injector
+    private rattrapageService: RattrapageService,
+    private notificationService: NotificationService,
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {}
 
   /**
@@ -48,10 +57,9 @@ export class GlobalScheduleComponent implements OnInit {
    */
   ngOnInit(): void {
     this.loadSchedule();
+    this.loadRattrapageSchedule();
     this.updateCurrentTime();
-    this.extractUniqueRooms();
   }
-
   /**
    * Updates current time every second
    */
@@ -62,39 +70,19 @@ export class GlobalScheduleComponent implements OnInit {
     }, 1000);
   }
 
-  /**
-   * Formats date to YYYY-MM-DD HH:MM:SS
-   */
-  private formatDateTime(date: Date): string {
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const hours = String(date.getUTCHours()).padStart(2, '0');
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  }
 
-  /**
-   * Loads schedule data from service
-   */
-  loadSchedule(): void {
-    this.isLoading = true;
-    this.error = null;
 
-    // Lazy injection of the service
-    this.scheduleService = this.injector.get(ScheduleService);
 
-    this.scheduleService.getSchedule().subscribe({
-      next: (schedule: Schedule) => {
-        this.schedule = schedule;
+
+  loadRattrapageSchedule(): void {
+    this.rattrapageService.getRattrapageSchedule().subscribe({
+      next: (schedule) => {
+        this.rattrapageSchedule = schedule;
         this.extractUniqueRooms();
-        this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
-        this.error = 'Failed to load schedule';
-        this.isLoading = false;
-        console.error('Schedule loading error:', error);
+        this.notificationService.showError('Failed to load makeup schedule');
       }
     });
   }
@@ -103,15 +91,27 @@ export class GlobalScheduleComponent implements OnInit {
    * Extracts unique rooms from schedule data
    */
   private extractUniqueRooms(): void {
-    if (!this.schedule) return;
-
     const roomSet = new Set<string>();
 
-    // Iterate through all schedule data to find unique rooms
-    this.days.forEach(day => {
-      Object.keys(this.schedule![day] || {}).forEach(group => {
-        this.timeSlots.forEach(timeSlot => {
-          const sessions = this.schedule![day][group]?.[timeSlot] || [];
+    // Extract from regular schedule
+    if (this.schedule) {
+      Object.values(this.schedule).forEach(daySchedule => {
+        Object.values(daySchedule).forEach(groupSchedule => {
+          Object.values(groupSchedule).forEach(timeSlotSessions => {
+            timeSlotSessions.forEach(session => {
+              if (session.room) {
+                roomSet.add(session.room);
+              }
+            });
+          });
+        });
+      });
+    }
+
+    // Extract from rattrapage schedule
+    if (this.rattrapageSchedule) {
+      Object.values(this.rattrapageSchedule).forEach(daySchedule => {
+        Object.values(daySchedule).forEach(sessions => {
           sessions.forEach(session => {
             if (session.room) {
               roomSet.add(session.room);
@@ -119,9 +119,8 @@ export class GlobalScheduleComponent implements OnInit {
           });
         });
       });
-    });
+    }
 
-    // Sort rooms alphabetically
     this.allRooms = Array.from(roomSet).sort();
   }
 
@@ -129,12 +128,17 @@ export class GlobalScheduleComponent implements OnInit {
    * Gets all sessions for a specific room, day, and time slot
    */
   getSessionsForRoom(room: string, day: string, timeSlot: string): Seance[] {
+    return this.showRattrapage
+      ? this.getRattrapageSessionsForRoom(room, day, timeSlot)
+      : this.getRegularSessionsForRoom(room, day, timeSlot);
+  }
+
+  private getRegularSessionsForRoom(room: string, day: string, timeSlot: string): Seance[] {
     if (!this.schedule?.[day]) return [];
 
     const sessions: Seance[] = [];
-    Object.keys(this.schedule[day]).forEach(group => {
-      const groupSchedule = this.schedule![day][group];
-      if (groupSchedule?.[timeSlot]) {
+    Object.entries(this.schedule[day]).forEach(([group, groupSchedule]) => {
+      if (groupSchedule[timeSlot]) {
         sessions.push(...groupSchedule[timeSlot].filter(session =>
           session.room === room
         ));
@@ -142,6 +146,48 @@ export class GlobalScheduleComponent implements OnInit {
     });
     return sessions;
   }
+
+  private getRattrapageSessionsForRoom(room: string, day: string, timeSlot: string): Seance[] {
+    if (!this.rattrapageSchedule?.[day]?.[timeSlot]) return [];
+    return this.rattrapageSchedule[day][timeSlot].filter(session =>
+      session.room === room
+    );
+  }
+
+  // ... Continue in the next part due to length limitations ...
+
+
+
+  /**
+   * Formats date to YYYY-MM-DD HH:MM:SS
+   */
+  private formatDateTime(date: Date): string {
+    return date.toISOString().replace('T', ' ').slice(0, 19);
+  }
+
+  /**
+   * Loads schedule data from service
+   */
+  loadSchedule(): void {
+    this.isLoading = true;
+    this.scheduleService.getSchedule().subscribe({
+      next: (schedule) => {
+        this.schedule = schedule;
+        this.extractUniqueRooms();
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        this.error = 'Failed to load schedule';
+        this.isLoading = false;
+        this.notificationService.showError(error.message);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+
+
 
   /**
    * Gets all courses for a specific time slot
@@ -164,31 +210,7 @@ export class GlobalScheduleComponent implements OnInit {
     return courses;
   }
 
-  /**
-   * Toggles time slot details visibility
-   */
-  toggleTimeSlotDetails(day: string, timeSlot: string): void {
-    if (this.isTimeSlotSelected(day, timeSlot)) {
-      this.selectedTimeSlot = null;
-    } else {
-      this.selectedTimeSlot = { day, time: timeSlot };
-    }
-  }
 
-  /**
-   * Checks if a time slot is currently selected
-   */
-  isTimeSlotSelected(day: string, timeSlot: string): boolean {
-    return this.selectedTimeSlot?.day === day && this.selectedTimeSlot?.time === timeSlot;
-  }
-
-  /**
-   * Gets unique session types for a time slot
-   */
-  getUniqueSessionTypes(day: string, timeSlot: string): string[] {
-    const sessions = this.getAllCoursesForSlot(day, timeSlot);
-    return Array.from(new Set(sessions.map(session => session.type)));
-  }
 
   /**
    * Returns appropriate icon for course type
@@ -229,4 +251,8 @@ export class GlobalScheduleComponent implements OnInit {
     console.log('Opening delete modal for:', id, day, group, timeSlot);
     // Implement delete modal logic
   }
+
+
+
+
 }

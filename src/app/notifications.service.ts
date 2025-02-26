@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {Personne} from './models/Users';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 export interface Notification {
   id: number;
@@ -19,7 +20,7 @@ export class NotificationService {
   private notifications: Notification[] = [];
   private notificationsSubject: BehaviorSubject<Notification[]> = new BehaviorSubject<Notification[]>([]);
 
-  constructor() {}
+  constructor(private snackBar: MatSnackBar) {}
 
   getNotifications(): Observable<Notification[]> {
     return this.notificationsSubject.asObservable();
@@ -74,4 +75,23 @@ export class NotificationService {
     personne.signalIds.forEach(id => {
       this.addNotification(message, type, id, expediteurId);
     });
-  }}
+  }
+  showSuccess(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: ['success-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
+  }
+
+  showError(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      panelClass: ['error-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
+  }
+
+}

@@ -44,3 +44,39 @@
     background: #6B7280;
   }
 }
+
+
+/* Add these styles for better visualization */
+.text-primary {
+  color: #2563eb;
+}
+
+.text-primary-light {
+  color: #60a5fa;
+}
+
+/* Enhance day headers */
+.day-header {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Session card enhancements */
+.session-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.session-card:hover {
+  transform: translateY(-1px);
+}
+
+/* Type badge animations */
+.type-badge {
+  transition: all 0.2s ease-in-out;
+}
+
+.type-badge:hover {
+  transform: scale(1.05);
+}
