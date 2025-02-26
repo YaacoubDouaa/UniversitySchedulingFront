@@ -86,6 +86,7 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import { ProfEditScheduleComponent } from './prof-edit-schedule/prof-edit-schedule.component';
 import {StudentScheduleComponent} from './student-schedule/student-schedule.component';
 import { EditModalComponent } from './edit-modal/edit-modal.component';
+import { StudentDashBoardComponent } from './student-dash-board/student-dash-board.component';
 
 @NgModule({
   declarations: [
@@ -113,7 +114,8 @@ import { EditModalComponent } from './edit-modal/edit-modal.component';
     NotificationsComponent,
     ProfEditScheduleComponent,
     StudentScheduleComponent,
-    EditModalComponent
+    EditModalComponent,
+    StudentDashBoardComponent
 
   ],
   imports: [
