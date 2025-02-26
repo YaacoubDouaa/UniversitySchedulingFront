@@ -176,8 +176,10 @@ export class CsvImportComponent implements OnInit {
       }
 
       try {
+        // Parse the CSV data
         this.convertedSeances = this.specializedParser.parseScheduleCsvToSeanceDTO(content);
 
+        // Create preview data from the converted seances
         const previewData: ScheduleRow[] = this.convertedSeances.slice(0, 5).map(seance => ({
           id: seance.id || 'To be generated',
           jour: seance.jour,
@@ -191,12 +193,18 @@ export class CsvImportComponent implements OnInit {
           branches: seance.branches?.map(b => b.name).join(', ') || ''
         }));
 
+        // Initialize the table data
         this.displayedColumns = Object.keys(previewData[0] || {});
-        this.previewData = new MatTableDataSource(previewData);
+        this.previewData = new MatTableDataSource<ScheduleRow>(previewData);
         this.parsedData = this.convertedSeances;
 
+        // Show mapping form when data is loaded
+        this.showMappingForm = true;
+
+        // Validate the converted data
         this.validateConvertedData();
 
+        // Update processing status
         this.isProcessing = false;
         this.processingProgress = 100;
 
@@ -586,7 +594,34 @@ export class CsvImportComponent implements OnInit {
     const sourceField = Object.entries(mapping).find(([_, value]) => value === targetField)?.[0];
     return sourceField ? row[sourceField] || '' : '';
   }
-  getCurrentDateTime() {
-    return "douaa";
+  getCurrentDateTime(): string {
+    // Return the stored current date time if available
+    if (this.currentDateTime) {
+      return this.currentDateTime;
+    }
+
+    // Get current UTC time
+    const now = new Date();
+
+    // Format to YYYY-MM-DD HH:MM:SS
+    const year = now.getUTCFullYear();
+    const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(now.getUTCDate()).padStart(2, '0');
+    const hours = String(now.getUTCHours()).padStart(2, '0');
+    const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+
+    // Update the stored current date time
+    this.currentDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+    return this.currentDateTime;
+  }
+
+  // Add this property to your component class
+  showMappingForm: boolean = false;
+
+// Add this method to toggle the form visibility
+  toggleMappingForm(): void {
+    this.showMappingForm = !this.showMappingForm;
   }
 }

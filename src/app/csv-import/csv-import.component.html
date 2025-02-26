@@ -144,34 +144,44 @@
               <span class="text-xs text-gray-500 dark:text-gray-400">Showing first 5 rows of {{ parsedData.length }}</span>
             </div>
           </div>
+          <!-- Field Mapping Section -->
+          <div *ngIf="!isProcessing && displayedColumns.length > 0" class="space-y-4">
+            <!-- Toggle Mapping Form Button -->
+            <button mat-raised-button
+                    (click)="toggleMappingForm()"
+                    class="w-full py-3 flex items-center justify-center space-x-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-all">
+              <i-feather [name]="showMappingForm ? 'chevron-up' : 'chevron-down'" class="h-5 w-5"></i-feather>
+              <span>{{ showMappingForm ? 'Hide Field Mapping' : 'Show Field Mapping' }}</span>
+            </button>
 
-          <!-- Field Mapping Form -->
-          <div *ngIf="!isProcessing && displayedColumns.length > 0">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
-              <i-feather name="map" class="h-5 w-5 text-primary"></i-feather>
-              <span>Map Fields</span>
-            </h3>
+            <!-- Mapping Form Section -->
+            <div *ngIf="showMappingForm" class="animate-fade-in space-y-4">
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+                <i-feather name="map" class="h-5 w-5 text-primary"></i-feather>
+                <span>Map Fields</span>
+              </h3>
 
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Map each column in your CSV file to the corresponding field in the schedule system
-            </p>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Map each column in your CSV file to the corresponding field in the schedule system
+              </p>
 
-            <form [formGroup]="mappingForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <mat-form-field *ngFor="let column of displayedColumns" appearance="outline">
-                <mat-label>{{ column }}</mat-label>
-                <mat-select [formControlName]="column">
-                  <mat-option value="">Ignore</mat-option>
-                  <mat-option value="day">Day</mat-option>
-                  <mat-option value="time">Time</mat-option>
-                  <mat-option value="course">Course</mat-option>
-                  <mat-option value="professor">Professor</mat-option>
-                  <mat-option value="room">Room</mat-option>
-                  <mat-option value="groupe">Group</mat-option>
-                  <mat-option value="type">Type</mat-option>
-                  <mat-option value="biWeekly">Bi-Weekly</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </form>
+              <form [formGroup]="mappingForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <mat-form-field *ngFor="let column of displayedColumns" appearance="outline">
+                  <mat-label>{{ column }}</mat-label>
+                  <mat-select [formControlName]="column">
+                    <mat-option value="">Ignore</mat-option>
+                    <mat-option value="day">Day</mat-option>
+                    <mat-option value="time">Time</mat-option>
+                    <mat-option value="course">Course</mat-option>
+                    <mat-option value="professor">Professor</mat-option>
+                    <mat-option value="room">Room</mat-option>
+                    <mat-option value="groupe">Group</mat-option>
+                    <mat-option value="type">Type</mat-option>
+                    <mat-option value="biWeekly">Bi-Weekly</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </form>
+            </div>
           </div>
 
           <!-- Action Buttons -->
