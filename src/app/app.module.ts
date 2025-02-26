@@ -85,6 +85,7 @@ import {NotificationsComponent} from './notifications/notifications.component';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import { ProfEditScheduleComponent } from './prof-edit-schedule/prof-edit-schedule.component';
 import {StudentScheduleComponent} from './student-schedule/student-schedule.component';
+import { EditModalComponent } from './edit-modal/edit-modal.component';
 
 @NgModule({
   declarations: [
@@ -111,7 +112,8 @@ import {StudentScheduleComponent} from './student-schedule/student-schedule.comp
     AdministratorSpaceComponent,
     NotificationsComponent,
     ProfEditScheduleComponent,
-    StudentScheduleComponent
+    StudentScheduleComponent,
+    EditModalComponent
 
   ],
   imports: [
