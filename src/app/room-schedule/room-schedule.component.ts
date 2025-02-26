@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import {RattrapageSchedule, Schedule} from '../models/Schedule';
 import { Seance } from '../models/Seance';
 import { ScheduleService } from '../schedule-service.service';
+import {APP_CONSTANTS} from '../constants';
 
 interface ActivitySelection {
   seance: Seance;
@@ -34,9 +35,9 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   /**
    * Constants
    */
-  readonly days: string[] = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
-  readonly timeSlots: string[] = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
-  readonly niveaux: string[] = ['ING1_INFO', 'ING2_INFO', 'ING3_INFO'];
+  days = APP_CONSTANTS.DAYS;
+  timeSlots = APP_CONSTANTS.TIME_SLOTS;
+  niveaux = APP_CONSTANTS.GROUPS;
   readonly rooms: string[] = ['A101', 'A102', 'A103', 'B101', 'B102', 'B103'];
 
   /**

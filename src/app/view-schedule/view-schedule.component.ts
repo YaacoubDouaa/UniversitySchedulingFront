@@ -8,6 +8,7 @@ import { Seance } from '../models/Seance';
 import { RattrapageService } from '../rattrapage.service';
 import {ScheduleService} from '../schedule-service.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {APP_CONSTANTS} from '../constants';
 
 
 @Component({
@@ -57,9 +58,10 @@ export class ViewScheduleComponent implements OnInit, OnDestroy {
    * Schedule Configuration
    * Basic setup for schedule display
    */
-  days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
-  timeSlots = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
-  groupOptions = ['ING1_INFO', 'ING1_INFO_TD1', 'ING1_INFO_TD2', 'ING1_INFO_TD1 || ING1_INFO_TD2'];
+  days = APP_CONSTANTS.DAYS;
+  timeSlots = APP_CONSTANTS.TIME_SLOTS;
+  groupOptions = APP_CONSTANTS.GROUPS;
+
 
   /**
    * Schedule State Management
