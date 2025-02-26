@@ -14,4 +14,5 @@ export const APP_CONSTANTS = {
     niveau: "ING1_INFO",
 
   }
+  ,ROOMS: ['101', '102', '102', '103']
 }

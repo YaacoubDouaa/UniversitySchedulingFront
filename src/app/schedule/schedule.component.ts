@@ -57,6 +57,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   days = APP_CONSTANTS.DAYS;
   timeSlots = APP_CONSTANTS.TIME_SLOTS;
   groupOptions = APP_CONSTANTS.GROUPS;
+  salleOPtions=APP_CONSTANTS.ROOMS
 
   /**
    * UI State Management
@@ -81,6 +82,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   private schedule: Schedule = {};
   private rattrapageSchedule: RattrapageSchedule = {};
   private idCounter = 20;
+
   /**
    * Activity Management
    * Handles currently selected or targeted activities
@@ -281,7 +283,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
       });
   }
 
-  selectedRoom: any;
+  selectedRoom='';
 
   /**
    * Title Animation
