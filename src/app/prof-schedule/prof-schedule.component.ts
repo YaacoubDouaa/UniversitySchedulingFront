@@ -1,262 +1,96 @@
-import {ChangeDetectorRef, Component} from '@angular/core';
-import {Seance} from '../models/Seance';
-import {RattrapageSchedule, Schedule} from '../models/Schedule';
-import {Subscription} from 'rxjs';
-import {ScheduleService} from '../schedule-service.service';
-interface ActivitySelection {
-  seance: Seance;
-  day: string;
-  time: string;
-  niveau: string;
-}
-
-interface DeleteSelection {
-  id: number;
-  day: string;
-  niveau: string;
-  time: string;
-}
+import {Component, Injector, OnInit} from '@angular/core';
+import { ProfessorsService } from '../professors.service';
+import { Observable, Subject, takeUntil } from 'rxjs';
+import { Prof } from '../models/Professors';
+import { Schedule } from '../models/Schedule';
+import { Seance } from '../models/Seance';
 
 @Component({
   selector: 'app-prof-schedule',
-  standalone: false,
   templateUrl: './prof-schedule.component.html',
-  styleUrl: './prof-schedule.component.css'
+  styleUrls: ['./prof-schedule.component.css'],
+  standalone: false
 })
-export class ProfScheduleComponent {
-  /**
-   * System Configuration
-   */
-  private readonly currentDateTime = '2025-02-24 22:30:32';
-  private readonly currentUser = 'YaacoubDouaa';
+export class ProfScheduleComponent implements OnInit {
+  currentDateTime: string;
+  currentUser: string;
+  profSchedule$: Observable<Schedule | null>;
+  schedule: Schedule | null = null;
+  private destroy$ = new Subject<void>();
 
-  /**
-   * Constants
-   */
-  readonly days: string[] = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
-  readonly timeSlots: string[] = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
-  readonly niveaux: string[] = ['ING1_INFO', 'ING2_INFO', 'ING3_INFO'];
-  readonly rooms: string[] = ['A101', 'A102', 'A103', 'B101', 'B102', 'B103'];
+  days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+  timeSlots = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
 
-  /**
-   * Component State
-   */
-  profSchedule: Schedule | null = null;
-  selectedRoom: string = 'A101';
-  selectedNiveau: string = 'ING1_INFO';
-  selectedFrequency: 'weekly' | 'biweekly' = 'weekly';
-  isLoading: boolean = false;
+  constructor(private professorsService: ProfessorsService, private injector: Injector) {
+    this.professorsService = this.injector.get(ProfessorsService);
+    this.currentDateTime = this.professorsService.getCurrentDateTime();
+    this.currentUser = this.professorsService.getCurrentUser();
+    this.profSchedule$ = this.professorsService.getProfessorSchedule(this.currentUser);
+  }
 
-  /**
-   * Modal States
-   */
-  showAddModal = false;
-  showEditModal = false;
-  showDeleteModal = false;
-
-  /**
-   * Error Handling
-   */
-  errorMessage = '';
-  showError = false;
-
-  /**
-   * Selected Items
-   */
-  selectedActivity: ActivitySelection | null = null;
-  seanceToDelete: DeleteSelection | null = null;
-
-  /**
-   * Subscription Management
-   */
-  private scheduleSubscription?: Subscription;
-  rattrapageSchedule: RattrapageSchedule = {};
-  constructor(private scheduleService: ScheduleService,private cdRef: ChangeDetectorRef) {}
-
-  ngOnInit(): void {
+  ngOnInit() {
     this.loadSchedule();
+
+    setInterval(() => {
+      this.currentDateTime = this.professorsService.getCurrentDateTime();
+    }, 1000);
   }
 
-  ngOnDestroy(): void {
-    this.scheduleSubscription?.unsubscribe();
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  /**
-   * Schedule Loading and Management
-   */
-  private loadSchedule(): void {
-    this.isLoading = true;
-    this.scheduleSubscription = this.scheduleService.getRoomSchedule(this.selectedRoom)
+  loadSchedule() {
+    this.profSchedule$
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (schedule: Schedule) => {
-          this.profSchedule = schedule;
-          this.cdRef.detectChanges(); // Manually trigger view update
-          this.isLoading = false;
+        next: (schedule) => {
+          if (schedule) {
+            this.schedule = schedule;
+            console.log('Schedule loaded successfully:', schedule);
+          } else {
+            console.log('No schedule found for user:', this.currentUser);
+          }
         },
-        error: (error: Error) => {
+        error: (error) => {
           console.error('Error loading schedule:', error);
-          this.showError = true;
-          this.errorMessage = 'Failed to load schedule';
-          this.isLoading = false;
         }
       });
   }
 
-  onRoomChange(): void {
-    this.loadSchedule();
-  }
+  getSessionsForSlot(schedule: Schedule | null, day: string, timeSlot: string): Seance[] {
+    if (!schedule || !schedule[day]) return [];
 
-  /**
-   * Session Management
-   */
-  getSessions(day: string, time: string, niveau: string): Seance[] {
-    if (!this.profSchedule?.[day]?.[time]?.[niveau]) {
-      return [];
+    const sessions: Seance[] = [];
+    if (schedule[day]) {
+      Object.values(schedule[day]).forEach(niveauSchedule => {
+        if (niveauSchedule[timeSlot]) {
+          sessions.push(...niveauSchedule[timeSlot]);
+        }
+      });
     }
-    return this.profSchedule[day][time][niveau];
+    return sessions;
   }
 
+  getCurrentTimeSlot(): string {
+    const now = new Date();
+    const hour = now.getHours();
+    const minutes = now.getMinutes();
 
-  /**
-   * Modal Management
-   */
-  openAddModal(day: string, time: string, niveau: string): void {
-    this.selectedActivity = {
-      seance: {
-        id: Math.floor(Math.random() * 1000000),
-        name: '',
-        room: this.selectedRoom,
-        type: 'COURS',
-        professor: '',
-        groupe: niveau,
-        biWeekly: this.selectedFrequency === 'biweekly'
-      },
-      day,
-      time,
-      niveau
-    };
-    this.showAddModal = true;
-    this.showError = false;
+    if (hour >= 8 && (hour < 10 || (hour === 10 && minutes <= 0))) return '8:30-10:00';
+    if (hour >= 10 && (hour < 11 || (hour === 11 && minutes <= 45))) return '10:15-11:45';
+    if (hour >= 13 && (hour < 14 || (hour === 14 && minutes <= 30))) return '13:00-14:30';
+    if (hour >= 14 && (hour < 16 || (hour === 16 && minutes <= 15))) return '14:45-16:15';
+    if (hour >= 16 && hour < 18) return '16:30-18:00';
+    return '';
   }
 
-  openEditModal(seance: Seance, day: string, time: string, niveau: string): void {
-    this.selectedActivity = {
-      seance: { ...seance },
-      day,
-      time,
-      niveau
-    };
-    this.selectedFrequency = seance.biWeekly ? 'biweekly' : 'weekly';
-    this.showEditModal = true;
-    this.showError = false;
+  isCurrentTimeSlot(timeSlot: string): boolean {
+    return timeSlot === this.getCurrentTimeSlot();
   }
 
-  openDeleteModal(id: number, day: string, niveau: string, time: string): void {
-    this.seanceToDelete = { id, day, niveau, time };
-    this.showDeleteModal = true;
-    this.showError = false;
-  }
-
-  /**
-   * Save Operations
-   */
-  saveAddChanges(): void {
-    if (!this.selectedActivity) return;
-
-    const { day, time, niveau, seance } = this.selectedActivity;
-    seance.biWeekly = this.selectedFrequency === 'biweekly';
-
-    this.isLoading = true;
-    this.scheduleService.addSession(day, time, niveau, seance)
-      .subscribe({
-        next: () => {
-          this.closeAddModal();
-          this.loadSchedule();
-        },
-        error: (error: Error) => {
-          this.showError = true;
-          this.errorMessage = error.message || 'Failed to add session';
-          this.isLoading = false;
-        }
-      });
-  }
-
-  saveEditChanges(): void {
-    if (!this.selectedActivity) return;
-
-    const { day, time, niveau, seance } = this.selectedActivity;
-    seance.biWeekly = this.selectedFrequency === 'biweekly';
-
-    this.isLoading = true;
-    this.scheduleService.updateSession(day, time, niveau, seance)
-      .subscribe({
-        next: () => {
-          this.closeEditModal();
-          this.loadSchedule();
-        },
-        error: (error: Error) => {
-          this.showError = true;
-          this.errorMessage = error.message || 'Failed to update session';
-          this.isLoading = false;
-        }
-      });
-  }
-
-  confirmDelete(): void {
-    if (!this.seanceToDelete) return;
-
-    const { id, day, niveau, time } = this.seanceToDelete;
-
-    this.isLoading = true;
-    this.scheduleService.deleteSession(day, time, niveau, id)
-      .subscribe({
-        next: () => {
-          this.closeDeleteModal();
-          this.loadSchedule();
-        },
-        error: (error: Error) => {
-          this.showError = true;
-          this.errorMessage = error.message || 'Failed to delete session';
-          this.isLoading = false;
-        }
-      });
-  }
-
-  /**
-   * Modal Close Handlers
-   */
-  closeAddModal(): void {
-    this.showAddModal = false;
-    this.selectedActivity = null;
-    this.showError = false;
-  }
-
-  closeEditModal(): void {
-    this.showEditModal = false;
-    this.selectedActivity = null;
-    this.showError = false;
-  }
-
-  closeDeleteModal(): void {
-    this.showDeleteModal = false;
-    this.seanceToDelete = null;
-    this.showError = false;
-  }
-
-  closeModal(): void {
-    this.closeAddModal();
-    this.closeEditModal();
-    this.closeDeleteModal();
-  }
-
-  /**
-   * System State Getters
-   */
-  getCurrentDateTime(): string {
-    return this.currentDateTime;
-  }
-
-  getCurrentUser(): string {
-    return this.currentUser;
+  refreshSchedule() {
+    this.loadSchedule();
   }
 }

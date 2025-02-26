@@ -90,6 +90,7 @@ import { StudentDashBoardComponent } from './student-dash-board/student-dash-boa
 import { TechnicienGlobalScheduleComponent } from './technicien-global-schedule/technicien-global-schedule.component';
 import { TechnicienDashBoardComponent } from './technicien-dash-board/technicien-dash-board.component';
 import { TechnicienSpaceComponent } from './technicien-space/technicien-space.component';
+import {ProfScheduleComponent} from './prof-schedule/prof-schedule.component';
 
 @NgModule({
   declarations: [
@@ -122,7 +123,8 @@ import { TechnicienSpaceComponent } from './technicien-space/technicien-space.co
     ProfEditScheduleComponent,
     TechnicienGlobalScheduleComponent,
     TechnicienDashBoardComponent,
-    TechnicienSpaceComponent
+    TechnicienSpaceComponent,
+    ProfScheduleComponent
   ],
   imports: [
     BrowserAnimationsModule,

@@ -78,8 +78,6 @@ export class TechnicienDashBoardComponent {
   getCurrentTimeSlot(): string {
     const hour = new Date().getHours();
     const minutes = new Date().getMinutes();
-
-    // Map current time to available time slots
     if (hour >= 8 && (hour < 10 || (hour === 10 && minutes <= 0))) return '8:30-10:00';
     if (hour >= 10 && (hour < 11 || (hour === 11 && minutes <= 45))) return '10:15-11:45';
     if (hour >= 13 && (hour < 14 || (hour === 14 && minutes <= 30))) return '13:00-14:30';

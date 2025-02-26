@@ -257,7 +257,7 @@ export class ProfessorsService {
   /**
    * Get current day's sessions
    */
-  private getCurrentSessions(schedule: Schedule): Seance[] {
+  getCurrentSessions(schedule: Schedule): Seance[] {
     const currentDay = this.getCurrentDay();
     if (!schedule[currentDay]) return [];
 
@@ -269,7 +269,7 @@ export class ProfessorsService {
   /**
    * Get upcoming sessions
    */
-  private getUpcomingSessions(schedule: Schedule): Array<Seance & {
+  getUpcomingSessions(schedule: Schedule): Array<Seance & {
     day: string;
     time: string;
     niveau: string;

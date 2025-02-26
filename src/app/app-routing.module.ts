@@ -21,6 +21,7 @@ import {AdministratorSpaceComponent} from './administrator-sapce/administrator-s
 import {TechnicienSpaceComponent} from './technicien-space/technicien-space.component';
 import {TechnicienGlobalScheduleComponent} from './technicien-global-schedule/technicien-global-schedule.component';
 import {TechnicienDashBoardComponent} from './technicien-dash-board/technicien-dash-board.component';
+import {ProfScheduleComponent} from './prof-schedule/prof-schedule.component';
 
 const routes: Routes = [ { path: '', component: DashboardComponent },
   { path: 'login', component: LoginComponent },
@@ -42,7 +43,7 @@ const routes: Routes = [ { path: '', component: DashboardComponent },
     component: ProfessorSpaceComponent},
       { path: '', redirectTo: 'profdashboard', pathMatch: 'full' },
       { path: 'profdashboard', component: ProfessorDashboardComponent },
-      // { path: 'profschedule', component: ProfessorViewScheduleComponent },
+      { path: 'profschedule', component: ProfScheduleComponent },
       { path: 'propose-rattrapage', component: ProposeRattrapageComponent },
 
   {

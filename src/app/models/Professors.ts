@@ -23,12 +23,14 @@ export interface EnseignantDTO {
 
 // Professor interface
 export interface Prof {
+
   name: string;
   codeEnseignant: string;
   heures: number;
   schedule: Schedule;
   totalScheduledHours?: number;
   currentWeekSessions?: Seance[];
+  totalHours?: number;
   upcomingSessions?: Array<Seance & { day: string; time: string }>;
 }
 
