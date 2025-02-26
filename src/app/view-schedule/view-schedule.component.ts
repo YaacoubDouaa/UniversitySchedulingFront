@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, OnDestroy, ChangeDetectorRef, Input} from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import {map, Observable, startWith, Subscription} from 'rxjs';
@@ -51,7 +51,7 @@ export class ViewScheduleComponent implements OnInit, OnDestroy {
   showDeleteModal = false;
   showTD = true;
   showTP = true;
-  selectedGroup = '';
+  @Input() selectedGroup = '';
   fullText = 'Schedule Manager';
   displayText = '';
   /**

@@ -17,16 +17,16 @@
 
 
 
-        <!-- Enhanced View Schedule Button -->
-        <div class="flex items-center">
-          <button (click)="navigateToView()"
-                  class="flex items-center space-x-2 px-6 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl">
-            <i-feather name="eye" class="h-5 w-5"></i-feather>
-            <span>View Schedule</span>
-          </button>
+          <!-- Enhanced View Schedule Button -->
+          <div class="flex items-center">
+            <button (click)="navigateToView()"
+                    class="flex items-center space-x-2 px-6 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl">
+              <i-feather name="eye" class="h-5 w-5"></i-feather>
+              <span>View Schedule</span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
     </div></nav>
 
   <!-- Main Content with Enhanced Styling -->
@@ -244,17 +244,17 @@
         </table>
       </div>
     </div>
-
     <!-- Edit/Add Modal -->
     <div *ngIf="showModal"
          class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
          (click)="closeModal()">
+
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full m-4 p-6"
            (click)="$event.stopPropagation()">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
             <i-feather [name]="selectedActivity.seance.id ? 'edit' : 'plus-circle'" class="h-5 w-5"></i-feather>
-            <span>{{ selectedActivity.seance.id ? 'Edit Activity' : 'Add Activity' }}</span>
+            <span>{{ selectedActivity.seance.id ? 'Edit Session' : 'Add Session' }}</span>
           </h2>
           <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                   (click)="closeModal()">
@@ -263,41 +263,46 @@
         </div>
 
         <form class="space-y-4">
-          <div>
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>
-                <div class="flex items-center space-x-2">
-                  <i-feather name="bookmark" class="h-4 w-4"></i-feather>
-                  <span>Activity Name</span>
-                </div>
-              </mat-label>
-              <input matInput [(ngModel)]="selectedActivity.seance.name" name="activityName" required />
-            </mat-form-field>
-          </div>
+          <!-- Activity Name -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>
+              <div class="flex items-center space-x-2">
+                <i-feather name="bookmark" class="h-4 w-4"></i-feather>
+                <span>Activity Name</span>
+              </div>
+            </mat-label>
+            <input matInput [(ngModel)]="selectedActivity.seance.name" name="activityName" required />
+          </mat-form-field>
 
-          <div>
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>
-                <div class="flex items-center space-x-2">
-                  <i-feather name="user" class="h-4 w-4"></i-feather>
-                  <span>Professor</span>
-                </div>
-              </mat-label>
-              <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required />
-            </mat-form-field>
-          </div>
+          <!-- Professor -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>
+              <div class="flex items-center space-x-2">
+                <i-feather name="user" class="h-4 w-4"></i-feather>
+                <span>Professor</span>
+              </div>
+            </mat-label>
+            <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required />
+          </mat-form-field>
 
-          <div>
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>
-                <div class="flex items-center space-x-2">
-                  <i-feather name="tag" class="h-4 w-4"></i-feather>
-                  <span>Type</span>
-                </div>
-              </mat-label>
-              <input matInput [(ngModel)]="selectedActivity.seance.type" name="type" />
-            </mat-form-field>
-          </div>
+          <!-- Type -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Type</mat-label>
+            <mat-select [(ngModel)]="selectedActivity.seance.type" name="type" required>
+              <mat-option value="COURS">Cours</mat-option>
+              <mat-option value="TD">TD</mat-option>
+              <mat-option value="TP">TP</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Frequency -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Frequency</mat-label>
+            <mat-select [(ngModel)]="selectedFrequency" name="frequency" required>
+              <mat-option value="weekly">Weekly</mat-option>
+              <mat-option value="biweekly">Bi-weekly</mat-option>
+            </mat-select>
+          </mat-form-field>
 
           <div class="flex justify-end space-x-3 pt-4">
             <button mat-button
@@ -346,6 +351,5 @@
           </div>
         </div>
       </div>
-    </div>
+    </div></div>
   </div>
-</div>

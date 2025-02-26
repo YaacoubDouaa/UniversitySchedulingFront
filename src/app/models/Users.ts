@@ -34,7 +34,12 @@ export interface Etudiant extends Personne {
   brancheId: number;
   tpId: number;
 }
-
+export interface Student{
+  id: number;
+  name: string;
+  groupe:string;
+  niveau:string;
+}
 
 // Technicien Interface
 export interface TechnicienDTO extends Personne {
