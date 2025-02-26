@@ -26,9 +26,12 @@ export class RoomsComponent implements OnInit {
   selectedTime: string = '';
   selectedType: string = '';
   selectedNiveau: string = '';
-  private selectedFrequency: 'weekly' | 'biweekly' = 'weekly';
+  protected selectedFrequency: 'weekly' | 'biweekly' = 'weekly';
   showModal: boolean = false;
   protected showAddModal: boolean = false;
+  // Constants
+
+  readonly niveaux: string[] = ['ING1_INFO', 'ING2_INFO', 'ING3_INFO'];
 
   // Data structures
   salles: SalleList = {};
@@ -176,30 +179,6 @@ export class RoomsComponent implements OnInit {
     };
     this.showModal = true;
   }
-
-  /**
-   * Open modal for editing session
-   */
-  openEditModal(seance: Seance, day: string, time: string, niveau: string): void {
-    this.selectedActivity = {
-      seance: { ...seance },
-      day,
-      time,
-      niveau
-    };
-    this.showModal = true;
-  }
-
-
-  /**
-   * Open modal for deleting session
-   */
-  openDeleteModal(seance: Seance, day: string, time: string, niveau: string): void {
-    this.selectedActivity = { seance, day, time, niveau };
-    this.showModal = true;
-  }
-
-
 
   /**
    * Close modal dialog
