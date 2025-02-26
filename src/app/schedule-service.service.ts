@@ -80,7 +80,7 @@ export class ScheduleService {
    * @param seance - Session details to add
    * @returns Observable<boolean> indicating success or error
    */
-  addSession(day: string, time: string, niveau: string, seance: Seance): Observable<boolean> {
+  addSession(day: string,  niveau: string, time: string, seance: Seance): Observable<boolean> {
     // Validate if session can be added
     if (!this.canAddSession(day, time, niveau, seance.biWeekly)) {
       return throwError(() => new Error(

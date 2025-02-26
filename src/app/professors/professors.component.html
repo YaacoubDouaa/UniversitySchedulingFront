@@ -215,7 +215,7 @@
             Cancel
           </button>
           <button mat-raised-button color="primary"
-                  (click)="selectedActivity.seance.id ? saveEditChanges() : saveAddChanges()"
+                  (click)="saveAddChanges()"
                   class="px-4 py-2 bg-[#ef233c] text-white rounded-lg hover:bg-[#ef233c]/90">
             {{ selectedActivity.seance.id ? 'Save Changes' : 'Add Session' }}
           </button>
@@ -235,7 +235,7 @@
   </div>
   <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Select Day and Time</h3>
   <p class="text-sm text-gray-500 dark:text-gray-400">Choose a day and time to view professor availability</p>
-</div>
+
 
 <!-- Loading Spinner -->
 <div *ngIf="isLoading"
@@ -244,4 +244,6 @@
     <mat-spinner diameter="48" class="mx-auto"></mat-spinner>
     <p class="mt-4 text-white">Loading...</p>
   </div>
-</div></div>
+</div>
+</div>
+</div>
