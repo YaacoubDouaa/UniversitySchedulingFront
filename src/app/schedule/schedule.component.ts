@@ -8,6 +8,7 @@ import {RattrapageSchedule, Schedule} from '../models/Schedule';
 import {RattrapageService} from '../rattrapage.service';
 import {ScheduleService} from '../schedule-service.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {APP_CONSTANTS} from '../constants';
 
 
 /**
@@ -47,15 +48,15 @@ export class ScheduleComponent implements OnInit, OnDestroy {
    * Stores current system time and user information
    */
   private readonly currentDateTime = '2025-02-24 20:42:07';
-  private readonly currentUser = 'YaacoubDouaa';
+  protected readonly currentUser = 'YaacoubDouaa';
 
   /**
    * Schedule Configuration
    * Basic setup for schedule display
    */
-  days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
-  timeSlots = ['8:30-10:00', '10:15-11:45', '13:00-14:30', '14:45-16:15', '16:30-18:00'];
-  groupOptions = ['ING1_INFO', 'ING1_INFO_TD1', 'ING1_INFO_TD2', 'ING1_INFO_TD1 || ING1_INFO_TD2'];
+  days = APP_CONSTANTS.DAYS;
+  timeSlots = APP_CONSTANTS.TIME_SLOTS;
+  groupOptions = APP_CONSTANTS.GROUPS;
 
   /**
    * UI State Management
@@ -261,7 +262,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.scheduleSubscription?.unsubscribe();
-    this.rattrapageSubscription?.unsubscribe();
+
   }
 
   /**
@@ -280,7 +281,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
       });
   }
 
-// ... [Previous code remains the same]
+  selectedRoom: any;
 
   /**
    * Title Animation
@@ -682,4 +683,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     this.cdRef.detectChanges();
   }
 
+  onRoomChange() {
+
+  }
 }
