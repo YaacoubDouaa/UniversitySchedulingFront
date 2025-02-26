@@ -115,8 +115,8 @@ import { StudentDashBoardComponent } from './student-dash-board/student-dash-boa
     ProfEditScheduleComponent,
     StudentScheduleComponent,
     EditModalComponent,
-    StudentDashBoardComponent
-
+    StudentDashBoardComponent,
+    ProfEditScheduleComponent
   ],
   imports: [
     BrowserAnimationsModule,

@@ -20,7 +20,6 @@ interface DeleteSelection {
 @Component({
   selector: 'app-prof-edit-schedule',
   standalone: false,
-
   templateUrl: './prof-edit-schedule.component.html',
   styleUrl: './prof-edit-schedule.component.css'
 })
