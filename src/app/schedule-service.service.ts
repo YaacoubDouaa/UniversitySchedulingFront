@@ -3,6 +3,10 @@ import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { Schedule } from './models/Schedule';
 import { Seance } from './models/Seance';
 import {demoSchedule} from './initialData';
+import {HttpClient} from '@angular/common/http';
+
+class SaveRequest {
+}
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +34,9 @@ export class ScheduleService {
    */
   private currentUser = 'YaacoubDouaa';
   currentDisponibilite: Observable<Schedule>=new Observable();
+  private apiUrl: string='';
 
+  constructor(private http: HttpClient) {}
   /**
    * Validates if a new session can be added to a specific time slot
    * Rules:
@@ -348,5 +354,8 @@ export class ScheduleService {
       console.error('Error changing schedule:', error);
       throw new Error('Failed to change schedule');
     }
+  }
+  saveSeances(request: SaveRequest): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/seances`, request);
   }
 }

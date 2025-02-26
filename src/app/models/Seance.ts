@@ -19,3 +19,16 @@ export interface SeanceConflict {
   time:string;
   conflictTypes: string[];
 }
+
+export interface SeanceDTO {
+  id?: string;
+  jour: string;
+  heureDebut: string;
+  heureFin: string;
+  type: string;
+  matiere: string;
+  frequence: string;
+  salle?: { name: string };
+  enseignant?: { name: string };
+  branches?: Array<{ name: string }>;
+}
