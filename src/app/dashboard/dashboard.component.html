@@ -1,5 +1,42 @@
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <!-- Enhanced Welcome Header -->
+
+    <div class="relative px-8 py-12">
+      <!-- Content -->
+      <div class="relative flex flex-col md:flex-row items-center justify-between">
+        <div class="text-center md:text-left mb-6 md:mb-0">
+          <h1 class="text-3xl md:text-4xl font-bold text-navy-100 mb-2">
+            <span class="typewriter">{{ displayText }}</span>
+            <span class="animate-pulse">|</span>
+          </h1>
+          <p class="text-navy-100 text-lg max-w-2xl">
+            Manage and organize your academic schedule efficiently
+          </p>
+          <!-- Current Date/Time and User Info -->
+          <div class="flex flex-wrap items-center gap-4 mt-4">
+            <div class="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+              <i-feather name="clock" class="h-4 w-4 text-navy-200"></i-feather>
+              <span class="text-sm font-mono text-purple-100">{{currentDateTime}}</span>
+            </div>
+            <div class="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+              <i-feather name="user" class="h-4 w-4 text-navy-200"></i-feather>
+              <span class="text-sm text-purple-100">{{currentUser}}</span>
+            </div>
+          </div>
+        </div>
+
+
+
+      <!-- Decorative Elements -->
+      <div class="absolute bottom-0 right-0 transform translate-y-1/2 translate-x-1/4">
+        <div class="text-purple-300/20">
+          <i-feather name="calendar" class="h-32 w-32"></i-feather>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Info Carousel -->
   <div class="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
     <div class="relative" style="height: 200px;">
@@ -103,21 +140,7 @@
     </div>
   </div>
 
-  <header class="bg-white shadow-md rounded-lg mb-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center py-4">
-        <!-- Typewriter Effect Header -->
-        <div class="text-center mb-12">
-          <h1 class="text-4xl font-bold tracking-tight">
-            <span>{{ displayText }}</span>
-            <span class="animate-pulse">|</span>
-          </h1>
-          <p class="text-gray-600 mt-4 animated-text">Manage and organize your academic schedule</p>
 
-        </div>
-      </div></div>
-
-  </header>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Schedule Section -->

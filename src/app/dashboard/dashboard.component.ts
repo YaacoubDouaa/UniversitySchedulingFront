@@ -204,4 +204,6 @@ export class DashboardComponent implements OnInit {
     this.upcomingRattrapages = 3; // Replace with actual count
   }
   protected readonly Object = Object;
+  currentUser='Douaa';
+  currentDateTime: string='';
 }
