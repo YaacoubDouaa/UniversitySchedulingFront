@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, of } from 'rxjs';
+import {BehaviorSubject, map, Observable, of, Subscription} from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
 import { Salle, SalleList, SallesDispo } from './models/Salle';
 import { Seance } from './models/Seance';
