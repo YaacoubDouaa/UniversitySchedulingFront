@@ -122,7 +122,14 @@ export class ProfessorsComponent implements OnInit, OnDestroy {
 
     return !hasRegularSession && !hasRattrapageSession;
   }
-
+  /**
+   * Handle prof selection
+   */
+  onSelectProf(profSchedule: Schedule): void {
+    this.scheduleService.changeSchedule(profSchedule);
+    this.profSchedule = profSchedule;
+    this.router.navigate(['/room-schedule']);
+  }
   /**
    * View session details for a specific time slot
    */
@@ -343,12 +350,7 @@ export class ProfessorsComponent implements OnInit, OnDestroy {
     );
   }
 
-  /**
-   * Navigate to professor's schedule
-   */
-  viewProfSchedule(profCode: string): void {
-    this.router.navigate(['/prof-schedule', profCode]);
-  }
+
 
   /**
    * Refresh view using ChangeDetectorRef
