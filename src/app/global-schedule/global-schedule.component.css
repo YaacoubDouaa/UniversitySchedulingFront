@@ -1,138 +1,46 @@
-.schedule-container {
-  font-family: Arial, sans-serif;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.day-container {
-  margin-bottom: 30px;
-}
-
-.day-container h2 {
-  background-color: #f0f0f0;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 5px;
-}
-
-.time-slot-container {
-  margin-bottom: 20px;
-  border-left: 3px solid #ddd;
-  padding-left: 15px;
-}
-
-.time-slot-container h3 {
-  color: #555;
-  margin-bottom: 10px;
-}
-
-.seance-item {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-left-width: 5px;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-}
-
-.seance-item:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.seance-item h4 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.seance-item p {
-  margin: 5px 0;
-  font-size: 14px;
-  color: #666;
-}
-
-button {
-  background-color: #4CAF50;
-  border: none;
-  color: white;
-  padding: 5px 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 14px;
-  margin: 2px 2px;
-  cursor: pointer;
-  border-radius: 3px;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #45a049;
-}
-
-button[class*="delete"] {
-  background-color: #f44336;
-}
-
-button[class*="delete"]:hover {
-  background-color: #d32f2f;
-}
-
-.modal {
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+/* Add these styles for better table appearance */
+.table-container {
+  position: relative;
   overflow: auto;
-  background-color: rgba(0,0,0,0.4);
+  border-radius: 0.5rem;
 }
 
-.modal-content {
-  background-color: #fefefe;
-  margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 500px;
-  border-radius: 5px;
+/* Smooth transitions for hover states */
+.cell-hover-effect {
+  transition: all 0.2s ease-in-out;
 }
 
-.modal-content h2 {
-  margin-top: 0;
+/* Custom scrollbar for better visibility */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.modal-content input,
-.modal-content select {
-  width: 100%;
-  padding: 8px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
   border-radius: 4px;
-  box-sizing: border-box;
 }
 
-.modal-content button {
-  width: 100%;
-  margin-top: 10px;
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
 }
 
-@media (max-width: 768px) {
-  .schedule-container {
-    padding: 10px;
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Dark mode scrollbar */
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-track {
+    background: #374151;
   }
 
-  .seance-item {
-    padding: 8px;
+  ::-webkit-scrollbar-thumb {
+    background: #4B5563;
   }
 
-  .modal-content {
-    width: 95%;
-    margin: 10% auto;
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6B7280;
   }
 }
