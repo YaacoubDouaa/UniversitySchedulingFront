@@ -32,12 +32,28 @@ export class RoomService {
               biWeekly: false
             }]
           }
-        }
+        },
         // ... other days
       }
     }
-    // ... other rooms
-  };
+    ,'A-9': {
+      id: 1,
+      name: 'A-8',
+      type: 'COURS',
+      capacite: 50,
+      schedule: {
+        LUNDI: {
+          'ING1_INFO': {
+            '8:30-10:00': [{
+              name: 'Ch-Ingénierie et interprétabilité des systèmes informatiques',
+              id: 1,
+              groupe: 'ING1_INFO',
+              room: 'A-8',
+              type: 'COURS',
+              professor: 'Sara MTIW',
+              biWeekly: false
+            }]
+          }}}}};
 
   constructor() {
     this.initializeService();

@@ -18,12 +18,12 @@ interface DeleteSelection {
 }
 
 @Component({
-  selector: 'app-prof-edit-schedule',
+  selector: 'app-prof-schedule',
   standalone: false,
-  templateUrl: './prof-edit-schedule.component.html',
-  styleUrl: './prof-edit-schedule.component.css'
+  templateUrl: './prof-schedule.component.html',
+  styleUrl: './prof-schedule.component.css'
 })
-export class ProfEditScheduleComponent {
+export class ProfScheduleComponent {
   /**
    * System Configuration
    */

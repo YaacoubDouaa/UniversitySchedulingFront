@@ -20,6 +20,7 @@ import {MessagingComponent} from './messaging/messaging.component';
 import {AdministratorSpaceComponent} from './administrator-sapce/administrator-space.component';
 import {TechnicienSpaceComponent} from './technicien-space/technicien-space.component';
 import {TechnicienGlobalScheduleComponent} from './technicien-global-schedule/technicien-global-schedule.component';
+import {TechnicienDashBoardComponent} from './technicien-dash-board/technicien-dash-board.component';
 
 const routes: Routes = [ { path: '', component: DashboardComponent },
   { path: 'login', component: LoginComponent },
@@ -48,7 +49,7 @@ const routes: Routes = [ { path: '', component: DashboardComponent },
     path: 'technicien',
     component: TechnicienSpaceComponent},
   { path: '', redirectTo: 'techDashboard', pathMatch: 'full' },
-  { path: 'techDashboard', component: TechnicienSpaceComponent },
+  { path: 'techDashboard', component: TechnicienDashBoardComponent },
   { path: 'techGlobalSchedule', component: TechnicienGlobalScheduleComponent  },
   { path: 'rooms', component: RoomsComponent },
   { path: 'schedule', component: ScheduleComponent }

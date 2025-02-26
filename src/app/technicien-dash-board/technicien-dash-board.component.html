@@ -1,0 +1,94 @@
+<!-- Room Carousel Section -->
+<div class="relative overflow-hidden">
+  <!-- Carousel Container -->
+  <div class="relative w-full"
+       (touchstart)="handleTouchStart($event)"
+       (touchmove)="handleTouchMove($event)"
+       (touchend)="handleTouchEnd()">
+
+    <!-- Navigation Buttons -->
+    <button
+      class="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
+      (click)="previousSlide()"
+      [class.opacity-50]="isAnimating"
+      [disabled]="isAnimating">
+      <i-feather name="chevron-left" class="h-6 w-6 text-gray-600 dark:text-gray-400"></i-feather>
+    </button>
+
+    <button
+      class="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
+      (click)="nextSlide()"
+      [class.opacity-50]="isAnimating"
+      [disabled]="isAnimating">
+      <i-feather name="chevron-right" class="h-6 w-6 text-gray-600 dark:text-gray-400"></i-feather>
+    </button>
+
+    <!-- Slides -->
+    <div class="flex transition-transform duration-500 ease-in-out"
+         [style.transform]="getSlideTransform()">
+      <ng-container *ngFor="let room of sallesList; let i = index">
+        <div class="w-full flex-shrink-0 p-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Room Details -->
+            <div class="space-y-6">
+              <div class="flex items-center space-x-3">
+                <div class="p-3 bg-primary/10 rounded-lg">
+                  <i-feather name="monitor" class="h-6 w-6 text-primary"></i-feather>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{room.name}}</h3>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{room.type}}</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                  <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Capacity</p>
+                  <p class="text-lg font-bold text-gray-900 dark:text-white">{{room.capacite}}</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                  <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Status</p>
+                  <div class="flex items-center space-x-2">
+                    <span class="h-3 w-3 rounded-full"
+                          [ngClass]="isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ?
+                                   'bg-red-500' : 'bg-green-500'"></span>
+                    <span class="font-medium"
+                          [ngClass]="isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ?
+                                   'text-red-500' : 'text-green-500'">
+                      {{isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ? 'Occupied' : 'Available'}}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Today's Schedule -->
+            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6">
+              <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Today's Schedule</h4>
+              <div class="space-y-3">
+                <div *ngFor="let timeSlot of timeSlots"
+                     class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg"
+                     [ngClass]="getOccupancyColor(room, getCurrentDay(), timeSlot)">
+                  <span class="text-sm font-medium">{{timeSlot}}</span>
+                  <span class="text-sm">
+                    {{getRoomScheduleStatus(room, getCurrentDay(), timeSlot)}}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Carousel Indicators -->
+    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      <button *ngFor="let i of getIndicators()"
+              class="w-2 h-2 rounded-full transition-all duration-300"
+              [class.bg-primary]="currentSlide === i"
+              [class.bg-gray-300]="currentSlide !== i"
+              (click)="currentSlide = i">
+      </button>
+    </div>
+  </div>
+</div>
