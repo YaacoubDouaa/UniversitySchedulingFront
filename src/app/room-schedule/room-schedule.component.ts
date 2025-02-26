@@ -126,7 +126,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   openAddModal(day: string, time: string): void {
     this.selectedActivity = {
       seance: {
-        id: Math.floor(Math.random() * 1000000),
+        id:0,
         name: '',
         type: 'COURS',
         professor: '',
@@ -251,7 +251,8 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
         next: () => {
           this.showSnackBar('Session added successfully', 'success');
           this.closeModal();
-          this.loadSchedule();
+
+          this.refreshData();
         },
         error: (error: Error) => {
           this.showError = true;
@@ -277,8 +278,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
         next: () => {
           this.showSnackBar('Session updated successfully', 'success');
           this.closeModal();
-          this.loadSchedule();
-        },
+         this.refreshData();        },
         error: (error: Error) => {
           this.showError = true;
           this.errorMessage = error.message || 'Failed to update session';
@@ -305,7 +305,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
         next: () => {
           this.showSnackBar('Session deleted successfully', 'success');
           this.closeDeleteModal();
-          this.loadSchedule();
+          this.refreshData();
         },
         error: (error: Error) => {
           this.showError = true;
@@ -376,5 +376,25 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
    */
   getCurrentUser(): string {
     return this.currentUser;
+  }
+  /**
+   * Refresh data after changes
+   */
+  private refreshData(): void {
+    // Refresh schedule
+    this.loadSchedule();
+
+    // Force UI update
+    this.cdRef.detectChanges();
+  }
+
+
+  getCourseIcon(type: string): string {
+    switch (type) {
+      case 'COURS': return 'book';
+      case 'TD': return 'edit-3';
+      case 'TP': return 'monitor';
+      default: return 'circle';
+    }
   }
 }

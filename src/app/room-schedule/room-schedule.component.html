@@ -13,6 +13,12 @@
           </div>
         </div>
 
+
+
+      <!-- Filters and Legend -->
+      <div class="flex flex-wrap items-center justify-between gap-4">
+
+
         <!-- Room Selection -->
         <div class="flex items-center space-x-4">
           <mat-form-field appearance="outline" class="w-48">
@@ -23,17 +29,6 @@
           </mat-form-field>
         </div>
       </div>
-
-      <!-- Filters and Legend -->
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <!-- Level Selection -->
-        <mat-form-field appearance="outline" class="w-48">
-          <mat-label>Select Level</mat-label>
-          <mat-select [(ngModel)]="selectedNiveau">
-            <mat-option *ngFor="let niveau of niveaux" [value]="niveau">{{ niveau }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
         <!-- Legend -->
         <div class="flex flex-wrap items-center gap-4">
           <div class="flex items-center space-x-2">
@@ -254,35 +249,79 @@
                      }"
                      (click)="openEditModal(seance, day, time)">
 
+
                   <!-- Session Content -->
-                  <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                      <span class="font-semibold text-gray-900 dark:text-white">{{ seance.name }}</span>
-                      <span *ngIf="seance.biWeekly"
-                            class="text-xs px-2 py-1 rounded-full bg-gray-200 dark:bg-gray-700
-                                   text-gray-700 dark:text-gray-300">
-                        Bi-weekly
-                      </span>
+                  <div class="flex flex-col divide-y divide-gray-200 dark:divide-gray-700 space-y-2">
+                    <!-- Header Section -->
+                    <div class="pb-2">
+                      <div class="flex flex-col space-y-2">
+                        <h3 class="font-medium text-gray-900 dark:text-white text-base break-words">{{ seance.name }}</h3>
+                        <span class="px-2 py-0.5 text-xs rounded-full w-fit"
+                              [ngClass]="{'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200': seance.type === 'COURS',
+                        'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200': seance.type === 'TD',
+                        'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200': seance.type === 'TP'}">
+          <i-feather [name]="getCourseIcon(seance.type)" class="h-3 w-3"></i-feather>
+                  <span>{{seance.type}}</span>
+        </span>
+                      </div>
                     </div>
 
-                    <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                      <i-feather name="user" class="h-4 w-4"></i-feather>
-                      <span>{{ seance.professor }}</span>
+                    <!-- Details Section -->
+                    <div class="py-2 flex flex-col space-y-2">
+                      <!-- Professor -->
+                      <div class="flex items-start space-x-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div class="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <i-feather name="user" class="h-3 w-3"></i-feather>
+                        </div>
+                        <span class="font-medium break-words">{{ seance.professor }}</span>
+                      </div>
+
+                      <!-- Room -->
+                      <div class="flex items-start space-x-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div class="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <i-feather name="map-pin" class="h-3 w-3"></i-feather>
+                        </div>
+                        <span class="font-medium break-words">{{ seance.room }}</span>
+                      </div>
+
+                      <!-- Group -->
+                      <div class="flex items-start space-x-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div class="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <i-feather name="users" class="h-3 w-3"></i-feather>
+                        </div>
+                        <span class="font-medium break-words">{{ seance.groupe }}</span>
+                      </div>
+
+                      <!-- Frequency -->
+                      <div class="flex items-start space-x-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div class="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <i-feather name="repeat" class="h-3 w-3"></i-feather>
+                        </div>
+                        <span class="font-medium">{{ seance.biWeekly ? "BiWeekly" : "Weekly" }}</span>
+                      </div>
                     </div>
 
-                    <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                      <i-feather name="users" class="h-4 w-4"></i-feather>
-                      <span>{{ seance.groupe }}</span>
+                    <!-- Action Buttons Section -->
+                    <div class="pt-2">
+                      <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="flex flex-col space-y-1">
+                          <button *ngIf="seance.biWeekly"
+                                  class="w-full flex items-center justify-center space-x-1 px-2 py-1 bg-green-500 hover:bg-green-600 text-white rounded text-xs "
+                                  (click)="openAddModal(day,time); $event.stopPropagation()">
+                            <i-feather name="plus-circle" class="h-3 w-3"></i-feather>
+                            <span>Add</span>
+                          </button>
+                          <button class="w-full flex items-center justify-center space-x-1 px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs "
+                                  (click)="openDeleteModal(seance.id,day,selectedNiveau,time); $event.stopPropagation()">
+                            <i-feather name="trash-2" class="h-3 w-3"></i-feather>
+                            <span>Delete</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-
-                    <!-- Delete Button -->
-                    <button class="absolute top-2 right-2 p-1 rounded-full hover:bg-red-200 dark:hover:bg-red-900/30
-                                 opacity-0 group-hover:opacity-100 transition-opacity"
-                            (click)="openDeleteModal(seance.id, day, selectedNiveau, time); $event.stopPropagation()">
-                      <i-feather name="trash-2" class="h-4 w-4 text-red-600"></i-feather>
-                    </button>
                   </div>
                 </div>
+
               </ng-container>
 
               <!-- Empty Slot -->
@@ -341,7 +380,13 @@
             <mat-label>Professor</mat-label>
             <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required>
           </mat-form-field>
-
+          <!-- Level Selection -->
+          <mat-form-field appearance="outline" class="w-48">
+            <mat-label>Select Level</mat-label>
+            <mat-select [(ngModel)]="selectedNiveau">
+              <mat-option *ngFor="let niveau of niveaux" [value]="niveau">{{ niveau }}</mat-option>
+            </mat-select>
+          </mat-form-field>
           <!-- Type -->
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Type</mat-label>
