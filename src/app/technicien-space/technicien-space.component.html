@@ -1,1 +1,194 @@
-<p>technicien-space works!</p>
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <!-- Message Notification -->
+  <div *ngIf="showMessageNotification"
+       [@slideInOut]
+       (click)="navigateToMessages()"
+       class="fixed bottom-4 right-4 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-purple-200 dark:border-purple-800 cursor-pointer transform hover:scale-102 transition-all duration-300 z-50">
+
+    <!-- Header -->
+    <div class="px-4 py-3 bg-purple-50 dark:bg-purple-900/20 rounded-t-lg border-b border-purple-100 dark:border-purple-800 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="w-2 h-2 bg-purple-600 rounded-full animate-pulse"></div>
+        <span class="text-sm font-medium text-purple-700 dark:text-purple-300">
+          Nouveau Message
+        </span>
+      </div>
+      <button (click)="dismissNotification($event)"
+              class="text-gray-400 hover:text-gray-500 focus:outline-none">
+        <i-feather name="x" class="h-4 w-4"></i-feather>
+      </button>
+    </div>
+
+    <!-- Message Content -->
+    <div class="p-4">
+      <div class="flex items-start space-x-3">
+        <!-- Sender Avatar -->
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+          <span class="text-purple-600 dark:text-purple-300 font-medium">
+            {{latestMessage.sender[0]}}
+          </span>
+        </div>
+
+        <!-- Message Details -->
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-900 dark:text-white">
+            {{latestMessage.sender}}
+          </p>
+          <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+            {{latestMessage.content}}
+          </p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            {{latestMessage.time}}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Footer -->
+    <div class="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 rounded-b-lg border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
+      <span class="text-xs text-gray-500 dark:text-gray-400">
+        {{unreadMessages}} message{{unreadMessages > 1 ? 's' : ''}} non lu{{unreadMessages > 1 ? 's' : ''}}
+      </span>
+      <div class="flex items-center text-purple-600 dark:text-purple-400 text-sm font-medium">
+        <span>Voir tous</span>
+        <i-feather name="chevron-right" class="h-4 w-4 ml-1"></i-feather>
+      </div>
+    </div>
+  </div>
+  <!-- Sidebar -->
+  <aside [class.w-64]="isOpen"
+         [class.w-20]="!isOpen"
+         class="fixed left-0 top-0 bottom-0 z-40 transition-width duration-300 ease-in-out bg-gray-800">
+    <div class="h-full flex flex-col">
+      <!-- Sidebar Header -->
+      <div class="h-16 flex items-center justify-between px-4 bg-gray-900">
+        <div class="flex items-center" *ngIf="isOpen">
+          <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+            <span class="text-white font-bold">{{currentUser[0]}}</span>
+          </div>
+          <span class="ml-2 text-white font-semibold truncate">Professor</span>
+        </div>
+        <button (click)="toggleSidebar()"
+                class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
+          <i-feather [name]="isOpen ? 'chevron-left' : 'chevron-right'" class="h-5 w-5"></i-feather>
+        </button>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+        <a *ngFor="let item of navItems"
+           [routerLink]="item.route"
+           routerLinkActive="bg-gray-900 text-white"
+           [class.justify-center]="!isOpen"
+           class="flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200 group">
+          <i-feather [name]="item.icon" class="h-5 w-5"></i-feather>
+          <span *ngIf="isOpen" class="ml-3">{{item.label}}</span>
+          <!-- Tooltip -->
+          <div *ngIf="!isOpen"
+               class="absolute left-20 bg-gray-900 text-white px-2 py-1 rounded text-sm whitespace-nowrap scale-0 group-hover:scale-100 transition-transform origin-left z-50">
+            {{item.label}}
+          </div>
+        </a>
+      </nav>
+
+      <!-- Bottom Section -->
+      <div class="border-t border-gray-700">
+        <!-- DateTime -->
+        <div class="px-4 py-2 text-gray-400 text-sm" [class.text-center]="!isOpen">
+          <i-feather name="clock" class="h-4 w-4 inline-block" [class.mr-2]="isOpen"></i-feather>
+          <span *ngIf="isOpen">{{currentDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+        </div>
+
+        <!-- User Profile -->
+        <div class="p-4" *ngIf="isOpen">
+          <div class="flex items-center space-x-3">
+            <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+              <span class="text-white font-bold text-sm">{{currentUser[0]}}</span>
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-white truncate">{{currentUser}}</p>
+              <p class="text-xs text-gray-400">Professor</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logout Button -->
+        <button (click)="logout()"
+                [class.justify-center]="!isOpen"
+                class="w-full flex items-center px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-gray-700 transition-colors">
+          <i-feather name="log-out" class="h-5 w-5"></i-feather>
+          <span *ngIf="isOpen" class="ml-3">Logout</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Toggle -->
+  <div class="sm:hidden fixed top-4 left-4 z-50">
+    <button (click)="toggleMobileMenu()"
+            class="p-2 rounded-md text-gray-400 hover:text-gray-200 hover:bg-gray-700 focus:outline-none">
+      <i-feather [name]="isMobileMenuOpen ? 'x' : 'menu'" class="h-6 w-6"></i-feather>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div *ngIf="isMobileMenuOpen"
+       class="sm:hidden fixed inset-0 z-40">
+    <!-- Overlay -->
+    <div class="fixed inset-0 bg-black bg-opacity-50"
+         (click)="toggleMobileMenu()"></div>
+
+    <!-- Mobile Sidebar -->
+    <div class="fixed inset-y-0 left-0 w-64 bg-gray-800">
+      <div class="h-full flex flex-col">
+        <!-- Mobile Header -->
+        <div class="h-16 flex items-center justify-between px-4 bg-gray-900">
+          <div class="flex items-center space-x-3">
+            <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+              <span class="text-white font-bold">{{currentUser[0]}}</span>
+            </div>
+            <span class="text-white font-semibold">Professor</span>
+          </div>
+          <button (click)="toggleMobileMenu()"
+                  class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
+            <i-feather name="x" class="h-5 w-5"></i-feather>
+          </button>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+          <a *ngFor="let item of navItems"
+             [routerLink]="item.route"
+             routerLinkActive="bg-gray-900 text-white"
+             (click)="toggleMobileMenu()"
+             class="flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200">
+            <i-feather [name]="item.icon" class="h-5 w-5"></i-feather>
+            <span class="ml-3">{{item.label}}</span>
+          </a>
+        </nav>
+
+        <!-- Mobile Bottom Section -->
+        <div class="border-t border-gray-700 p-4">
+          <div class="text-gray-400 text-sm mb-4">
+            <i-feather name="clock" class="h-4 w-4 inline-block mr-2"></i-feather>
+            <span>{{currentDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+          </div>
+          <button (click)="logout()"
+                  class="w-full flex items-center px-2 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-gray-700 rounded-md transition-colors">
+            <i-feather name="log-out" class="h-5 w-5"></i-feather>
+            <span class="ml-3">Logout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div [class.sm:ml-64]="isOpen"
+       [class.sm:ml-20]="!isOpen"
+       class="transition-all duration-300">
+    <div class="p-6">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

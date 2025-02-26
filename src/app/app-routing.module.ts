@@ -18,6 +18,8 @@ import {ProposeRattrapageComponent} from './propose-rattrapage/propose-rattrapag
 import {CsvImportComponent} from './csv-import/csv-import.component';
 import {MessagingComponent} from './messaging/messaging.component';
 import {AdministratorSpaceComponent} from './administrator-sapce/administrator-space.component';
+import {TechnicienSpaceComponent} from './technicien-space/technicien-space.component';
+import {TechnicienGlobalScheduleComponent} from './technicien-global-schedule/technicien-global-schedule.component';
 
 const routes: Routes = [ { path: '', component: DashboardComponent },
   { path: 'login', component: LoginComponent },
@@ -40,9 +42,16 @@ const routes: Routes = [ { path: '', component: DashboardComponent },
       { path: '', redirectTo: 'profdashboard', pathMatch: 'full' },
       { path: 'profdashboard', component: ProfessorDashboardComponent },
       // { path: 'profschedule', component: ProfessorViewScheduleComponent },
-      { path: 'propose-rattrapage', component: ProposeRattrapageComponent }
+      { path: 'propose-rattrapage', component: ProposeRattrapageComponent },
 
-
+  {
+    path: 'technicien',
+    component: TechnicienSpaceComponent},
+  { path: '', redirectTo: 'techDashboard', pathMatch: 'full' },
+  { path: 'techDashboard', component: TechnicienSpaceComponent },
+  { path: 'techGlobalSchedule', component: TechnicienGlobalScheduleComponent  },
+  { path: 'rooms', component: RoomsComponent },
+  { path: 'schedule', component: ScheduleComponent }
 ];
 
 @NgModule({
