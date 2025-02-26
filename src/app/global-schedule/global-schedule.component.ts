@@ -8,10 +8,19 @@ import {NotificationService} from '../notifications.service';
 import {APP_CONSTANTS} from '../constants';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {FeatherModule} from 'angular-feather';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {animate, style, transition, trigger} from '@angular/animations';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
-
+/**
+ * Interface for seance deletion
+ */
+interface SeanceToDelete {
+  id: number;
+  day: string;
+  group: string;
+  time: string;
+}
 @Component({
   selector: 'app-global-schedule',
   templateUrl: './global-schedule.component.html',
@@ -34,7 +43,17 @@ export class GlobalScheduleComponent implements OnInit {
   schedule: Schedule | null = null;
   rattrapageSchedule: RattrapageSchedule | null = null;
   showRattrapage = false;
-
+idCounter=20;
+  /**
+   * Autocomplete Options
+   * Predefined options for form inputs
+   */
+  nameOptions: string[] = APP_CONSTANTS.SESSIONS;
+  roomOptions: string[] = APP_CONSTANTS.ROOMS;
+  typeOptions: string[] = APP_CONSTANTS.SESSION_TYPES;
+  frequencyOptions: string[] =APP_CONSTANTS.FREQUENCIES;
+  profOptions: string[] = APP_CONSTANTS.PROFS;
+  groupOptions=APP_CONSTANTS.GROUPS;
   days = APP_CONSTANTS.DAYS;
   timeSlots = APP_CONSTANTS.TIME_SLOTS;
   currentDate = APP_CONSTANTS.CURRENT_DATE;
@@ -43,13 +62,55 @@ export class GlobalScheduleComponent implements OnInit {
 
   isLoading = false;
   error: string | null = null;
+  /**
+   * UI State Management
+   * Controls visibility and state of UI components
+   */
+  showModal = false;
 
+  showDeleteModal = false;
+
+  /**
+   * Activity Management
+   * Handles currently selected or targeted activities
+   */
+    // Initialize selected activity with default values
+  selectedActivity:  {
+    seance: {
+      id: number,
+      name: string,
+      type:  "COURS" | "TD" | "TP" | string,
+      professor: string,
+      groupe: string,
+      room: string,
+      biWeekly: boolean,
+      // Add any other required Seance properties with default values
+    },
+    day: string,
+    time:string
+  } = {
+    seance: {
+      id: 0,
+      name: '',
+      type: '',
+      professor: '',
+      groupe: '',
+      room: '',
+      biWeekly: false,
+      // Add any other required Seance properties with default values
+    },
+    day: '',
+    time: ''
+  };
+ selectedFrequency='';
+  private selectedGroup= '' ;
   constructor(
     private scheduleService: ScheduleService,
     private rattrapageService: RattrapageService,
     private notificationService: NotificationService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private snackBar:MatSnackBar
   ) {}
 
   /**
@@ -79,7 +140,7 @@ export class GlobalScheduleComponent implements OnInit {
       next: (schedule) => {
         this.rattrapageSchedule = schedule;
         this.extractUniqueRooms();
-        this.cdr.detectChanges();
+        this.cdRef.detectChanges();
       },
       error: (error) => {
         this.notificationService.showError('Failed to load makeup schedule');
@@ -175,13 +236,13 @@ export class GlobalScheduleComponent implements OnInit {
         this.schedule = schedule;
         this.extractUniqueRooms();
         this.isLoading = false;
-        this.cdr.detectChanges();
+        this.cdRef.detectChanges();
       },
       error: (error) => {
         this.error = 'Failed to load schedule';
         this.isLoading = false;
         this.notificationService.showError(error.message);
-        this.cdr.detectChanges();
+        this.cdRef.detectChanges();
       }
     });
   }
@@ -228,31 +289,263 @@ export class GlobalScheduleComponent implements OnInit {
     }
   }
 
+
+  seanceToDelete: {
+    id: number;
+    day: string;
+    group: string;
+    time: string;
+  } | null = null;
   /**
-   * Opens modal for adding new session
+   * Helper method to set seance for deletion
    */
-  openAddModal(day: string, timeSlot: string): void {
-    console.log('Opening add modal for:', day, timeSlot);
-    // Implement add modal logic
+  setSeanceToDelete(seance: SeanceToDelete): void {
+    this.seanceToDelete = seance;
   }
 
   /**
-   * Opens modal for editing session
+   * Helper method to reset deletion state
    */
-  openEditModal(session: Seance, day: string, timeSlot: string): void {
-    console.log('Opening edit modal for:', session, day, timeSlot);
-    // Implement edit modal logic
+  resetSeanceToDelete(): void {
+    this.seanceToDelete = null;
+    /**
+     * Form Controls
+     * Manages form inputs for session creation/editing
+     */
+    let nameControl = new FormControl('');
+    let roomControl = new FormControl('');
+    let typeControl = new FormControl('');
+    let professorControl = new FormControl('');
+    let frequencyControl = new FormControl('');
+    let selectedFrequency = '';
   }
 
   /**
-   * Opens modal for deleting session
+   * Modal Management Methods
+   * Handle the opening, closing, and state management of modals
    */
-  openDeleteModal(id: number, day: string, group: string, timeSlot: string): void {
-    console.log('Opening delete modal for:', id, day, group, timeSlot);
-    // Implement delete modal logic
+  openAddModal(day: string, time: string): void {
+    this.selectedActivity = {
+      seance: {
+        name: '',
+        id: 0,
+        room: '',
+        type: 'COURS',
+        professor: '',
+        groupe: '',
+        biWeekly: false
+      },
+      day,
+      time
+    };
+    this.showModal = true;
+
   }
 
+  openEditModal(seance: Seance, day: string, time: string): void {
+    this.selectedActivity = {
+      seance: { ...seance },
+      day,
+      time
+    };
+    this.selectedFrequency = seance.biWeekly ? 'biweekly' : 'weekly';
+    this.showModal = true;
+  }
 
+  closeModal(): void {
+    this.selectedActivity ={
+      seance: {
+        id: 0,
+        name: '',
+        type: '',
+        professor: '',
+        groupe: '',
+        room: '',
+        biWeekly: false,
+        // Add any other required Seance properties with default values
+      },
+      day: '',
+      time: ''
+    } ;
+    this.showModal = false;
 
+  }
+
+  /**
+   * Save new session with validation and warning messages
+   */
+  saveAddChanges(): void {
+    // Validation checks with specific error messages
+    if (!this.selectedActivity ) {
+      // Show warning message for missing group
+      if (!this.selectedGroup) {
+        this.showWarningMessage('Please select a group before adding a session.');
+        return;
+      }
+
+      // Show warning message for missing activity details
+      if (!this.selectedActivity) {
+        this.showWarningMessage('Please fill in session details before saving.');
+        return;
+      }
+      return;
+    }
+
+    // Validate required fields
+    const { day, time, seance } = this.selectedActivity;
+    if (!seance.name || !seance.professor || !seance.type) {
+      this.showWarningMessage('Please fill in all required fields (Name, Professor, Type).');
+      return;
+    }
+
+    // Proceed with save if validation passes
+    seance.biWeekly = this.selectedFrequency === 'biweekly';
+    seance.id = ++this.idCounter;
+    seance.groupe = this.selectedGroup;
+
+    this.scheduleService.addSession(day, time, this.selectedGroup, seance)
+      .subscribe({
+        next: (success) => {
+          if (success) {
+            // Show success message
+            this.showSuccessMessage('Session added successfully!');
+            this.refreshData();
+            this.closeModal();
+          }
+        },
+        error: (error) => {
+          // Show error message
+          this.showErrorMessage('Failed to add session. Please try again.');
+          console.error('Error adding session:', error);
+        }
+      });
+  }
+
+  /**
+   * Warning message display
+   * Add these methods to your component
+   */
+  private showWarningMessage(message: string): void {
+    // Using MatSnackBar (if you're using Angular Material)
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      panelClass: ['warning-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
+
+  }
+
+  /**
+   * Success message display
+   */
+  private showSuccessMessage(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: ['success-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
+  }
+
+  /**
+   * Error message display
+   */
+  private showErrorMessage(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      panelClass: ['error-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
+  }
+
+  /**
+   * Save edited session with validation and warning messages
+   */
+  saveEditChanges(): void {
+    // Validate selected activity exists
+    if (!this.selectedActivity) {
+      this.showWarningMessage('No session selected for editing.');
+      return;
+    }
+
+    const { day, time, seance } = this.selectedActivity;
+
+    // Validate required fields
+    if (!seance.name || !seance.professor || !seance.type || !seance.groupe) {
+      this.showWarningMessage('Please fill in all required fields (Name, Professor, Type, Group).');
+      return;
+    }
+
+    // Set frequency
+    seance.biWeekly = this.selectedFrequency === 'biweekly';
+
+    // Update session
+    this.scheduleService.updateSession(day, time, seance.groupe, seance)
+      .subscribe({
+        next: (success) => {
+          if (success) {
+            // Show success message
+            this.showSuccessMessage('Session updated successfully!');
+
+            // Get latest schedule
+            this.scheduleService.getSchedule().subscribe(schedule => {
+              this.schedule = { ...schedule };
+              this.cdRef.detectChanges();
+            });
+
+            this.closeModal();
+          }
+        },
+        error: (error) => {
+          // Show error message
+          this.showErrorMessage('Failed to update session. Please try again.');
+          console.error('Error updating session:', error);
+        },
+        complete: () => {
+          // Force refresh
+          this.cdRef.detectChanges();
+        }
+      });
+  }
+  /**
+   * Delete Management Methods
+   * Handle deletion of schedule entries
+   */
+  openDeleteModal(id: number, day: string, group: string, time: string): void {
+    this.showDeleteModal = true;
+    this.seanceToDelete = { id, day, group, time };
+  }
+
+  confirmDelete(): void {
+    if (!this.seanceToDelete) return;
+
+    const { id, day, group, time } = this.seanceToDelete;
+
+    this.scheduleService.deleteSession(day, time, group, id)
+      .subscribe({
+        next: () => {
+          this.refreshData();
+          this.closeDeleteModal();
+        },
+
+      });
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.seanceToDelete = null;
+  }
+  /**
+   * Refresh data after changes
+   */
+  private refreshData(): void {
+    // Refresh schedule
+    this.loadSchedule();
+    this.loadRattrapageSchedule();
+    // Force UI update
+    this.cdRef.detectChanges();
+  }
 
 }
