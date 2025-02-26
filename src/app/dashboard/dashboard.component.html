@@ -1,5 +1,108 @@
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Info Carousel -->
+  <div class="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+    <div class="relative" style="height: 200px;">
+      <!-- Carousel Container -->
+      <div class="flex transition-transform duration-500 h-full"
+           [style.transform]="'translateX(-' + (currentSlide * 100) + '%)'">
+
+        <!-- Actualités Slide -->
+        <div class="w-full flex-shrink-0 flex items-center justify-center p-6">
+          <div class="text-center">
+            <i-feather
+              name="bell"
+              class="h-16 w-16 mb-4 text-purple-500 mx-auto animate-bounce"
+            ></i-feather>
+            <h3 class="text-xl font-semibold mb-2">Actualités</h3>
+            <p class="text-gray-600 dark:text-gray-400">
+              {{actualitesCount}} nouvelles notifications
+            </p>
+          </div>
+        </div>
+
+        <!-- Conflicts Slide -->
+        <div class="w-full flex-shrink-0 flex items-center justify-center p-6">
+          <div class="text-center">
+            <i-feather
+              name="alert-triangle"
+              class="h-16 w-16 mb-4 text-red-500 mx-auto animate-pulse"
+            ></i-feather>
+            <h3 class="text-xl font-semibold mb-2">Conflicts</h3>
+            <p class="text-gray-600 dark:text-gray-400">
+              {{conflicts.length}} conflits détectés
+            </p>
+          </div>
+        </div>
+
+        <!-- Rooms Status Slide -->
+        <div class="w-full flex-shrink-0 flex items-center justify-center p-6">
+          <div class="text-center">
+            <i-feather
+              name="home"
+              class="h-16 w-16 mb-4 text-blue-500 mx-auto"
+            ></i-feather>
+            <h3 class="text-xl font-semibold mb-2">Salles</h3>
+            <p class="text-gray-600 dark:text-gray-400">
+              {{availableRooms}} salles disponibles
+            </p>
+          </div>
+        </div>
+
+        <!-- Professors Status Slide -->
+        <div class="w-full flex-shrink-0 flex items-center justify-center p-6">
+          <div class="text-center">
+            <i-feather
+              name="users"
+              class="h-16 w-16 mb-4 text-green-500 mx-auto"
+            ></i-feather>
+            <h3 class="text-xl font-semibold mb-2">Professeurs</h3>
+            <p class="text-gray-600 dark:text-gray-400">
+              {{activeProfs}} professeurs actifs
+            </p>
+          </div>
+        </div>
+
+        <!-- Rattrapage Status Slide -->
+        <div class="w-full flex-shrink-0 flex items-center justify-center p-6">
+          <div class="text-center">
+            <i-feather
+              name="calendar"
+              class="h-16 w-16 mb-4 text-orange-500 mx-auto"
+            ></i-feather>
+            <h3 class="text-xl font-semibold mb-2">Rattrapages</h3>
+            <p class="text-gray-600 dark:text-gray-400">
+              {{upcomingRattrapages}} séances prévues
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <button
+        class="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
+        (click)="previousSlide()">
+        <i-feather name="chevron-left" class="h-6 w-6 text-gray-600 dark:text-gray-400"></i-feather>
+      </button>
+
+      <button
+        class="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
+        (click)="nextSlide()">
+        <i-feather name="chevron-right" class="h-6 w-6 text-gray-600 dark:text-gray-400"></i-feather>
+      </button>
+
+      <!-- Indicators -->
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+        <button *ngFor="let _ of slides; let i = index"
+                (click)="goToSlide(i)"
+                class="w-2 h-2 rounded-full transition-all duration-300"
+                [class.bg-purple-500]="currentSlide === i"
+                [class.bg-gray-300]="currentSlide !== i">
+        </button>
+      </div>
+    </div>
+  </div>
+
   <header class="bg-white shadow-md rounded-lg mb-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center py-4">

@@ -5,6 +5,8 @@ import { ScheduleService } from '../schedule-service.service';
 import { ConflictService } from '../conflict.service';
 import { RattrapageService } from '../rattrapage.service';
 import {animate, style, transition, trigger} from '@angular/animations';
+import {interval, Subject, takeUntil} from 'rxjs';
+import {ProfessorsService} from '../professors.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -39,8 +41,11 @@ export class DashboardComponent implements OnInit {
   ];
   appJson: String = "aaaa";
 
-  constructor(private injector: Injector) {
+  constructor(private injector: Injector,private professorsService: ProfessorsService,
+              ) {
     this.currentDay = this.getCurrentDay();
+    // Start auto-sliding
+    this.startAutoSlide();
   }
 
   ngOnInit(): void {
@@ -48,6 +53,7 @@ export class DashboardComponent implements OnInit {
     this.loadConflicts();
     this.loadRattrapageSchedule();
     this.animateText();
+    this.loadStats();
   }
   private animateText() {
     let currentIndex = 0;
@@ -142,6 +148,60 @@ export class DashboardComponent implements OnInit {
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
+// Carousel properties
+  currentSlide = 0;
+  slides = [
+    { name: 'Actualités', icon: 'bell', color: 'purple' },
+    { name: 'Conflicts', icon: 'alert-triangle', color: 'red' },
+    { name: 'Salles', icon: 'home', color: 'blue' },
+    { name: 'Professeurs', icon: 'users', color: 'green' },
+    { name: 'Rattrapages', icon: 'calendar', color: 'orange' }
+  ];
 
+  // Stats for slides
+  actualitesCount = 0;
+  availableRooms = 0;
+  activeProfs = 0;
+  upcomingRattrapages = 0;
+  private destroy$ = new Subject<void>();
+  private autoSlideInterval$ = interval(5000);
+
+
+
+
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // Carousel methods
+  nextSlide(): void {
+    this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+  }
+
+  previousSlide(): void {
+    this.currentSlide = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
+  }
+
+  goToSlide(index: number): void {
+    this.currentSlide = index;
+  }
+
+  private startAutoSlide(): void {
+    this.autoSlideInterval$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.nextSlide();
+      });
+  }
+
+  private loadStats(): void {
+    // Example stats loading - replace with your actual data loading
+    this.actualitesCount = 5; // Replace with actual count
+    this.availableRooms = 10; // Replace with actual count
+    this.activeProfs = 15; // Replace with actual count
+    this.upcomingRattrapages = 3; // Replace with actual count
+  }
   protected readonly Object = Object;
 }
