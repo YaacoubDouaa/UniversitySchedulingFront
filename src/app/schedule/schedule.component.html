@@ -298,18 +298,16 @@
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>
               <div class="flex items-center space-x-2">
-                <i-feather name="book" class="h-4 w-4"></i-feather>
-                <span>Type</span>
+                <i-feather name="map-pin" class="h-4 w-4"></i-feather>
+                <span>Room</span>
               </div>
             </mat-label>
-            <mat-select [(ngModel)]="selectedActivity.seance.type" name="type" required
-                        class="backdrop-blur-sm">
-              <mat-option value="COURS">Cours</mat-option>
-              <mat-option value="TD">TD</mat-option>
-              <mat-option value="TP">TP</mat-option>
+            <mat-select [(ngModel)]="selectedActivity.seance.type" name="room" required>
+              <mat-option *ngFor="let room of roomOptions" [value]="selectedRoom">
+                {{room}}
+              </mat-option>
             </mat-select>
           </mat-form-field>
-
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>
               <div class="flex items-center space-x-2">

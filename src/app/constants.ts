@@ -13,6 +13,8 @@ export const APP_CONSTANTS = {
     groupe: "ING1_INFO_TD1",
     niveau: "ING1_INFO",
 
-  }
+  },
+    PROFS:['prof1', 'prof2', 'prof3']
+  ,SESSIONS:['Math Class', 'History Class', 'Physics Class', 'Chemistry Class']
   ,ROOMS: ['101', '102', '102', '103']
 }

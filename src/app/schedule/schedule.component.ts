@@ -178,11 +178,11 @@ export class ScheduleComponent implements OnInit, OnDestroy {
    * Autocomplete Options
    * Predefined options for form inputs
    */
-  nameOptions: string[] = ['Math Class', 'History Class', 'Physics Class', 'Chemistry Class'];
-  roomOptions: string[] = ['A-101', 'A-102', 'A-201', 'B-101'];
-  typeOptions: string[] = ['COURS', 'TD', 'TP'];
-  frequencyOptions: string[] = ['biweekly', 'weekly'];
-  profOptions: string[] = ['prof1', 'prof2', 'prof3'];
+  nameOptions: string[] = APP_CONSTANTS.SESSIONS;
+  roomOptions: string[] = APP_CONSTANTS.ROOMS;
+  typeOptions: string[] = APP_CONSTANTS.SESSION_TYPES;
+  frequencyOptions: string[] =APP_CONSTANTS.FREQUENCIES;
+  profOptions: string[] = APP_CONSTANTS.PROFS;
 
   /**
    * Filtered Observables
@@ -247,6 +247,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
       startWith(''),
       map(value => this._filter(value, this.profOptions))
     );
+
   }
 
 
