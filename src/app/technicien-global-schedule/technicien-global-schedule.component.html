@@ -68,12 +68,8 @@
               [ngClass]="{
                 'border-r-4': isLastSlot && dayIndex !== days.length - 1
               }">
-            <!-- Add Button -->
-            <button *ngIf="getSessionsForRoom(room, day, timeSlot).length === 0"
-                    class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-full bg-green-500 hover:bg-green-600 text-white"
-                    (click)="openAddModal(day, timeSlot)">
-              <i-feather name="plus" class="h-3 w-3"></i-feather>
-            </button>
+
+
 
             <ng-container *ngFor="let session of getSessionsForRoom(room, day, timeSlot)">
 
@@ -104,10 +100,6 @@
                   <button class="p-1 hover:bg-blue-200 dark:hover:bg-blue-800 rounded"
                           (click)="openEditModal(session, day, timeSlot)">
                     <i-feather name="edit-2" class="h-3 w-3"></i-feather>
-                  </button>
-                  <button class="p-1 hover:bg-red-200 dark:hover:bg-red-800 rounded"
-                          (click)="openDeleteModal(session.id, day, session.groupe, timeSlot)">
-                    <i-feather name="trash-2" class="h-3 w-3"></i-feather>
                   </button>
                 </div>
               </div>
@@ -144,7 +136,7 @@
           <div class="p-2 bg-primary/10 rounded-lg">
             <i-feather [name]="'edit Room'" class="h-5 w-5 text-primary"></i-feather>
           </div>
-          <span>{{ selectedActivity.seance.id ? 'Edit Session' : 'Add Session' }}</span>
+          <span>Edit Room</span>
         </h2>
         <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
                 (click)="closeModal()">
@@ -166,34 +158,6 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>
-            <div class="flex items-center space-x-2">
-              <i-feather name="repeat" class="h-4 w-4"></i-feather>
-              <span>Frequency</span>
-            </div>
-          </mat-label>
-          <mat-select [(ngModel)]="selectedFrequency" name="frequency" required
-                      class="backdrop-blur-sm">
-            <mat-option value="weekly">Weekly</mat-option>
-            <mat-option value="biweekly">Bi-weekly</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>
-            <div class="flex items-center space-x-2">
-              <i-feather name="bookmark" class="h-4 w-4"></i-feather>
-              <span>Frequency</span>
-            </div>
-          </mat-label>
-          <mat-select [(ngModel)]="selectedActivity.seance.type" name="frequency" required
-                      class="backdrop-blur-sm">
-            <mat-option *ngFor="let type of typeOptions" [value]="selectedActivity.seance.type">
-              {{type}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
         <div class="flex justify-end space-x-3 pt-4">
           <button mat-button
                   class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -203,7 +167,7 @@
           </button>
           <button mat-raised-button color="primary"
                   class="flex items-center space-x-2 px-6 py-2 rounded-lg bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary transition-all duration-300"
-                  (click)="selectedActivity.seance.id ? saveEditChanges() : saveAddChanges()">
+                  (click)="saveEditChanges()">
             <i-feather name="save" class="h-4 w-4"></i-feather>
             <span>Save</span>
           </button>

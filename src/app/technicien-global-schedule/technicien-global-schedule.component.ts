@@ -103,8 +103,7 @@ export class TechnicienGlobalScheduleComponent  implements OnInit {
     day: '',
     time: ''
   };
-  selectedFrequency = '';
-  private selectedGroup = '';
+
 
   constructor(
     private scheduleService: ScheduleService,
@@ -322,23 +321,7 @@ export class TechnicienGlobalScheduleComponent  implements OnInit {
    * Modal Management Methods
    * Handle the opening, closing, and state management of modals
    */
-  openAddModal(day: string, time: string): void {
-    this.selectedActivity = {
-      seance: {
-        name: '',
-        id: 0,
-        room: '',
-        type: 'COURS',
-        professor: '',
-        groupe: '',
-        biWeekly: false
-      },
-      day,
-      time
-    };
-    this.showModal = true;
 
-  }
 
   openEditModal(seance: Seance, day: string, time: string): void {
     this.selectedActivity = {
@@ -346,7 +329,6 @@ export class TechnicienGlobalScheduleComponent  implements OnInit {
       day,
       time
     };
-    this.selectedFrequency = seance.biWeekly ? 'biweekly' : 'weekly';
     this.showModal = true;
   }
 
@@ -369,55 +351,6 @@ export class TechnicienGlobalScheduleComponent  implements OnInit {
 
   }
 
-  /**
-   * Save new session with validation and warning messages
-   */
-  saveAddChanges(): void {
-    // Validation checks with specific error messages
-    if (!this.selectedActivity) {
-      // Show warning message for missing group
-      if (!this.selectedGroup) {
-        this.showWarningMessage('Please select a group before adding a session.');
-        return;
-      }
-
-      // Show warning message for missing activity details
-      if (!this.selectedActivity) {
-        this.showWarningMessage('Please fill in session details before saving.');
-        return;
-      }
-      return;
-    }
-
-    // Validate required fields
-    const {day, time, seance} = this.selectedActivity;
-    if (!seance.name || !seance.professor || !seance.type) {
-      this.showWarningMessage('Please fill in all required fields (Name, Professor, Type).');
-      return;
-    }
-
-    // Proceed with save if validation passes
-    seance.biWeekly = this.selectedFrequency === 'biweekly';
-    seance.id = ++this.idCounter;
-    seance.groupe = this.selectedGroup;
-
-    this.scheduleService.addSession(day, time, this.selectedGroup, seance)
-      .subscribe({
-        next: (success) => {
-          if (success) {
-            // Show success message
-            this.showSuccessMessage('Session added successfully!');
-            this.refreshData();
-            this.closeModal();
-          }
-        },
-        error: (error) => {
-          // Show error message
-          this.showErrorMessage('Failed to add session. Please try again.');
-          console.error('Error adding session:', error);
-        }
-      });
-  }
 
   /**
    * Warning message display
@@ -469,16 +402,6 @@ export class TechnicienGlobalScheduleComponent  implements OnInit {
     }
 
     const {day, time, seance} = this.selectedActivity;
-
-    // Validate required fields
-    if (!seance.name || !seance.professor || !seance.type || !seance.groupe) {
-      this.showWarningMessage('Please fill in all required fields (Name, Professor, Type, Group).');
-      return;
-    }
-
-    // Set frequency
-    seance.biWeekly = this.selectedFrequency === 'biweekly';
-
     // Update session
     this.scheduleService.updateSession(day, time, seance.groupe, seance)
       .subscribe({
@@ -508,34 +431,6 @@ export class TechnicienGlobalScheduleComponent  implements OnInit {
       });
   }
 
-  /**
-   * Delete Management Methods
-   * Handle deletion of schedule entries
-   */
-  openDeleteModal(id: number, day: string, group: string, time: string): void {
-    this.showDeleteModal = true;
-    this.seanceToDelete = {id, day, group, time};
-  }
-
-  confirmDelete(): void {
-    if (!this.seanceToDelete) return;
-
-    const {id, day, group, time} = this.seanceToDelete;
-
-    this.scheduleService.deleteSession(day, time, group, id)
-      .subscribe({
-        next: () => {
-          this.refreshData();
-          this.closeDeleteModal();
-        },
-
-      });
-  }
-
-  closeDeleteModal(): void {
-    this.showDeleteModal = false;
-    this.seanceToDelete = null;
-  }
 
   /**
    * Refresh data after changes
