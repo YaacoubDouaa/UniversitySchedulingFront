@@ -286,6 +286,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
 
   selectedRoom='';
 
+
   /**
    * Title Animation
    * Animates the display of the component title
@@ -335,6 +336,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   }
 
   closeModal(): void {
+
     this.selectedActivity ={
       seance: {
         id: 0,
@@ -385,13 +387,15 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     seance.id = ++this.idCounter;
     seance.groupe = this.selectedGroup;
 
-    this.scheduleService.addSession(day, time, this.selectedGroup, seance)
+    this.scheduleService.addSession(day,  this.selectedGroup,time, seance)
       .subscribe({
         next: (success) => {
           if (success) {
             // Show success message
-            this.showSuccessMessage('Session added successfully!');
+
+            // this.showSuccessMessage('Session added successfully!');
             this.refreshData();
+            console.log('Session successfully added');
             this.closeModal();
           }
         },
@@ -464,12 +468,12 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     seance.biWeekly = this.selectedFrequency === 'biweekly';
 
     // Update session
-    this.scheduleService.updateSession(day, time, seance.groupe, seance)
+    this.scheduleService.updateSession(day, time, seance.groupe,seance)
       .subscribe({
         next: (success) => {
           if (success) {
             // Show success message
-            this.showSuccessMessage('Session updated successfully!');
+             this.showSuccessMessage('Session updated successfully!');
 
             // Get latest schedule
             this.scheduleService.getSchedule().subscribe(schedule => {
@@ -520,41 +524,60 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     this.seanceToDelete = null;
   }
 
-  /**
-   * Schedule Display Methods
-   * Handle the filtering and display of schedule entries
-   */
   getFilteredSchedule(): { [day: string]: { [time: string]: Seance[] | null } } {
-
     const filteredSchedule: { [day: string]: { [time: string]: Seance[] | null } } = {};
+
+    // Always ensure selectedGroup is considered when filtering
+    let displayGroups = this.getDisplayedGroup();
+
+    // IMPORTANT FIX: Always include the current selected group
+    if (this.selectedGroup && !displayGroups.includes(this.selectedGroup)) {
+      displayGroups = [...displayGroups, this.selectedGroup];
+    }
+
+    // Debug logging to help track issues
+    console.debug('Filtering schedule for groups:', displayGroups);
 
     // Process regular schedule
     this.days.forEach(day => {
       filteredSchedule[day] = {};
 
-      // Filter normal sessions
-      Object.keys(this.schedule[day] || {}).forEach(group => {
-        if (this.getDisplayedGroup().includes(group)) {
-          Object.keys(this.schedule[day]?.[group] || {}).forEach(time => {
-            const seances = this.schedule[day]?.[group]?.[time];
-            if (seances) {
-              if (!filteredSchedule[day][time]) {
-                filteredSchedule[day][time] = [];
-              }
-              seances.forEach(seance => {
-                if (this.shouldShowSeance(seance)) {
-                  filteredSchedule[day][time]!.push({
-                    ...seance,
-                    isRattrapage: false
-                  });
-                }
-              });
-            }
-          });
-        }
-      });
+      // Check if there are entries for this day
+      if (this.schedule[day]) {
+        // List groups found in day's schedule
+        const availableGroups = Object.keys(this.schedule[day]);
+        console.debug(`Day ${day} has groups:`, availableGroups);
 
-      // Process rattrapage sessions
+        // Filter normal sessions
+        availableGroups.forEach(group => {
+          // Check if this group should be displayed
+          if (displayGroups.includes(group)) {
+            const timeSlots = Object.keys(this.schedule[day][group] || {});
+
+            timeSlots.forEach(time => {
+              const seances = this.schedule[day][group][time];
+              if (seances && seances.length > 0) {
+                // Initialize array if needed
+                if (!filteredSchedule[day][time]) {
+                  filteredSchedule[day][time] = [];
+                }
+
+                // Add each seance that should be shown
+                seances.forEach(seance => {
+                  if (this.shouldShowSeance(seance)) {
+                    filteredSchedule[day][time]!.push({
+                      ...seance,
+                      isRattrapage: false
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+
+      // Process rattrapage sessions (unchanged)
       if (this.rattrapageSchedule[day]) {
         Object.entries(this.rattrapageSchedule[day]).forEach(([time, seances]) => {
           if (!filteredSchedule[day][time]) {
@@ -562,7 +585,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
           }
 
           seances.forEach(seance => {
-            if (this.shouldShowSeance(seance)  &&  seance.groupe==this.selectedGroup) {
+            if (this.shouldShowSeance(seance) && seance.groupe === this.selectedGroup) {
               filteredSchedule[day][time]!.push({
                 ...seance,
                 isRattrapage: true,
@@ -603,6 +626,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   getDisplayedGroup(): string[] {
     const groups: string[] = [];
 
+    // Handle specific known groups with special rules
     switch (this.selectedGroup) {
       case 'ING1_INFO_TD1 || ING1_INFO_TD2':
         groups.push('ING1_INFO_TD1 || ING1_INFO_TD2');
@@ -616,24 +640,17 @@ export class ScheduleComponent implements OnInit, OnDestroy {
       case 'ING1_INFO':
         groups.push('ING1_INFO_TD1', 'ING1_INFO_TD1 || ING1_INFO_TD2', 'ING1_INFO');
         break;
+      default:
+        // IMPORTANT: Always include the currently selected group
+        // This ensures any group can be displayed if selected
+        if (this.selectedGroup) {
+          groups.push(this.selectedGroup);
+        }
+        break;
     }
 
     return groups;
   }
-
-  /**
-   * Styling Methods
-   * Handle visual presentation of schedule elements
-   */
-  getTypeClass(type: string): string {
-    switch (type.toLowerCase()) {
-      case 'cours': return 'session-type-cours';
-      case 'td': return 'session-type-td';
-      case 'tp': return 'session-type-tp';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  }
-
   getActivityColor(biWeekly: boolean | undefined): string {
     return biWeekly ? '#B0B8C7' : 'transparent';
   }
@@ -679,11 +696,13 @@ export class ScheduleComponent implements OnInit, OnDestroy {
    * Refresh data after changes
    */
   private refreshData(): void {
+    console.log('refreshData() called');
     // Refresh schedule
     this.initializeSubscriptions();
-
+    this.showSuccessMessage('Session added successfully!');
     // Force UI update
     this.cdRef.detectChanges();
+
   }
 
   onRoomChange() {

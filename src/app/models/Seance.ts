@@ -9,6 +9,8 @@ export interface Seance {
   groupe: string;
   biWeekly: boolean;
   isRattrapage?: boolean;
+  time?: string;
+  day?: string;
 }
 
 // SeanceConflict Interface
@@ -18,6 +20,8 @@ export interface SeanceConflict {
   day:string;
   time:string;
   conflictTypes: string[];
+  lastModifiedBy?: string;
+  lastModifiedAt?: string;
 }
 
 export interface SeanceDTO {
@@ -31,4 +35,10 @@ export interface SeanceDTO {
   salle?: { name: string };
   enseignant?: { name: string };
   branches?: Array<{ name: string }>;
+}
+export interface ConflictResolutionLog {
+  conflictId: number;
+  resolvedBy: string;
+  resolvedAt: string;
+  resolutionDetails: string;
 }
