@@ -352,7 +352,8 @@
     </div>
 
     <!-- Add/Edit Modal -->
-    <div *ngIf="showModal "
+    <!-- Add/Edit Modal -->
+    <div *ngIf="showModal"
          class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
          (click)="closeModal()">
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full m-4 p-6"
@@ -362,17 +363,19 @@
             <i-feather [name]="selectedActivity.seance.id ? 'edit' : 'plus-circle'" class="h-5 w-5"></i-feather>
             <span>{{ selectedActivity.seance.id ? 'Edit Session' : 'Add Session' }}</span>
           </h2>
-          <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          <button type="button" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                   (click)="closeModal()">
             <i-feather name="x" class="h-5 w-5"></i-feather>
           </button>
         </div>
 
-        <form class="space-y-4" (submit)="$event.preventDefault()">
+        <!-- Complete form with proper submission -->
+        <form #sessionForm="ngForm" class="space-y-4"
+              (ngSubmit)="sessionForm.form.valid && (selectedActivity.seance.id ? saveEditChanges() : saveAddChanges())">
           <!-- Session Name -->
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Session Name</mat-label>
-            <input matInput [(ngModel)]="selectedActivity.seance.name" name="name" required>
+            <input matInput [(ngModel)]="selectedActivity.seance.name" name="sessionName" required>
           </mat-form-field>
 
           <!-- Professor -->
@@ -380,17 +383,19 @@
             <mat-label>Professor</mat-label>
             <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required>
           </mat-form-field>
-          <!-- Level Selection -->
-          <mat-form-field appearance="outline" class="w-48">
-            <mat-label>Select Level</mat-label>
-            <mat-select [(ngModel)]="selectedNiveau">
+
+          <!-- Group Selection -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Group</mat-label>
+            <mat-select [(ngModel)]="selectedActivity.seance.groupe" name="groupe" required>
               <mat-option *ngFor="let niveau of niveaux" [value]="niveau">{{ niveau }}</mat-option>
             </mat-select>
           </mat-form-field>
+
           <!-- Type -->
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Type</mat-label>
-            <mat-select [(ngModel)]="selectedActivity.seance.type" name="type" required>
+            <mat-select [(ngModel)]="selectedActivity.seance.type" name="sessionType" required>
               <mat-option value="COURS">Cours</mat-option>
               <mat-option value="TD">TD</mat-option>
               <mat-option value="TP">TP</mat-option>
@@ -414,15 +419,16 @@
 
           <!-- Action Buttons -->
           <div class="flex justify-end space-x-3 pt-4">
-            <button mat-button
+            <button type="button" mat-button
                     class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                     (click)="closeModal()">
               <i-feather name="x" class="h-4 w-4"></i-feather>
               <span>Cancel</span>
             </button>
-            <button mat-raised-button color="primary"
+
+            <button type="submit" mat-raised-button color="primary"
                     class="flex items-center space-x-2"
-                    (click)="selectedActivity.seance.id ? saveEditChanges() : saveAddChanges()">
+                    [disabled]="!sessionForm.form.valid">
               <i-feather name="save" class="h-4 w-4"></i-feather>
               <span>{{ selectedActivity.seance.id ? 'Update' : 'Save' }}</span>
             </button>
@@ -430,7 +436,6 @@
         </form>
       </div>
     </div>
-
     <!-- Delete Confirmation Modal -->
     <div *ngIf="showDeleteModal"
          class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"

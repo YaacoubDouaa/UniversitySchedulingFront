@@ -1,4 +1,5 @@
 import {Schedule} from './models/Schedule';
+import {SalleList} from './models/Salle';
 
 export const demoSchedule: Schedule = {
   'LUNDI': {
@@ -72,3 +73,44 @@ export const demoSchedule: Schedule = {
     }
   }
 };
+export const demoSalles: SalleList = {
+  'A-8': {
+    id: 1,
+    name: 'A-8',
+    type: 'COURS',
+    capacite: 50,
+    schedule: {
+      LUNDI: {
+        'ING1_INFO': {
+          '8:30-10:00': [{
+            name: 'Ch-Ingénierie et interprétabilité des systèmes informatiques',
+            id: 1,
+            groupe: 'ING1_INFO',
+            room: 'A-8',
+            type: 'COURS',
+            professor: 'Sara MTIW',
+            biWeekly: false
+          }]
+        }
+      },
+
+    }
+  }
+  ,'A-9': {
+    id: 1,
+    name: 'A-8',
+    type: 'COURS',
+    capacite: 50,
+    schedule: {
+      LUNDI: {
+        'ING1_INFO': {
+          '8:30-10:00': [{
+            name: 'Ch-Ingénierie et interprétabilité des systèmes informatiques',
+            id: 1,
+            groupe: 'ING1_INFO',
+            room: 'A-8',
+            type: 'COURS',
+            professor: 'Sara MTIW',
+            biWeekly: false
+          }]
+        }}}}};

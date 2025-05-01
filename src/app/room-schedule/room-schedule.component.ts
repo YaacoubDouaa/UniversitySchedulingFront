@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, Input } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, map } from 'rxjs';
 import { RattrapageSchedule, Schedule } from '../models/Schedule';
 import { Seance } from '../models/Seance';
 import { ScheduleService } from '../schedule-service.service';
@@ -30,7 +30,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   /**
    * System Configuration
    */
-  private readonly currentDateTime = '2025-02-26 15:00:03';
+  private readonly currentDateTime = '2025-05-01 14:15:02';
   private readonly currentUser = 'YaacoubDouaa';
 
   /**
@@ -75,13 +75,13 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   days = APP_CONSTANTS.DAYS;
   timeSlots = APP_CONSTANTS.TIME_SLOTS;
   niveaux = APP_CONSTANTS.GROUPS;
-  readonly rooms: string[] = ['A101', 'A102', 'A103', 'B101', 'B102', 'B103'];
+   rooms=APP_CONSTANTS.ROOMS;
 
   /**
    * Component State
    */
   @Input() schedule: Schedule | null = null;
-  selectedRoom: string = 'A101';
+  selectedRoom: string = '101';
   selectedNiveau: string = 'ING1_INFO';
   selectedFrequency: 'weekly' | 'biweekly' = 'weekly';
   isLoading: boolean = false;
@@ -111,11 +111,15 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.selectedRoom = this.scheduleService.getCurrentSalleName();
     this.loadSchedule();
   }
 
   ngOnDestroy(): void {
-    this.scheduleSubscription?.unsubscribe();
+    // Clean up subscriptions to prevent memory leaks
+    if (this.scheduleSubscription) {
+      this.scheduleSubscription.unsubscribe();
+    }
   }
 
   /**
@@ -126,7 +130,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   openAddModal(day: string, time: string): void {
     this.selectedActivity = {
       seance: {
-        id:0,
+        id: 0,
         name: '',
         type: 'COURS',
         professor: '',
@@ -148,11 +152,16 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
    * @param time Time slot of the session
    */
   openEditModal(seance: Seance, day: string, time: string): void {
+    // Create a deep copy to avoid direct reference modification
     this.selectedActivity = {
       seance: { ...seance },
       day,
       time
     };
+
+    // Set the frequency based on the session's biWeekly property
+    this.selectedFrequency = seance.biWeekly ? 'biweekly' : 'weekly';
+
     this.showModal = true;
     this.cdRef.detectChanges();
   }
@@ -201,16 +210,58 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Loads the room schedule
+   * Loads the room schedule with proper subscription management
+   * and filtering for the selected room
    */
   private loadSchedule(): void {
+    // Clear any existing subscription first to prevent memory leaks
+    if (this.scheduleSubscription) {
+      this.scheduleSubscription.unsubscribe();
+    }
+
     this.isLoading = true;
-    this.scheduleSubscription = this.scheduleService.getRoomSchedule(this.selectedRoom)
+
+    // Get the full schedule from the service
+    this.scheduleSubscription = this.scheduleService.getSchedule()
       .subscribe({
-        next: (schedule: Schedule) => {
-          this.schedule = schedule;
-          this.cdRef.detectChanges();
+        next: (completeSchedule: Schedule) => {
+          // Filter the schedule for the selected room
+          const roomSchedule: Schedule = {};
+
+          // Process each day in the schedule
+          Object.keys(completeSchedule).forEach(day => {
+            // Process each group in that day
+            Object.keys(completeSchedule[day] || {}).forEach(group => {
+              // Process each time slot
+              Object.keys(completeSchedule[day][group] || {}).forEach(timeSlot => {
+                const sessions = completeSchedule[day][group][timeSlot] || [];
+
+                // Filter for sessions in this room
+                const roomSessions = sessions.filter(seance =>
+                  seance.room === this.selectedRoom);
+
+                if (roomSessions.length > 0) {
+                  if (!roomSchedule[day]) {
+                    roomSchedule[day] = {};
+                  }
+
+                  if (!roomSchedule[day][group]) {
+                    roomSchedule[day][group] = {};
+                  }
+
+                  roomSchedule[day][group][timeSlot] = roomSessions;
+                }
+              });
+            });
+          });
+
+          // Update the component's schedule data
+          this.schedule = roomSchedule;
           this.isLoading = false;
+
+          // Force UI update
+          this.cdRef.detectChanges();
+          console.log('Schedule loaded successfully for room:', this.selectedRoom);
         },
         error: (error: Error) => {
           console.error('Error loading schedule:', error);
@@ -218,26 +269,52 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
           this.errorMessage = 'Failed to load schedule';
           this.isLoading = false;
           this.showSnackBar('Failed to load schedule', 'error');
+        },
+        complete: () => {
+          this.isLoading = false;
         }
       });
   }
 
   /**
-   * Handles room selection change
+   * Handles room selection change and syncs with service
    */
   onRoomChange(): void {
+    console.log('Room changed to:', this.selectedRoom);
+
+    // Update the service's salle name
+    this.scheduleService.changeSalleName(this.selectedRoom);
+
+    // Update the room in any currently selected activity
+    if (this.selectedActivity && this.showModal) {
+      this.selectedActivity.seance.room = this.selectedRoom;
+    }
+
     this.loadSchedule();
   }
-
+  /**
+   * Gets the current salle name from the service
+   * @returns The current salle name
+   */
+  getCurrentSalleName(): string {
+    return this.scheduleService.getCurrentSalleName();
+  }
   /**
    * Gets sessions for a specific time slot
+   * @param day Day of the week
+   * @param time Time slot
+   * @param niveau Academic level/group
+   * @returns Array of sessions for the specified parameters
    */
   getSessions(day: string, time: string, niveau: string): Seance[] {
-    return this.schedule?.[day]?.[time]?.[niveau] || [];
+    if (!this.schedule || !this.schedule[day] || !this.schedule[day][niveau]) {
+      return [];
+    }
+    return this.schedule[day][niveau][time] || [];
   }
 
   /**
-   * Saves a new session
+   * Saves a new session with improved error handling and refresh
    */
   saveAddChanges(): void {
     if (!this.validateSession()) return;
@@ -245,26 +322,39 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
     const { day, time, seance } = this.selectedActivity;
     seance.biWeekly = this.selectedFrequency === 'biweekly';
 
-    this.isLoading = true;
-    this.scheduleService.addSession(day, time, seance.groupe, seance)
-      .subscribe({
-        next: () => {
-          this.showSnackBar('Session added successfully', 'success');
-          this.closeModal();
+    // Always ensure room is set correctly
+    seance.room = this.selectedRoom;
 
-          this.refreshData();
+    this.isLoading = true;
+    this.scheduleService.addSession(day, seance.groupe, time, seance)
+      .subscribe({
+        next: (success) => {
+          if (success) {
+            this.showSnackBar('Session added successfully', 'success');
+            this.closeModal();
+            this.refreshData();
+          } else {
+            // Handle case where operation returned false
+            this.showError = true;
+            this.errorMessage = 'Failed to add session - operation unsuccessful';
+            this.isLoading = false;
+            this.showSnackBar('Failed to add session', 'error');
+          }
         },
         error: (error: Error) => {
           this.showError = true;
           this.errorMessage = error.message || 'Failed to add session';
           this.isLoading = false;
           this.showSnackBar('Failed to add session: ' + this.errorMessage, 'error');
+        },
+        complete: () => {
+          this.isLoading = false;
         }
       });
   }
 
   /**
-   * Saves changes to an existing session
+   * Saves changes to an existing session with improved error handling
    */
   saveEditChanges(): void {
     if (!this.validateSession()) return;
@@ -272,24 +362,39 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
     const { day, time, seance } = this.selectedActivity;
     seance.biWeekly = this.selectedFrequency === 'biweekly';
 
+    // Always ensure room is set correctly
+    seance.room = this.selectedRoom;
+
     this.isLoading = true;
     this.scheduleService.updateSession(day, time, seance.groupe, seance)
       .subscribe({
-        next: () => {
-          this.showSnackBar('Session updated successfully', 'success');
-          this.closeModal();
-         this.refreshData();        },
+        next: (success) => {
+          if (success) {
+            this.showSnackBar('Session updated successfully', 'success');
+            this.closeModal();
+            this.refreshData();
+          } else {
+            // Handle case where operation returned false
+            this.showError = true;
+            this.errorMessage = 'Failed to update session - operation unsuccessful';
+            this.isLoading = false;
+            this.showSnackBar('Failed to update session', 'error');
+          }
+        },
         error: (error: Error) => {
           this.showError = true;
           this.errorMessage = error.message || 'Failed to update session';
           this.isLoading = false;
           this.showSnackBar('Failed to update session: ' + this.errorMessage, 'error');
+        },
+        complete: () => {
+          this.isLoading = false;
         }
       });
   }
 
   /**
-   * Confirms and executes session deletion
+   * Confirms and executes session deletion with improved error handling
    */
   confirmDelete(): void {
     if (!this.seanceToDelete) {
@@ -297,27 +402,38 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const { id, day, time } = this.seanceToDelete;
+    const { id, day, group, time } = this.seanceToDelete;
 
     this.isLoading = true;
-    this.scheduleService.deleteSession(day, time, this.seanceToDelete.group, id)
+    this.scheduleService.deleteSession(day, time, group, id)
       .subscribe({
-        next: () => {
-          this.showSnackBar('Session deleted successfully', 'success');
-          this.closeDeleteModal();
-          this.refreshData();
+        next: (success) => {
+          if (success) {
+            this.showSnackBar('Session deleted successfully', 'success');
+            this.closeDeleteModal();
+            this.refreshData();
+          } else {
+            this.showError = true;
+            this.errorMessage = 'Failed to delete session - operation unsuccessful';
+            this.isLoading = false;
+            this.showSnackBar('Failed to delete session', 'error');
+          }
         },
         error: (error: Error) => {
           this.showError = true;
           this.errorMessage = error.message || 'Failed to delete session';
           this.isLoading = false;
           this.showSnackBar('Failed to delete session: ' + this.errorMessage, 'error');
+        },
+        complete: () => {
+          this.isLoading = false;
         }
       });
   }
 
   /**
    * Validates session data before saving
+   * @returns boolean indicating if validation passed
    */
   private validateSession(): boolean {
     if (!this.selectedActivity) {
@@ -342,9 +458,13 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    if (!seance.room) {
-      this.showSnackBar('Room is required', 'error');
+    if (!seance.groupe) {
+      this.showSnackBar('Group is required', 'error');
       return false;
+    }
+
+    if (!seance.room) {
+      seance.room = this.selectedRoom; // Set default room if missing
     }
 
     return true;
@@ -366,6 +486,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
 
   /**
    * Gets current date and time
+   * @returns Formatted date time string
    */
   getCurrentDateTime(): string {
     return this.currentDateTime;
@@ -373,22 +494,33 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
 
   /**
    * Gets current user
+   * @returns Current user's login
    */
   getCurrentUser(): string {
     return this.currentUser;
   }
+
   /**
-   * Refresh data after changes
+   * Improved refresh data method with proper timing
    */
   private refreshData(): void {
-    // Refresh schedule
-    this.loadSchedule();
+    console.log('Refreshing data...');
 
-    // Force UI update
-    this.cdRef.detectChanges();
+    // Clear any stale errors
+    this.showError = false;
+    this.errorMessage = '';
+
+    // Use setTimeout to ensure service has time to update internal state
+    setTimeout(() => {
+      this.loadSchedule();
+    }, 100);
   }
 
-
+  /**
+   * Gets the icon for a course type
+   * @param type Course type (COURS, TD, TP)
+   * @returns Icon name for the specified course type
+   */
   getCourseIcon(type: string): string {
     switch (type) {
       case 'COURS': return 'book';

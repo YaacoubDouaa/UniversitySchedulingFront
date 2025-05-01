@@ -98,7 +98,7 @@ export class ScheduleService {
 
     // Add new session
     schedule[day][niveau][time].push(seance);
-
+    console.log(schedule[day][niveau][time]);
     // Broadcast schedule update
     this.scheduleSubject.next(schedule);
 
@@ -357,5 +357,36 @@ export class ScheduleService {
   }
   saveSeances(request: SaveRequest): Observable<{ success: boolean; message: string }> {
     return this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/seances`, request);
+  }
+
+  /**
+   * Current salle (room) name
+   * Stores the name of the currently selected room
+   */
+  private salleName: string = 'A101'; // Default room name
+
+  /**
+   * Change the current salle name
+   * Updates the salle name and triggers any necessary refresh
+   *
+   * @param name - New salle name to set
+   */
+  changeSalleName(name: string): void {
+    this.salleName = name;
+    console.log(`Salle name changed to: ${name}`);
+
+    // Optional: Notify subscribers about the room change
+    // You could emit an event or update any related data
+
+    // Example: Update timestamp when room is changed
+    this.updateCurrentDateTime();
+  }
+
+  /**
+   * Gets the current salle name
+   * @returns string The name of the currently selected salle
+   */
+  getCurrentSalleName(): string {
+    return this.salleName;
   }
 }

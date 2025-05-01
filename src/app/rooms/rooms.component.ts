@@ -132,12 +132,16 @@ export class RoomsComponent implements OnInit {
     });
   }
 
+changeSalle(name:string): void {
+  this.salleScheduleService.changeSalleName(name);
 
+}
   /**
    * Handle room selection
    */
-  onSelectSalle(salleSchedule: Schedule): void {
+  onSelectSalle(selectedSalle:string,salleSchedule: Schedule): void {
     this.salleScheduleService.changeSchedule(salleSchedule);
+    this.changeSalle(selectedSalle);
     this.salleSchedule = salleSchedule;
     this.router.navigate(['/room-schedule']);
   }

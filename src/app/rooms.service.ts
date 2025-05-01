@@ -4,57 +4,17 @@ import { delay, tap } from 'rxjs/operators';
 import { Salle, SalleList, SallesDispo } from './models/Salle';
 import { Seance } from './models/Seance';
 import { Schedule } from './models/Schedule';
+import{demoSalles} from './initialData';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoomService {
-  private sallesSubject = new BehaviorSubject<SalleList>({});
+
   private loaded = false;
-
   // Example of restructured data with the new Schedule interface
-  private salles: SalleList = {
-    'A-8': {
-      id: 1,
-      name: 'A-8',
-      type: 'COURS',
-      capacite: 50,
-      schedule: {
-        LUNDI: {
-          'ING1_INFO': {
-            '8:30-10:00': [{
-              name: 'Ch-Ingénierie et interprétabilité des systèmes informatiques',
-              id: 1,
-              groupe: 'ING1_INFO',
-              room: 'A-8',
-              type: 'COURS',
-              professor: 'Sara MTIW',
-              biWeekly: false
-            }]
-          }
-        },
-        // ... other days
-      }
-    }
-    ,'A-9': {
-      id: 1,
-      name: 'A-8',
-      type: 'COURS',
-      capacite: 50,
-      schedule: {
-        LUNDI: {
-          'ING1_INFO': {
-            '8:30-10:00': [{
-              name: 'Ch-Ingénierie et interprétabilité des systèmes informatiques',
-              id: 1,
-              groupe: 'ING1_INFO',
-              room: 'A-8',
-              type: 'COURS',
-              professor: 'Sara MTIW',
-              biWeekly: false
-            }]
-          }}}}};
-
+  private salles: SalleList = demoSalles;
+  private sallesSubject = new BehaviorSubject<SalleList>({});
   constructor() {
     this.initializeService();
   }
