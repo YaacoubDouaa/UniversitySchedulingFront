@@ -294,6 +294,8 @@
             <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required
                    class="backdrop-blur-sm" />
           </mat-form-field>
+
+          <!-- Type Selector Fix -->
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>
               <div class="flex items-center space-x-2">
@@ -301,14 +303,14 @@
                 <span>Type</span>
               </div>
             </mat-label>
-            <mat-select [(ngModel)]="selectedActivity.seance.type" name="room" required>
-              <mat-option *ngFor="let type of typeOptions" [value]="selectedActivity.seance.type">
+            <mat-select [(ngModel)]="selectedActivity.seance.type" name="type" required>
+              <mat-option *ngFor="let type of typeOptions" [value]="type">
                 {{type}}
               </mat-option>
             </mat-select>
           </mat-form-field>
 
-
+          <!-- Room Selector Fix -->
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>
               <div class="flex items-center space-x-2">
@@ -317,7 +319,7 @@
               </div>
             </mat-label>
             <mat-select [(ngModel)]="selectedActivity.seance.room" name="room" required>
-              <mat-option *ngFor="let room of roomOptions" [value]="selectedRoom">
+              <mat-option *ngFor="let room of roomOptions" [value]="room">
                 {{room}}
               </mat-option>
             </mat-select>
