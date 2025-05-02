@@ -195,92 +195,239 @@
     </div>
 
     <!-- Modal -->
-    <!-- Modal Content -->
+    <!-- Session Modal - Add/Edit -->
     <ng-container *ngIf="showModal && selectedActivity">
-      <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
            (click)="closeModal()">
-        <mat-card class="w-full max-w-lg bg-white dark:bg-gray-800 shadow-xl"
+        <mat-card class="w-full max-w-lg bg-white dark:bg-gray-800 shadow-xl overflow-hidden rounded-xl"
                   (click)="$event.stopPropagation()">
           <!-- Modal Header -->
-          <mat-card-header class="border-b border-gray-200 dark:border-gray-700 p-4">
-            <mat-card-title class="text-lg font-semibold text-gray-900 dark:text-white">
-              {{ selectedActivity.seance.id ? 'Session Details' : 'New Session' }}
-            </mat-card-title>
+          <mat-card-header class="border-b border-gray-200 dark:border-gray-700 p-4 bg-primary/10 dark:bg-primary/5">
+            <div class="flex items-center space-x-3 w-full">
+              <div class="p-2 bg-primary/20 rounded-lg">
+                <i-feather [name]="selectedActivity.seance.id ? 'edit' : 'plus-circle'" class="h-5 w-5 text-primary"></i-feather>
+              </div>
+              <mat-card-title class="text-lg font-semibold text-gray-900 dark:text-white">
+                {{ selectedActivity.seance.id === 0 ? 'Add New Session' : 'Edit Session' }}
+              </mat-card-title>
+            </div>
             <button mat-icon-button class="absolute top-2 right-2" (click)="closeModal()">
               <i-feather name="x" class="h-5 w-5 text-gray-500 dark:text-gray-400"></i-feather>
             </button>
           </mat-card-header>
 
           <!-- Modal Body -->
-          <mat-card-content class="p-4 space-y-4">
-            <!-- Session Details -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- Session Name -->
-              <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Session Name</mat-label>
-                <input matInput [(ngModel)]="selectedActivity.seance.name" name="name" required>
-              </mat-form-field>
-              <!-- Type -->
-              <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Type</mat-label>
-                <mat-select [(ngModel)]="selectedActivity.seance.type" name="type" required>
-                  <mat-option *ngFor="let type of types" [value]="type">
-                    {{ type }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+          <mat-card-content class="p-5 space-y-4">
+            <form #sessionForm="ngForm" class="space-y-4">
+              <!-- Session Details -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Session Name -->
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>
+                    <div class="flex items-center space-x-2">
+                      <i-feather name="bookmark" class="h-4 w-4"></i-feather>
+                      <span>Session Name</span>
+                    </div>
+                  </mat-label>
+                  <input matInput [(ngModel)]="selectedActivity.seance.name" name="name" required>
+                  <mat-error>Session name is required</mat-error>
+                </mat-form-field>
 
-              <!-- Groupe -->
-              <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Groupe</mat-label>
-                <mat-select [(ngModel)]="selectedActivity.seance.groupe" name="groupe" required>
-                  <mat-option *ngFor="let niveau of niveaux" [value]="niveau">
-                    {{ niveau }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+                <!-- Professor -->
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>
+                    <div class="flex items-center space-x-2">
+                      <i-feather name="user" class="h-4 w-4"></i-feather>
+                      <span>Professor</span>
+                    </div>
+                  </mat-label>
+                  <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required>
+                  <mat-error>Professor name is required</mat-error>
+                </mat-form-field>
 
-              <!-- Frequency -->
-              <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Frequency</mat-label>
-                <mat-select [(ngModel)]="selectedFrequency" name="frequency">
-                  <mat-option value="weekly">Weekly</mat-option>
-                  <mat-option value="biweekly">Bi-weekly</mat-option>
-                </mat-select>
-              </mat-form-field>
+                <!-- Type -->
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>
+                    <div class="flex items-center space-x-2">
+                      <i-feather name="tag" class="h-4 w-4"></i-feather>
+                      <span>Type</span>
+                    </div>
+                  </mat-label>
+                  <mat-select [(ngModel)]="selectedActivity.seance.type" name="type" required>
+                    <mat-option *ngFor="let type of types" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>Session type is required</mat-error>
+                </mat-form-field>
 
-              <!-- Time Slot Info -->
-              <div class="flex flex-col space-y-1 p-3 bg-gray-50 dark:bg-gray-900/30 rounded-lg">
-                <span class="text-sm font-medium">{{ selectedActivity.day }}</span>
-                <span class="text-sm text-gray-500 dark:text-gray-400">{{ selectedActivity.time }}</span>
+                <!-- Room - Explicitly included and required -->
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>
+                    <div class="flex items-center space-x-2">
+                      <i-feather name="map-pin" class="h-4 w-4"></i-feather>
+                      <span>Room</span>
+                    </div>
+                  </mat-label>
+                  <mat-select [(ngModel)]="selectedActivity.seance.room" name="room" required>
+                    <mat-option *ngFor="let roomName of Object.keys(salles)" [value]="roomName">
+                      {{ roomName }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>Room is required</mat-error>
+                </mat-form-field>
+
+                <!-- Groupe -->
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>
+                    <div class="flex items-center space-x-2">
+                      <i-feather name="users" class="h-4 w-4"></i-feather>
+                      <span>Group</span>
+                    </div>
+                  </mat-label>
+                  <mat-select [(ngModel)]="selectedActivity.seance.groupe" name="groupe" required>
+                    <mat-option *ngFor="let niveau of niveaux" [value]="niveau">
+                      {{ niveau }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>Group is required</mat-error>
+                </mat-form-field>
+
+                <!-- Frequency -->
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>
+                    <div class="flex items-center space-x-2">
+                      <i-feather name="repeat" class="h-4 w-4"></i-feather>
+                      <span>Frequency</span>
+                    </div>
+                  </mat-label>
+                  <mat-select [(ngModel)]="selectedFrequency" name="frequency" required>
+                    <mat-option value="weekly">Weekly</mat-option>
+                    <mat-option value="biweekly">Bi-weekly</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <!-- Time Slot Info -->
+                <div class="flex flex-col space-y-1 p-3 bg-gray-50 dark:bg-gray-900/30 rounded-lg">
+                  <div class="flex items-center space-x-2">
+                    <i-feather name="calendar" class="h-4 w-4 text-primary"></i-feather>
+                    <span class="text-sm font-medium">{{ selectedActivity.day }}</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <i-feather name="clock" class="h-4 w-4 text-primary"></i-feather>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ selectedActivity.time }}</span>
+                  </div>
+                </div>
               </div>
+            </form>
+
+            <!-- Debug info (for development, remove in production) -->
+            <div *ngIf="false" class="text-xs text-gray-500 border-t pt-2 mt-2">
+              <p>Debug info:</p>
+              <pre>{{ selectedActivity | json }}</pre>
+            </div>
+          </mat-card-content>
+
+          <!-- Modal Footer -->
+          <mat-card-actions class="flex justify-end space-x-3 p-4 border-t border-gray-200 dark:border-gray-700">
+            <button mat-button (click)="closeModal()"
+                    class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+              <i-feather name="x" class="h-4 w-4"></i-feather>
+              <span>Cancel</span>
+            </button>
+            <button mat-raised-button color="primary"
+                    [disabled]="!sessionForm.form.valid"
+                    (click)="selectedActivity.seance.id === 0 ? saveAddChanges() : saveEditChanges()"
+                    class="flex items-center space-x-2 px-6 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors">
+              <i-feather name="save" class="h-4 w-4"></i-feather>
+              <span>{{ selectedActivity.seance.id === 0 ? 'Add' : 'Update' }}</span>
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+
+    </ng-container>
+    <!-- View Sessions Modal -->
+    <ng-container *ngIf="showViewModal">
+      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+           (click)="closeViewModal()">
+        <mat-card class="w-full max-w-lg bg-white dark:bg-gray-800 shadow-xl overflow-hidden rounded-xl"
+                  (click)="$event.stopPropagation()">
+          <!-- Modal Header -->
+          <mat-card-header class="border-b border-gray-200 dark:border-gray-700 p-4 bg-blue-50 dark:bg-blue-900/20">
+            <div class="flex items-center space-x-3 w-full">
+              <div class="p-2 bg-blue-100 dark:bg-blue-800/30 rounded-lg">
+                <i-feather name="calendar" class="h-5 w-5 text-blue-600 dark:text-blue-400"></i-feather>
+              </div>
+              <mat-card-title class="text-lg font-semibold text-gray-900 dark:text-white">
+                {{ viewModalTitle }}
+              </mat-card-title>
+            </div>
+            <button mat-icon-button class="absolute top-2 right-2" (click)="closeViewModal()">
+              <i-feather name="x" class="h-5 w-5 text-gray-500 dark:text-gray-400"></i-feather>
+            </button>
+          </mat-card-header>
+
+          <!-- Modal Body -->
+          <mat-card-content class="p-5">
+            <div *ngIf="viewingSessions.length === 0" class="text-center py-6">
+              <i-feather name="calendar-x" class="h-12 w-12 text-gray-400 mx-auto mb-3"></i-feather>
+              <p class="text-gray-500">No sessions found for this time slot.</p>
             </div>
 
-            <!-- Additional Info for Rattrapage -->
-            <div *ngIf="selectedActivity.seance.isRattrapage"
-                 class="p-3 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
-              <div class="flex items-center space-x-2">
-                <i-feather name="info" class="h-4 w-4 text-purple-500"></i-feather>
-                <span class="text-sm text-purple-700 dark:text-purple-300">Rattrapage Session</span>
+            <div *ngIf="viewingSessions.length > 0" class="space-y-4">
+              <!-- Session List -->
+              <div *ngFor="let session of viewingSessions; let i = index"
+                   class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-3"
+                   [ngClass]="{
+                 'border-l-4 border-blue-500': session.type === 'COURS',
+                 'border-l-4 border-green-500': session.type === 'TD',
+                 'border-l-4 border-orange-500': session.type === 'TP',
+                 'border-l-4 border-purple-500': session.type === 'SEMINAIRE'
+               }">
+                <div class="flex justify-between items-start">
+                  <h3 class="font-medium text-gray-900 dark:text-white text-lg">{{ session.name }}</h3>
+                  <span class="px-2 py-1 text-xs rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300">
+                {{ session.type }}
+              </span>
+                </div>
+
+                <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div class="flex items-center space-x-2">
+                    <i-feather name="user" class="h-4 w-4 text-gray-500"></i-feather>
+                    <span class="text-gray-700 dark:text-gray-300">{{ session.professor }}</span>
+                  </div>
+
+                  <div class="flex items-center space-x-2">
+                    <i-feather name="users" class="h-4 w-4 text-gray-500"></i-feather>
+                    <span class="text-gray-700 dark:text-gray-300">{{ session.groupe }}</span>
+                  </div>
+
+                  <div class="flex items-center space-x-2">
+                    <i-feather name="map-pin" class="h-4 w-4 text-gray-500"></i-feather>
+                    <span class="text-gray-700 dark:text-gray-300">{{ session.room }}</span>
+                  </div>
+
+                  <div class="flex items-center space-x-2">
+                    <i-feather name="repeat" class="h-4 w-4 text-gray-500"></i-feather>
+                    <span class="text-gray-700 dark:text-gray-300">{{ session.biWeekly ? 'Bi-weekly' : 'Weekly' }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </mat-card-content>
 
           <!-- Modal Footer -->
-          <mat-card-actions class="flex justify-end space-x-2 p-4 border-t border-gray-200 dark:border-gray-700">
-            <button mat-button (click)="closeModal()"
-                    class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
-              Cancel
-            </button>
-            <button mat-raised-button color="primary"
-                    (click)="saveAddChanges()"
-                    class="px-4 py-2 bg-[#ef233c] text-white rounded-lg hover:bg-[#ef233c]/90">
-              {{ selectedActivity.seance.id ? 'Save Changes' : 'Add Session' }}
+          <mat-card-actions class="flex justify-end p-4 border-t border-gray-200 dark:border-gray-700">
+            <button mat-button (click)="closeViewModal()"
+                    class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+              <i-feather name="x" class="h-4 w-4"></i-feather>
+              <span>Close</span>
             </button>
           </mat-card-actions>
         </mat-card>
       </div>
     </ng-container>
+  </div>
 
-  </div></div>
-
+</div>
