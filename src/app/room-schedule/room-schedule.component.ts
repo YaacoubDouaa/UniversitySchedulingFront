@@ -30,7 +30,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   /**
    * System Configuration
    */
-  private readonly currentDateTime = '2025-05-01 14:15:02';
+  private readonly currentDateTime = '2025-05-02 18:07:41';
   private readonly currentUser = 'YaacoubDouaa';
 
   /**
@@ -75,16 +75,20 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   days = APP_CONSTANTS.DAYS;
   timeSlots = APP_CONSTANTS.TIME_SLOTS;
   niveaux = APP_CONSTANTS.GROUPS;
-   rooms=APP_CONSTANTS.ROOMS;
+  rooms = APP_CONSTANTS.ROOMS;
+  typeOptions = ['COURS', 'TD', 'TP'];
+  roomOptions = APP_CONSTANTS.ROOMS;
 
   /**
    * Component State
    */
-  @Input() schedule: Schedule | null = null;
+  @Input() schedule: Schedule = {}; // Initialize as empty object instead of null
   selectedRoom: string = '101';
   selectedNiveau: string = 'ING1_INFO';
   selectedFrequency: 'weekly' | 'biweekly' = 'weekly';
   isLoading: boolean = false;
+  showTP: boolean = true;
+  showTD: boolean = true;
 
   /**
    * Modal States
@@ -111,7 +115,9 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    console.log('Component initializing...');
     this.selectedRoom = this.scheduleService.getCurrentSalleName();
+    console.log('Initial selected room:', this.selectedRoom);
     this.loadSchedule();
   }
 
@@ -123,26 +129,34 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Opens the add session modal
+   * Opens the add session modal with a properly initialized new session
    * @param day Selected day
    * @param time Selected time slot
    */
   openAddModal(day: string, time: string): void {
+    console.log('Opening add modal for day:', day, 'time:', time);
+
+    // Explicitly create a brand new session object with ID=0
     this.selectedActivity = {
       seance: {
-        id: 0,
+        id: 0, // Ensure this is explicitly 0 for new sessions
         name: '',
         type: 'COURS',
         professor: '',
         groupe: this.selectedNiveau,
         room: this.selectedRoom,
-        biWeekly: this.selectedFrequency === 'biweekly'
+        biWeekly: false // Default to weekly
       },
       day,
       time
     };
+
+    // Reset the frequency selector
+    this.selectedFrequency = 'weekly';
+
     this.showModal = true;
     this.cdRef.detectChanges();
+    console.log('Add modal opened with:', this.selectedActivity);
   }
 
   /**
@@ -152,6 +166,8 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
    * @param time Time slot of the session
    */
   openEditModal(seance: Seance, day: string, time: string): void {
+    console.log('Opening edit modal for session:', seance);
+
     // Create a deep copy to avoid direct reference modification
     this.selectedActivity = {
       seance: { ...seance },
@@ -174,6 +190,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
    * @param time Time slot
    */
   openDeleteModal(id: number, day: string, group: string, time: string): void {
+    console.log('Opening delete modal for session ID:', id);
     this.seanceToDelete = { id, day, group, time };
     this.showDeleteModal = true;
     this.cdRef.detectChanges();
@@ -184,6 +201,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
    */
   closeModal(): void {
     this.showModal = false;
+    this.showDeleteModal = false;
     this.selectedActivity = {
       seance: {
         id: 0,
@@ -201,15 +219,6 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Closes the delete confirmation modal
-   */
-  closeDeleteModal(): void {
-    this.showDeleteModal = false;
-    this.seanceToDelete = null;
-    this.cdRef.detectChanges();
-  }
-
-  /**
    * Loads the room schedule with proper subscription management
    * and filtering for the selected room
    */
@@ -220,11 +229,25 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
     }
 
     this.isLoading = true;
+    console.log('Loading schedule for room:', this.selectedRoom);
 
     // Get the full schedule from the service
     this.scheduleSubscription = this.scheduleService.getSchedule()
       .subscribe({
         next: (completeSchedule: Schedule) => {
+          console.log('Complete schedule received:', completeSchedule);
+
+          // If the complete schedule is empty, show error and exit
+          if (!completeSchedule || Object.keys(completeSchedule).length === 0) {
+            console.error('Received empty schedule from service');
+            this.showError = true;
+            this.errorMessage = 'No schedule data available';
+            this.isLoading = false;
+            this.schedule = {};
+            this.cdRef.detectChanges();
+            return;
+          }
+
           // Filter the schedule for the selected room
           const roomSchedule: Schedule = {};
 
@@ -239,6 +262,8 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
                 // Filter for sessions in this room
                 const roomSessions = sessions.filter(seance =>
                   seance.room === this.selectedRoom);
+
+                console.log(`Day: ${day}, Group: ${group}, Time: ${timeSlot}, Sessions: ${sessions.length}, Room sessions: ${roomSessions.length}`);
 
                 if (roomSessions.length > 0) {
                   if (!roomSchedule[day]) {
@@ -255,7 +280,9 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
             });
           });
 
-          // Update the component's schedule data
+          console.log('Filtered room schedule:', roomSchedule);
+
+          // Update the component's schedule data with the filtered schedule
           this.schedule = roomSchedule;
           this.isLoading = false;
 
@@ -266,14 +293,24 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
         error: (error: Error) => {
           console.error('Error loading schedule:', error);
           this.showError = true;
-          this.errorMessage = 'Failed to load schedule';
+          this.errorMessage = 'Failed to load schedule: ' + (error.message || 'Unknown error');
           this.isLoading = false;
+          this.schedule = {}; // Initialize with empty object instead of leaving as undefined
           this.showSnackBar('Failed to load schedule', 'error');
+          this.cdRef.detectChanges();
         },
         complete: () => {
           this.isLoading = false;
+          this.cdRef.detectChanges();
         }
       });
+  }
+
+  /**
+   * Gets filtered schedule based on selected options
+   */
+  getFilteredSchedule(): Schedule {
+    return this.schedule || {};
   }
 
   /**
@@ -292,6 +329,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
 
     this.loadSchedule();
   }
+
   /**
    * Gets the current salle name from the service
    * @returns The current salle name
@@ -299,18 +337,37 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
   getCurrentSalleName(): string {
     return this.scheduleService.getCurrentSalleName();
   }
+
   /**
-   * Gets sessions for a specific time slot
+   * Gets sessions for a specific time slot with improved error handling
    * @param day Day of the week
    * @param time Time slot
    * @param niveau Academic level/group
    * @returns Array of sessions for the specified parameters
    */
   getSessions(day: string, time: string, niveau: string): Seance[] {
-    if (!this.schedule || !this.schedule[day] || !this.schedule[day][niveau]) {
+    // Comment out some of the verbose logging to reduce console noise
+    // console.log('getSessions called with:', { day, time, niveau });
+
+    if (!this.schedule) {
+      console.log('Schedule is null or undefined');
       return [];
     }
-    return this.schedule[day][niveau][time] || [];
+
+    if (!this.schedule[day]) {
+      console.log(`Day "${day}" not found in schedule. Available days:`, Object.keys(this.schedule));
+      return [];
+    }
+
+    if (!this.schedule[day][niveau]) {
+      console.log(`Niveau "${niveau}" not found for day "${day}". Available niveaux:`,
+        Object.keys(this.schedule[day]));
+      return [];
+    }
+
+    const sessions = this.schedule[day][niveau][time] || [];
+    // console.log(`Found ${sessions.length} sessions for ${day}, ${time}, ${niveau}`);
+    return sessions;
   }
 
   /**
@@ -410,7 +467,7 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
         next: (success) => {
           if (success) {
             this.showSnackBar('Session deleted successfully', 'success');
-            this.closeDeleteModal();
+            this.closeModal();
             this.refreshData();
           } else {
             this.showError = true;
@@ -529,4 +586,26 @@ export class RoomScheduleComponent implements OnInit, OnDestroy {
       default: return 'circle';
     }
   }
+
+  /**
+   * Navigate to view page
+   */
+  navigateToView(): void {
+    console.log('Navigating to view page...');
+    // Implement navigation logic here
+  }
+
+  /**
+   * Closes the delete confirmation modal
+   */
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.seanceToDelete = null;
+    this.cdRef.detectChanges();
+  }
+
+  /**
+   * Determine if a button should display or not
+   */
+  displayText = 'Room Schedule Manager';
 }

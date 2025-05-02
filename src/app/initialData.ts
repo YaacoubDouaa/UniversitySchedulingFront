@@ -98,7 +98,7 @@ export const demoSalles: SalleList = {
   }
   ,'A-9': {
     id: 1,
-    name: 'A-8',
+    name: 'A-9',
     type: 'COURS',
     capacite: 50,
     schedule: {
@@ -108,7 +108,7 @@ export const demoSalles: SalleList = {
             name: 'Ch-Ingénierie et interprétabilité des systèmes informatiques',
             id: 1,
             groupe: 'ING1_INFO',
-            room: 'A-8',
+            room: 'A-9',
             type: 'COURS',
             professor: 'Sara MTIW',
             biWeekly: false

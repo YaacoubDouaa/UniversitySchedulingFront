@@ -73,6 +73,29 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Sample Data Preview -->
+              <div *ngIf="fileInfo.sampleData && fileInfo.sampleData.length > 0" class="mt-4">
+                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sample Data:</h4>
+                <div class="overflow-x-auto">
+                  <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs">
+                    <thead class="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                      <th *ngFor="let cell of fileInfo.sampleData[0]; let i = index" class="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                        Column {{ i + 1 }}
+                      </th>
+                    </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr *ngFor="let row of fileInfo.sampleData.slice(0, 3)">
+                      <td *ngFor="let cell of row" class="px-2 py-1 whitespace-nowrap text-xs text-gray-600 dark:text-gray-400">
+                        {{ cell }}
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
 
             <!-- Action Buttons -->
@@ -89,7 +112,7 @@
 
         <!-- Step 2: Preview & Map Fields -->
         <mat-step [stepControl]="mappingForm">
-          <ng-template matStepLabel>Map Fields</ng-template>
+          <ng-template matStepLabel>Preview Data</ng-template>
 
           <!-- Processing Indicator -->
           <div *ngIf="isProcessing" class="py-8">
@@ -141,9 +164,80 @@
             </div>
 
             <div class="text-right mt-2">
-              <span class="text-xs text-gray-500 dark:text-gray-400">Showing first 5 rows of {{ parsedData.length }}</span>
+              <span class="text-xs text-gray-500 dark:text-gray-400">Showing first {{ previewData.data.length }} rows of {{ convertedSeances.length }}</span>
             </div>
           </div>
+
+          <!-- Extracted Entities Summary -->
+          <div *ngIf="!isProcessing && convertedSeances.length > 0" class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+              <i-feather name="database" class="h-5 w-5 text-primary"></i-feather>
+              <span>Extracted Entities</span>
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Sessions:</span>
+                  <span class="text-sm font-bold text-primary">{{ convertedSeances.length }}</span>
+                </div>
+                <div class="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+                  <div class="h-full bg-primary" style="width: 100%"></div>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Rooms:</span>
+                  <span class="text-sm font-bold text-primary">{{ salles.length }}</span>
+                </div>
+                <div class="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+                  <div class="h-full bg-primary" style="width: 100%"></div>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Teachers:</span>
+                  <span class="text-sm font-bold text-primary">{{ enseignants.length }}</span>
+                </div>
+                <div class="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+                  <div class="h-full bg-primary" style="width: 100%"></div>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Programs:</span>
+                  <span class="text-sm font-bold text-primary">{{ branches.length }}</span>
+                </div>
+                <div class="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+                  <div class="h-full bg-primary" style="width: 100%"></div>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">TD Groups:</span>
+                  <span class="text-sm font-bold text-primary">{{ tds.length }}</span>
+                </div>
+                <div class="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+                  <div class="h-full bg-primary" style="width: 100%"></div>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">TP Groups:</span>
+                  <span class="text-sm font-bold text-primary">{{ tps.length }}</span>
+                </div>
+                <div class="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+                  <div class="h-full bg-primary" style="width: 100%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Field Mapping Section -->
           <div *ngIf="!isProcessing && displayedColumns.length > 0" class="space-y-4">
             <!-- Toggle Mapping Form Button -->
@@ -192,9 +286,9 @@
             </button>
 
             <button mat-button matStepperNext (click)="mapFields()"
-                    [disabled]="isProcessing"
+                    [disabled]="isProcessing || convertedSeances.length === 0"
                     class="px-6 py-2 flex items-center space-x-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
-              <span>Map Fields</span>
+              <span>Continue</span>
               <i-feather name="arrow-right" class="h-4 w-4"></i-feather>
             </button>
           </div>
@@ -226,8 +320,23 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
               <div class="flex justify-between items-center">
-                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Records:</span>
-                <span class="text-sm text-gray-900 dark:text-white">{{ parsedData.length }}</span>
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions:</span>
+                <span class="text-sm text-gray-900 dark:text-white">{{ convertedSeances.length }}</span>
+              </div>
+
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Rooms:</span>
+                <span class="text-sm text-gray-900 dark:text-white">{{ salles.length }}</span>
+              </div>
+
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Teachers:</span>
+                <span class="text-sm text-gray-900 dark:text-white">{{ enseignants.length }}</span>
+              </div>
+
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Programs:</span>
+                <span class="text-sm text-gray-900 dark:text-white">{{ branches.length }}</span>
               </div>
 
               <div class="flex justify-between items-center">
@@ -236,27 +345,32 @@
               </div>
 
               <div class="flex justify-between items-center">
-                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">File Size:</span>
-                <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo?.size || 'N/A' }}</span>
-              </div>
-
-              <div class="flex justify-between items-center">
                 <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Import Date:</span>
-                <span class="text-sm text-gray-900 dark:text-white">{{ getCurrentDateTime() }}</span>
+                <span class="text-sm text-gray-900 dark:text-white">{{ currentDateTime }}</span>
               </div>
             </div>
+          </div>
+
+          <!-- Processing Indicator -->
+          <div *ngIf="isProcessing" class="py-4 mb-6">
+            <div class="mb-4">
+              <mat-progress-bar mode="determinate" [value]="processingProgress" color="primary"></mat-progress-bar>
+            </div>
+            <p class="text-center text-gray-600 dark:text-gray-400">Processing... {{ processingProgress }}%</p>
           </div>
 
           <!-- Action Buttons -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <button mat-raised-button color="primary" (click)="saveSchedule()"
-                    class="py-3 flex items-center justify-center space-x-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all shadow-md">
+                    [disabled]="isProcessing || convertedSeances.length === 0"
+                    class="py-3 flex items-center justify-center space-x-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
               <i-feather name="save" class="h-5 w-5"></i-feather>
               <span>Save to System</span>
             </button>
 
             <button mat-raised-button color="accent" (click)="downloadJson()"
-                    class="py-3 flex items-center justify-center space-x-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-all shadow-md">
+                    [disabled]="isProcessing || convertedSeances.length === 0"
+                    class="py-3 flex items-center justify-center space-x-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
               <i-feather name="download" class="h-5 w-5"></i-feather>
               <span>Export as JSON</span>
             </button>
@@ -270,7 +384,7 @@
             </h4>
 
             <div class="flex flex-wrap gap-3">
-              <button mat-stroked-button (click)="stepper.reset()"
+              <button mat-stroked-button (click)="reset()"
                       class="px-4 py-2 flex items-center space-x-2 border border-red-300 dark:border-red-600 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-all">
                 <i-feather name="refresh-cw" class="h-4 w-4"></i-feather>
                 <span>Start Over</span>
@@ -286,7 +400,7 @@
               <span>Back</span>
             </button>
 
-            <button mat-button (click)="stepper.reset()"
+            <button mat-button (click)="reset()"
                     class="px-6 py-2 flex items-center space-x-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
               <i-feather name="x" class="h-4 w-4"></i-feather>
               <span>Cancel</span>
@@ -295,12 +409,13 @@
         </mat-step>
       </mat-stepper>
     </div>
-    <!-- Add this right before the closing </div> of your main container -->
-    <div *ngIf="errorMessage" class="fixed top-5 right-5 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50">
-      {{ errorMessage }}
-      <button class="ml-2 text-white" (click)="errorMessage = null">×</button>
+
+    <!-- Error Message Toast -->
+    <div *ngIf="errorMessage" class="fixed top-5 right-5 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50 flex items-center justify-between">
+      <span>{{ errorMessage }}</span>
+      <button class="ml-3 text-white hover:text-white/80" (click)="errorMessage = null">
+        <i-feather name="x" class="h-4 w-4"></i-feather>
+      </button>
     </div>
   </div>
-
-
 </div>
