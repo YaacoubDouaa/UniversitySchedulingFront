@@ -324,24 +324,34 @@ idCounter=20;
    * Modal Management Methods
    * Handle the opening, closing, and state management of modals
    */
-  openAddModal(day: string, time: string): void {
+  /**
+   * Opens modal for adding a new session
+   */
+  openAddModal(day: string, time: string, room: string): void {
+    console.log(`Opening add modal for day=${day}, time=${time}`);
+    // Create a completely new session object with required fields initialized
     this.selectedActivity = {
       seance: {
-        name: '',
         id: 0,
-        room: '',
-        type: 'COURS',
+        name: '',
+        room: room,
+        type: 'COURS',  // Set default type
         professor: '',
-        groupe: '',
+        groupe: this.selectedGroup || '',  // Use selectedGroup if available
         biWeekly: false
       },
       day,
       time
     };
+
+    // Reset frequency to weekly by default
+    this.selectedFrequency = 'weekly';
+
+    // Show modal
     this.showModal = true;
 
+    console.log('Add modal opened with:', this.selectedActivity);
   }
-
   openEditModal(seance: Seance, day: string, time: string): void {
     this.selectedActivity = {
       seance: { ...seance },
@@ -374,36 +384,69 @@ idCounter=20;
   /**
    * Save new session with validation and warning messages
    */
+  /**
+   * Save new session with validation and warning messages
+   */
   saveAddChanges(): void {
-    // Validation checks with specific error messages
-    if (!this.selectedActivity ) {
-      // Show warning message for missing group
-      if (!this.selectedGroup) {
-        this.showWarningMessage('Please select a group before adding a session.');
-        return;
-      }
+    console.log('Saving new session...', this.selectedActivity);
 
-      // Show warning message for missing activity details
-      if (!this.selectedActivity) {
-        this.showWarningMessage('Please fill in session details before saving.');
-        return;
-      }
+    // Validate selected activity exists
+    if (!this.selectedActivity) {
+      this.showWarningMessage('No session data to save.');
       return;
     }
 
-    // Validate required fields
     const { day, time, seance } = this.selectedActivity;
-    if (!seance.name || !seance.professor || !seance.type) {
-      this.showWarningMessage('Please fill in all required fields (Name, Professor, Type).');
+
+    // Set frequency based on selection
+    seance.biWeekly = this.selectedFrequency === 'biweekly';
+
+    // Validate required fields directly from the form model
+    if (!seance.name) {
+      this.showWarningMessage('Session name is required.');
       return;
     }
 
-    // Proceed with save if validation passes
-    seance.biWeekly = this.selectedFrequency === 'biweekly';
-    seance.id = ++this.idCounter;
-    seance.groupe = this.selectedGroup;
+    if (!seance.professor) {
+      this.showWarningMessage('Professor name is required.');
+      return;
+    }
 
-    this.scheduleService.addSession(day, time, this.selectedGroup, seance)
+    if (!seance.type) {
+      this.showWarningMessage('Session type is required.');
+      return;
+    }
+
+    if (!seance.room) {
+      this.showWarningMessage('Room is required.');
+      return;
+    }
+
+    // For groupe, use either the one in the form or the selectedGroup
+    if (!seance.groupe) {
+      // Only if not already set in the form
+      if (!this.selectedGroup) {
+        this.showWarningMessage('Group is required. Please select a group.');
+        return;
+      }
+      seance.groupe = this.selectedGroup;
+    }
+
+    // Assign a unique ID if not already set
+    if (!seance.id) {
+      seance.id = ++this.idCounter;
+    }
+
+    // Debug output before service call
+    console.log('Validated data to save:', {
+      day,
+      time,
+      groupe: seance.groupe,
+      seance
+    });
+
+    // Now make the service call with the validated data
+    this.scheduleService.addSession(day, seance.groupe, time, seance)
       .subscribe({
         next: (success) => {
           if (success) {
@@ -414,8 +457,8 @@ idCounter=20;
           }
         },
         error: (error) => {
-          // Show error message
-          this.showErrorMessage('Failed to add session. Please try again.');
+          // Show detailed error message
+          this.showErrorMessage('Failed to add session: ' + (error.message || 'Unknown error'));
           console.error('Error adding session:', error);
         }
       });

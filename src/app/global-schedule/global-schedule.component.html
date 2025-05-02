@@ -71,26 +71,29 @@
             <!-- Add Button -->
             <button *ngIf="getSessionsForRoom(room, day, timeSlot).length === 0"
                     class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-full bg-green-500 hover:bg-green-600 text-white"
-                    (click)="openAddModal(day, timeSlot)">
+                    (click)="openAddModal(day, timeSlot,room)">
               <i-feather name="plus" class="h-3 w-3"></i-feather>
             </button>
 
+            <!-- Session card with properly positioned action buttons -->
             <ng-container *ngFor="let session of getSessionsForRoom(room, day, timeSlot)">
-
-              <div class="mb-1 p-2 rounded-lg text-xs group/session hover:shadow-md transition-all"
+              <div class="mb-1 p-2 rounded-lg text-xs group/session hover:shadow-md transition-all relative"
                    [ngClass]="{
-                     'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200': session.type === 'COURS',
-                     'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200': session.type === 'TD',
-                     'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200': session.type === 'TP'
-                   }">
+         'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200': session.type === 'COURS',
+         'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200': session.type === 'TD',
+         'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200': session.type === 'TP'
+       }">
+                <!-- Type badge -->
                 <span class="px-2 py-0.5 text-xs rounded-full w-fit"
                       [ngClass]="{'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200': session.type === 'COURS',
-                        'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200': session.type === 'TD',
-                        'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200': session.type === 'TP'}">
-          <i-feather [name]="getCourseIcon(session.type)" class="h-3 w-3"></i-feather>
-                  <span>{{session.type}}</span>
-        </span>
-                <div class="font-medium mb-1">{{session.name}} </div>
+            'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200': session.type === 'TD',
+            'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200': session.type === 'TP'}">
+      <i-feather [name]="getCourseIcon(session.type)" class="h-3 w-3"></i-feather>
+      <span>{{session.type}}</span>
+    </span>
+
+                <!-- Main content -->
+                <div class="font-medium mb-1">{{session.name}}</div>
                 <div class="flex items-center space-x-1">
                   <i-feather name="users" class="h-3 w-3"></i-feather>
                   <span>{{session.groupe}}</span>
@@ -99,21 +102,29 @@
                   <i-feather name="user" class="h-3 w-3"></i-feather>
                   <span>{{session.professor}}</span>
                 </div>
-                <!-- Action buttons -->
-                <div class="mt-1 flex justify-end space-x-1 opacity-0 group-hover/session:opacity-100 transition-opacity">
-                  <button class="p-1 hover:bg-blue-200 dark:hover:bg-blue-800 rounded"
+                <!-- Frequency -->
+                <div class="font-medium mb-1">
+                  <div class="flex items-center space-x-1">
+                    <i-feather name="repeat" class="h-3 w-3"></i-feather>
+                    <span class="font-medium">{{ session.biWeekly ? "BiWeekly" : "Weekly" }}</span>
+                  </div>
+                </div>
+
+                <!-- Action buttons in the top right corner -->
+                <div class="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover/session:opacity-100 transition-opacity">
+                  <!-- Edit button -->
+                  <button class="p-1 hover:bg-blue-200 dark:hover:bg-blue-800 rounded-full bg-white/80 dark:bg-gray-700/80 shadow-sm"
                           (click)="openEditModal(session, day, timeSlot)">
-                    <i-feather name="edit-2" class="h-3 w-3"></i-feather>
+                    <i-feather name="edit-2" class="h-3 w-3 text-blue-600 dark:text-blue-400"></i-feather>
                   </button>
-                  <button class="p-1 hover:bg-red-200 dark:hover:bg-red-800 rounded"
+                  <!-- Delete button -->
+                  <button class="p-1 hover:bg-red-200 dark:hover:bg-red-800 rounded-full bg-white/80 dark:bg-gray-700/80 shadow-sm"
                           (click)="openDeleteModal(session.id, day, session.groupe, timeSlot)">
-                    <i-feather name="trash-2" class="h-3 w-3"></i-feather>
+                    <i-feather name="trash-2" class="h-3 w-3 text-red-600 dark:text-red-400"></i-feather>
                   </button>
                 </div>
               </div>
-            </ng-container>
-          </td>
-        </ng-container>
+            </ng-container></td></ng-container>
       </tr>
       </tbody>
     </table>
@@ -133,117 +144,134 @@
     </div>
   </div>
   <!-- Add some CSS styles to your component's CSS file -->
-
   <div *ngIf="showModal"
        class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
        (click)="closeModal()">
-    <div class="bg-white/95 dark:bg-gray-800/95 rounded-2xl shadow-2xl max-w-md w-full m-4 p-6 backdrop-blur-lg border border-gray-200/50 dark:border-gray-700/50"
+    <div class="bg-white/95 dark:bg-gray-800/95 rounded-xl shadow-lg max-w-sm w-full m-3 p-4 backdrop-blur-lg border border-gray-200/50 dark:border-gray-700/50"
          (click)="$event.stopPropagation()">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center space-x-3">
-          <div class="p-2 bg-primary/10 rounded-lg">
-            <i-feather [name]="selectedActivity.seance.id ? 'edit' : 'plus-circle'" class="h-5 w-5 text-primary"></i-feather>
+      <!-- Compact Header -->
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
+          <div class="p-1.5 bg-primary/10 rounded-md">
+            <i-feather [name]="selectedActivity.seance.id ? 'edit' : 'plus-circle'" class="h-4 w-4 text-primary"></i-feather>
           </div>
-          <span>{{ selectedActivity.seance.id ? 'Edit Session' : 'Add Session' }}</span>
+          <span>{{ selectedActivity.seance.id ? 'Edit' : 'Add' }} Session</span>
         </h2>
-        <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+        <button class="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
                 (click)="closeModal()">
-          <i-feather name="x" class="h-5 w-5 text-gray-500 dark:text-gray-400"></i-feather>
+          <i-feather name="x" class="h-4 w-4 text-gray-500 dark:text-gray-400"></i-feather>
         </button>
       </div>
 
-      <form class="space-y-5">
-        <!-- Enhanced Form Fields -->
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>
-            <div class="flex items-center space-x-2">
-              <i-feather name="bookmark" class="h-4 w-4"></i-feather>
-              <span>Activity Name</span>
-            </div>
-          </mat-label>
-          <input matInput [(ngModel)]="selectedActivity.seance.name" name="activityName" required
-                 class="backdrop-blur-sm" />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>
-            <div class="flex items-center space-x-2">
-              <i-feather name="users" class="h-4 w-4"></i-feather>
-              <span>Group</span>
-            </div>
-          </mat-label>
-          <input matInput [(ngModel)]="selectedActivity.seance.groupe" name="groupe" required
-                 class="backdrop-blur-sm" />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>
-            <div class="flex items-center space-x-2">
-              <i-feather name="user" class="h-4 w-4"></i-feather>
-              <span>Professor</span>
-            </div>
-          </mat-label>
-          <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required
-                 class="backdrop-blur-sm" />
-        </mat-form-field>
+      <form #sessionForm="ngForm" class="space-y-3">
+        <!-- Session Details - Compact Layout -->
+        <div class="grid grid-cols-2 gap-3">
+          <!-- Activity Name (Full width) -->
+          <mat-form-field appearance="outline" class="col-span-2">
+            <mat-label>
+              <div class="flex items-center space-x-1">
+                <i-feather name="bookmark" class="h-3.5 w-3.5"></i-feather>
+                <span>Activity Name</span>
+              </div>
+            </mat-label>
+            <input matInput [(ngModel)]="selectedActivity.seance.name" name="activityName" required
+                   placeholder="Enter name" />
+          </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>
-            <div class="flex items-center space-x-2">
-              <i-feather name="map-pin" class="h-4 w-4"></i-feather>
-              <span>Room</span>
-            </div>
-          </mat-label>
-          <mat-select [(ngModel)]="selectedActivity.seance.type" name="room" required>
-            <mat-option *ngFor="let room of roomOptions" [value]="selectedActivity.seance.room">
-              {{room}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>
-            <div class="flex items-center space-x-2">
-              <i-feather name="repeat" class="h-4 w-4"></i-feather>
-              <span>Frequency</span>
-            </div>
-          </mat-label>
-          <mat-select [(ngModel)]="selectedFrequency" name="frequency" required
-                      class="backdrop-blur-sm">
-            <mat-option value="weekly">Weekly</mat-option>
-            <mat-option value="biweekly">Bi-weekly</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>
-            <div class="flex items-center space-x-2">
-              <i-feather name="bookmark" class="h-4 w-4"></i-feather>
-              <span>Frequency</span>
-            </div>
-          </mat-label>
-          <mat-select [(ngModel)]="selectedActivity.seance.type" name="frequency" required
-                      class="backdrop-blur-sm">
-            <mat-option *ngFor="let type of typeOptions" [value]="selectedActivity.seance.type">
-              {{type}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+          <!-- Professor -->
+          <mat-form-field appearance="outline">
+            <mat-label>
+              <div class="flex items-center space-x-1">
+                <i-feather name="user" class="h-3.5 w-3.5"></i-feather>
+                <span>Professor</span>
+              </div>
+            </mat-label>
+            <input matInput [(ngModel)]="selectedActivity.seance.professor" name="professor" required
+                   placeholder="Professor" />
+          </mat-form-field>
 
-        <div class="flex justify-end space-x-3 pt-4">
-          <button mat-button
-                  class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          <!-- Group -->
+          <mat-form-field appearance="outline">
+            <mat-label>
+              <div class="flex items-center space-x-1">
+                <i-feather name="users" class="h-3.5 w-3.5"></i-feather>
+                <span>Group</span>
+              </div>
+            </mat-label>
+            <mat-select [(ngModel)]="selectedActivity.seance.groupe" name="groupe" required>
+              <mat-option *ngFor="let group of groupOptions" [value]="group">
+                {{ group }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+
+
+          <!-- Type Selection -->
+          <mat-form-field appearance="outline">
+            <mat-label>
+              <div class="flex items-center space-x-1">
+                <i-feather name="tag" class="h-3.5 w-3.5"></i-feather>
+                <span>Type</span>
+              </div>
+            </mat-label>
+            <mat-select [(ngModel)]="selectedActivity.seance.type" name="type" required>
+              <mat-option *ngFor="let type of typeOptions" [value]="type">
+                {{ type }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="flex space-x-3">
+          <!-- Frequency -->
+          <mat-form-field appearance="outline" class="w-1/2">
+            <mat-label>
+              <div class="flex items-center space-x-1">
+                <i-feather name="repeat" class="h-3.5 w-3.5"></i-feather>
+                <span>Frequency</span>
+              </div>
+            </mat-label>
+            <mat-select [(ngModel)]="selectedFrequency" name="frequency" required>
+              <mat-option value="weekly">Weekly</mat-option>
+              <mat-option value="biweekly">Bi-weekly</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Time Slot Info Display -->
+          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-md p-2 text-xs flex flex-col justify-center flex-1">
+            <div class="flex items-center space-x-1 mb-1">
+              <i-feather name="calendar" class="h-3 w-3 text-primary"></i-feather>
+              <span class="font-medium">{{ selectedActivity.day }}</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <i-feather name="clock" class="h-3 w-3 text-primary"></i-feather>
+              <span class="font-medium">{{ selectedActivity.time }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions - Compact layout -->
+        <div class="flex justify-end space-x-2 pt-2">
+          <button mat-button type="button"
+                  class="text-sm flex items-center space-x-1 px-3 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   (click)="closeModal()">
-            <i-feather name="x" class="h-4 w-4"></i-feather>
+            <i-feather name="x" class="h-3.5 w-3.5"></i-feather>
             <span>Cancel</span>
           </button>
-          <button mat-raised-button color="primary"
-                  class="flex items-center space-x-2 px-6 py-2 rounded-lg bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary transition-all duration-300"
+          <button mat-raised-button color="primary" type="submit"
+                  [disabled]="sessionForm.invalid"
+                  class="text-sm flex items-center space-x-1 px-4 py-1 rounded-md bg-primary hover:bg-primary-dark text-white transition-colors"
                   (click)="selectedActivity.seance.id ? saveEditChanges() : saveAddChanges()">
-            <i-feather name="save" class="h-4 w-4"></i-feather>
-            <span>Save</span>
+            <i-feather name="save" class="h-3.5 w-3.5"></i-feather>
+            <span>{{ selectedActivity.seance.id ? 'Update' : 'Add' }}</span>
           </button>
         </div>
       </form>
     </div>
   </div>
-
   <!-- Enhanced Delete Confirmation Modal -->
   <div *ngIf="showDeleteModal"
        class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
@@ -275,5 +303,3 @@
     </div>
   </div>
 </div>
-
-
