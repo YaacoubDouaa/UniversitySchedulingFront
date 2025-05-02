@@ -169,7 +169,8 @@ changeSalle(name:string): void {
    * @param time Selected time slot
    * @param niveau Academic level/group
    */
-  openAddModal(day: string, time: string, niveau: string): void {
+  openAddModal(day: string, time: string, niveau: string, salle: string): void {
+
     console.log('Opening add modal for day:', day, 'time:', time);
 
     // If niveau is not provided or empty, use the selectedNiveau from the component
@@ -177,8 +178,7 @@ changeSalle(name:string): void {
       niveau = this.selectedNiveau || this.niveaux[0];
     }
 
-    // Get the selected room - either the room being viewed or the first room
-    const selectedRoom = Object.keys(this.salles)[0];
+
 
     // Explicitly create a completely new session object
     // IMPORTANT: set id to 0 for new sessions
@@ -186,7 +186,7 @@ changeSalle(name:string): void {
       seance: {
         id: 0, // Use 0 instead of Math.random() for new sessions
         name: '',
-        room: selectedRoom,
+        room: salle,
         type: 'COURS',
         professor: '',
         groupe: niveau,
@@ -209,7 +209,7 @@ changeSalle(name:string): void {
     console.log('Add modal opened with:', {
       id: this.selectedActivity.seance.id,
       isZero: this.selectedActivity.seance.id === 0,
-      room: selectedRoom
+      room: salle
     });
   }
 

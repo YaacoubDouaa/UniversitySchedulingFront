@@ -173,7 +173,7 @@
           <button mat-button
                   class="flex items-center space-x-1"
                   *ngIf="isSalleAvailable(salle, selectedDay, selectedTime)"
-                  (click)="openAddModal(selectedDay, selectedTime, selectedNiveau)">
+                  (click)="openAddModal(selectedDay, selectedTime, selectedNiveau,salle)">
             <i-feather name="plus-circle" class="h-4 w-4"></i-feather>
             <span>Add Session</span>
           </button>
@@ -261,21 +261,6 @@
                   <mat-error>Session type is required</mat-error>
                 </mat-form-field>
 
-                <!-- Room - Explicitly included and required -->
-                <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>
-                    <div class="flex items-center space-x-2">
-                      <i-feather name="map-pin" class="h-4 w-4"></i-feather>
-                      <span>Room</span>
-                    </div>
-                  </mat-label>
-                  <mat-select [(ngModel)]="selectedActivity.seance.room" name="room" required>
-                    <mat-option *ngFor="let roomName of Object.keys(salles)" [value]="roomName">
-                      {{ roomName }}
-                    </mat-option>
-                  </mat-select>
-                  <mat-error>Room is required</mat-error>
-                </mat-form-field>
 
                 <!-- Groupe -->
                 <mat-form-field appearance="outline" class="w-full">
