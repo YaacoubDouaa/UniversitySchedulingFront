@@ -44,6 +44,7 @@ export class RoomsComponent implements OnInit {
     time: string;
     niveau?: string;
   } | null = null;
+  private idCounter=20;
 
   constructor(private cdRef: ChangeDetectorRef, // Inject ChangeDetectorRef
     private router: Router,
@@ -170,7 +171,7 @@ changeSalle(name:string): void {
    * @param niveau Academic level/group
    */
   openAddModal(day: string, time: string, niveau: string, salle: string): void {
-
+    this.showAddModal = true;
     console.log('Opening add modal for day:', day, 'time:', time);
 
     // If niveau is not provided or empty, use the selectedNiveau from the component
@@ -184,7 +185,7 @@ changeSalle(name:string): void {
     // IMPORTANT: set id to 0 for new sessions
     this.selectedActivity = {
       seance: {
-        id: 0, // Use 0 instead of Math.random() for new sessions
+        id: this.idCounter++, // Use 0 instead of Math.random() for new sessions
         name: '',
         room: salle,
         type: 'COURS',
@@ -346,6 +347,7 @@ changeSalle(name:string): void {
         alert('Failed to add session: ' + (error.message || 'Unknown error'));
       }
     });
+    this.showAddModal = false;
   }
   /**
    * Close modal dialog
