@@ -79,20 +79,31 @@
             <ng-container *ngFor="let session of getSessionsForRoom(room, day, timeSlot)">
               <div class="mb-1 p-2 rounded-lg text-xs group/session hover:shadow-md transition-all relative"
                    [ngClass]="{
-         'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200': session.type === 'COURS',
-         'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200': session.type === 'TD',
-         'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200': session.type === 'TP'
+         'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200': session.type === 'COURS' && !session.isRattrapage,
+         'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200': session.type === 'TD' && !session.isRattrapage,
+         'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200': session.type === 'TP' && !session.isRattrapage,
+         'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 border border-amber-400': session.isRattrapage
        }">
-                <!-- Type badge -->
-                <span class="px-2 py-0.5 text-xs rounded-full w-fit"
-                      [ngClass]="{'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200': session.type === 'COURS',
-            'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200': session.type === 'TD',
-            'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200': session.type === 'TP'}">
-      <i-feather [name]="getCourseIcon(session.type)" class="h-3 w-3"></i-feather>
-      <span>{{session.type}}</span>
-    </span>
 
-                <!-- Main content -->
+                <!-- Header with Type Badge and potentially Rattrapage Badge -->
+                <div class="flex justify-between items-center mb-1">
+                  <!-- Type Badge -->
+                  <span class="px-2 py-0.5 text-xs rounded-full w-fit"
+                        [ngClass]="{'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200': session.type === 'COURS',
+              'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200': session.type === 'TD',
+              'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200': session.type === 'TP'}">
+        <i-feather [name]="getCourseIcon(session.type)" class="h-3 w-3"></i-feather>
+        <span>{{session.type}}</span>
+      </span>
+
+                  <!-- Rattrapage Badge -->
+                  <span *ngIf="session.isRattrapage"
+                        class="px-1.5 py-0.5 text-2xs rounded-full bg-amber-200 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+        Makeup
+      </span>
+                </div>
+
+                <!-- Main Session Details -->
                 <div class="font-medium mb-1">{{session.name}}</div>
                 <div class="flex items-center space-x-1">
                   <i-feather name="users" class="h-3 w-3"></i-feather>
@@ -102,22 +113,30 @@
                   <i-feather name="user" class="h-3 w-3"></i-feather>
                   <span>{{session.professor}}</span>
                 </div>
+
                 <!-- Frequency -->
-                <div class="font-medium mb-1">
-                  <div class="flex items-center space-x-1">
-                    <i-feather name="repeat" class="h-3 w-3"></i-feather>
-                    <span class="font-medium">{{ session.biWeekly ? "BiWeekly" : "Weekly" }}</span>
-                  </div>
+                <div class="flex items-center space-x-1">
+                  <i-feather name="repeat" class="h-3 w-3"></i-feather>
+                  <span class="font-medium">{{ session.biWeekly ? "BiWeekly" : "Weekly" }}</span>
                 </div>
 
-                <!-- Action buttons in the top right corner -->
+                <!-- Action Buttons -->
                 <div class="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover/session:opacity-100 transition-opacity">
-                  <!-- Edit button -->
+                  <!-- Add Biweekly Session Button - Only shows for biweekly sessions -->
+                  <button *ngIf="session.biWeekly"
+                          class="p-1 hover:bg-green-200 dark:hover:bg-green-800 rounded-full bg-white/80 dark:bg-gray-700/80 shadow-sm"
+                          (click)="openAddModal(day,timeSlot,room)"
+                          title="Add alternate biweekly session">
+                    <i-feather name="plus-circle" class="h-3 w-3 text-green-600 dark:text-green-400"></i-feather>
+                  </button>
+
+                  <!-- Edit Button -->
                   <button class="p-1 hover:bg-blue-200 dark:hover:bg-blue-800 rounded-full bg-white/80 dark:bg-gray-700/80 shadow-sm"
                           (click)="openEditModal(session, day, timeSlot)">
                     <i-feather name="edit-2" class="h-3 w-3 text-blue-600 dark:text-blue-400"></i-feather>
                   </button>
-                  <!-- Delete button -->
+
+                  <!-- Delete Button -->
                   <button class="p-1 hover:bg-red-200 dark:hover:bg-red-800 rounded-full bg-white/80 dark:bg-gray-700/80 shadow-sm"
                           (click)="openDeleteModal(session.id, day, session.groupe, timeSlot)">
                     <i-feather name="trash-2" class="h-3 w-3 text-red-600 dark:text-red-400"></i-feather>

@@ -11,6 +11,8 @@ export interface Seance {
   isRattrapage?: boolean;
   time?: string;
   day?: string;
+  rattrapageDate?: Date | string; // New property for makeup session date
+
 }
 
 // SeanceConflict Interface
