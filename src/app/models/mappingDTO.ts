@@ -1,5 +1,8 @@
+import {EnseignantDTO, Prof} from "./Professors";
 import {RattrapageSchedule, Schedule} from "./Schedule";
 import {Seance, SeanceDTO} from "./Seance";
+import {SalleDTO} from './dto';
+import {Salle, SalleList} from './Salle';
 
 /**
  * Processes a list of SeanceDTO objects and fills Schedule and RattrapageSchedule objects
@@ -128,4 +131,202 @@ function extractNiveauFromBranches(branches?: Array<{ name: string }>): string {
  */
 function formatTimeSlot(start: string, end: string): string {
   return `${start} - ${end}`;
+}
+
+/**
+ * Maps an EnseignantDTO to a Prof object
+ * @param dto The EnseignantDTO to map
+ * @param allSeances Array of all Seance objects (used to populate the schedule)
+ * @returns Mapped Prof object
+ */
+export function mapEnseignantDTOToProf(dto: EnseignantDTO, allSeances: Seance[] = []): Prof {
+  // Create empty schedule
+  const schedule: Schedule = {};
+
+  // Filter seances that belong to this professor and add to schedule
+  const professorSeances = allSeances.filter(seance =>
+    dto.seanceIds.includes(seance.id)
+  );
+
+  // Populate the schedule
+  professorSeances.forEach(seance => {
+    const day = seance.day || '';
+    const time = seance.time || '';
+    const niveau = seance.groupe || 'Unknown';
+
+    if (!schedule[day]) {
+      schedule[day] = {};
+    }
+
+    if (!schedule[day][niveau]) {
+      schedule[day][niveau] = {};
+    }
+
+    if (!schedule[day][niveau][time]) {
+      schedule[day][niveau][time] = [];
+    }
+
+    schedule[day][niveau][time].push(seance);
+  });
+
+  // Get current week's sessions
+  const currentWeekSessions = professorSeances.filter(seance =>
+    !seance.isRattrapage && (!seance.biWeekly || isCurrentWeekBiWeekly())
+  );
+
+  // Get upcoming sessions (including rattrapages)
+  const upcomingSessions = professorSeances
+    .filter(seance => seance.isRattrapage || seance.rattrapageDate)
+    .map(seance => ({
+      ...seance,
+      day: seance.day || '',
+      time: seance.time || ''
+    }));
+
+  // Calculate total scheduled hours
+  const totalScheduledHours = calculateTotalHours(professorSeances);
+
+  return {
+    name: extractProfessorName(dto), // Need to extract from seances or have separate endpoint
+    codeEnseignant: dto.codeEnseignant,
+    heures: dto.heures,
+    schedule: schedule,
+    totalScheduledHours: totalScheduledHours,
+    currentWeekSessions: currentWeekSessions,
+    totalHours: dto.heures, // Same as heures property
+    upcomingSessions: upcomingSessions,
+  };
+}
+
+/**
+ * Maps a SalleDTO to a Salle object
+ * @param dto The SalleDTO to map
+ * @param allSeances Array of all Seance objects (used to populate the schedule)
+ * @returns Mapped Salle object
+ */
+export function mapSalleDTOToSalle(dto: SalleDTO, allSeances: Seance[] = []): Salle {
+  // Create empty schedule
+  const schedule: Schedule = {};
+
+  // Filter seances that are scheduled in this room and add to schedule
+  const roomSeances = allSeances.filter(seance =>
+    dto.seanceIds.includes(seance.id)
+  );
+
+  // Populate the schedule
+  roomSeances.forEach(seance => {
+    const day = seance.day || '';
+    const time = seance.time || '';
+    const niveau = seance.groupe || 'Unknown';
+
+    if (!schedule[day]) {
+      schedule[day] = {};
+    }
+
+    if (!schedule[day][niveau]) {
+      schedule[day][niveau] = {};
+    }
+
+    if (!schedule[day][niveau][time]) {
+      schedule[day][niveau][time] = [];
+    }
+
+    schedule[day][niveau][time].push(seance);
+  });
+
+  return {
+    id: dto.id || 0,
+    name: dto.identifiant,
+    type: dto.type,
+    capacite: dto.capacite,
+    schedule: schedule
+  };
+}
+
+/**
+ * Maps multiple SalleDTO objects to a SalleList
+ * @param dtos Array of SalleDTO objects
+ * @param allSeances Array of all Seance objects (used to populate the schedules)
+ * @returns SalleList object
+ */
+export function mapSalleDTOsToSalleList(dtos: SalleDTO[], allSeances: Seance[] = []): SalleList {
+  const salleList: SalleList = {};
+
+  dtos.forEach(dto => {
+    const salle = mapSalleDTOToSalle(dto, allSeances);
+    salleList[dto.identifiant] = salle;
+  });
+
+  return salleList;
+}
+
+/**
+ * Helper function to extract professor name from DTO or seances
+ * Need to implement based on your data structure
+ */
+function extractProfessorName(dto: EnseignantDTO): string {
+  // This is a placeholder. You might need to get this information from
+  // a separate endpoint or extract it from the seances themselves
+  return dto.codeEnseignant;
+}
+
+/**
+ * Helper function to check if current week is for bi-weekly sessions
+ * Implement according to your business logic
+ */
+function isCurrentWeekBiWeekly(): boolean {
+  // Placeholder implementation
+  // Calculate based on current week number or specific logic for your app
+  const now = new Date();
+  return now.getWeek() % 2 === 0; // Example: even weeks are bi-weekly
+}
+
+/**
+ * Helper function to calculate total hours from seances
+ */
+function calculateTotalHours(seances: Seance[]): number {
+  return seances.reduce((total, seance) => {
+    // Extract duration from time string (e.g., "08:30 - 10:00")
+    if (seance.time) {
+      const [start, end] = seance.time.split(' - ');
+      if (start && end) {
+        const startTime = parseTimeString(start);
+        const endTime = parseTimeString(end);
+        if (startTime && endTime) {
+          const durationHours = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+          return total + durationHours;
+        }
+      }
+    }
+    return total;
+  }, 0);
+}
+
+/**
+ * Parse time string in format "HH:MM" to Date object
+ */
+function parseTimeString(timeStr: string): Date | null {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  if (isNaN(hours) || isNaN(minutes)) return null;
+
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+  return date;
+}
+
+/**
+ * Helper extension for Date to get week number
+ */
+declare global {
+  interface Date {
+    getWeek(): number;
+  }
+}
+
+// Add getWeek method to Date prototype if not exists
+if (!Date.prototype.getWeek) {
+  Date.prototype.getWeek = function(): number {
+    const firstDay = new Date(this.getFullYear(), 0, 1);
+    return Math.ceil(((this.getTime() - firstDay.getTime()) / 86400000 + firstDay.getDay() + 1) / 7);
+  };
 }
