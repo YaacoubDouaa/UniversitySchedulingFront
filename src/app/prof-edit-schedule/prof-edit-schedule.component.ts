@@ -42,7 +42,14 @@ export class ProfEditScheduleComponent {
   /**
    * Component State
    */
-  profSchedule: Schedule | null = null;
+  profSchedule: Schedule = {
+    'Lundi': {},
+    'Mardi': {},
+    'Mercredi': {},
+    'Jeudi': {},
+    'Vendredi': {},
+    'Samedi': {}
+  }  ;
   selectedRoom: string = 'A101';
   selectedNiveau: string = 'ING1_INFO';
   selectedFrequency: 'weekly' | 'biweekly' = 'weekly';
