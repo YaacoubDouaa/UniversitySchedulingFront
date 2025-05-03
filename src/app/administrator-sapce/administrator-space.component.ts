@@ -70,9 +70,9 @@ export class AdministratorSpaceComponent  implements OnInit {
     event.stopPropagation();
     this.showMessageNotification = false;
   }
-  logout() {
-    this.authService.logout('admin');
-  }
+  // logout() {
+  //   this.authService.logout('admin');
+  // }
 
 }
 
