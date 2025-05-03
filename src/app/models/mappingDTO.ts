@@ -1,8 +1,9 @@
 import {EnseignantDTO, Prof} from "./Professors";
 import {RattrapageSchedule, Schedule} from "./Schedule";
 import {Seance, SeanceDTO} from "./Seance";
-import {SalleDTO} from './dto';
+import {BrancheDTO, SalleDTO} from './dto';
 import {Salle, SalleList} from './Salle';
+import {Branche} from './Branches';
 
 /**
  * Processes a list of SeanceDTO objects and fills Schedule and RattrapageSchedule objects
@@ -330,3 +331,242 @@ if (!Date.prototype.getWeek) {
     return Math.ceil(((this.getTime() - firstDay.getTime()) / 86400000 + firstDay.getDay() + 1) / 7);
   };
 }
+
+/**
+ * Maps a BrancheDTO object to a Branche object
+ * @param dto The BrancheDTO to map
+ * @param allSeances Array of all Seance objects (used to find associated seances)
+ * @returns Mapped Branche object
+ */
+export function mapBrancheDTOToBranche(dto: BrancheDTO, allSeances: Seance[] = []): Branche {
+  // Filter seances that belong to this branch
+  const brancheSeances = allSeances.filter(seance =>
+    dto.seanceIds.includes(seance.id)
+  );
+
+  return {
+    id: dto.id || 0,
+    niveau: dto.niveau,
+    specialite: dto.specialite,
+    nbTD: dto.nbTD,
+    departement: dto.departement,
+    seances: brancheSeances
+  };
+}
+
+/**
+ * Maps multiple BrancheDTO objects to Branche objects
+ * @param dtos Array of BrancheDTO objects
+ * @param allSeances Array of all Seance objects (used to find associated seances)
+ * @returns Array of mapped Branche objects
+ */
+export function mapBrancheDTOsToBranches(dtos: BrancheDTO[], allSeances: Seance[] = []): Branche[] {
+  return dtos.map(dto => mapBrancheDTOToBranche(dto, allSeances));
+}
+
+/**
+ * Maps a Branche to a BrancheDTO object
+ * @param branche The Branche to convert
+ * @returns Mapped BrancheDTO object
+ */
+export function mapBrancheToBrancheDTO(branche: Branche): BrancheDTO {
+  return {
+    id: branche.id,
+    niveau: branche.niveau,
+    specialite: branche.specialite,
+    nbTD: branche.nbTD,
+    departement: branche.departement,
+    seanceIds: branche.seances.map(seance => seance.id)
+  };
+}
+
+
+// Sample test data
+const testSeanceDTOs: SeanceDTO[] = [
+  // Regular session - Professor 1, Room 1, GINF2
+  {
+    id: '101',
+    jour: 'Lundi',
+    heureDebut: '08:30',
+    heureFin: '10:00',
+    type: 'COURS',
+    matiere: 'Mathematics',
+    frequence: 'HEBDOMADAIRE',
+    salle: { name: 'Room A101' },
+    enseignant: { name: 'Dr. Smith' },
+    branches: [{ name: 'GINF2' }]
+  },
+  // Regular session - Professor 1, Room 2, GINF1
+  {
+    id: '102',
+    jour: 'Lundi',
+    heureDebut: '10:15',
+    heureFin: '11:45',
+    type: 'TD',
+    matiere: 'Physics',
+    frequence: 'BI-HEBDOMADAIRE',
+    salle: { name: 'Lab B203' },
+    enseignant: { name: 'Dr. Smith' },
+    branches: [{ name: 'GINF1' }]
+  },
+  // Rattrapage session - Professor 2, Room 1, GINF3
+  {
+    id: '103',
+    jour: 'Mardi',
+    heureDebut: '13:00',
+    heureFin: '14:30',
+    type: 'RATTRAPAGE',
+    matiere: 'Chemistry',
+    frequence: 'UNIQUE',
+    salle: { name: 'Room A101' },
+    enseignant: { name: 'Dr. Williams' },
+    branches: [{ name: 'GINF3' }]
+  },
+  // Regular session - Professor 2, Room 3, GINF2
+  {
+    id: '104',
+    jour: 'Mercredi',
+    heureDebut: '15:00',
+    heureFin: '16:30',
+    type: 'TP',
+    matiere: 'Computer Science',
+    frequence: 'HEBDOMADAIRE',
+    salle: { name: 'Lab C305' },
+    enseignant: { name: 'Dr. Williams' },
+    branches: [{ name: 'GINF2' }]
+  },
+  // Regular session - Professor 3, Room 2, GINF3
+  {
+    id: '105',
+    jour: 'Jeudi',
+    heureDebut: '09:00',
+    heureFin: '11:00',
+    type: 'COURS',
+    matiere: 'Database Systems',
+    frequence: 'HEBDOMADAIRE',
+    salle: { name: 'Lab B203' },
+    enseignant: { name: 'Prof. Johnson' },
+    branches: [{ name: 'GINF3' }]
+  }
+];
+
+// Sample professor data
+const testEnseignantDTOs: EnseignantDTO[] = [
+  {
+    codeEnseignant: 'SMITH001',
+    heures: 20,
+    seanceIds: [101, 102],
+    propositionIds: [],
+    signalIds: []
+  },
+  {
+    codeEnseignant: 'WILLIAMS002',
+    heures: 15,
+    seanceIds: [103, 104],
+    propositionIds: [],
+    signalIds: []
+  },
+  {
+    codeEnseignant: 'JOHNSON003',
+    heures: 10,
+    seanceIds: [105],
+    propositionIds: [],
+    signalIds: []
+  }
+];
+
+// Sample room data
+const testSalleDTOs: SalleDTO[] = [
+  {
+    id: 1,
+    identifiant: 'A101',
+    type: 'Classroom',
+    capacite: 40,
+    disponibilite: ['08:00-18:00'],
+    seanceIds: [101, 103]
+  },
+  {
+    id: 2,
+    identifiant: 'B203',
+    type: 'Lab',
+    capacite: 25,
+    disponibilite: ['08:00-18:00'],
+    seanceIds: [102, 105]
+  },
+  {
+    id: 3,
+    identifiant: 'C305',
+    type: 'Computer Lab',
+    capacite: 30,
+    disponibilite: ['08:00-18:00'],
+    seanceIds: [104]
+  }
+];
+
+// Test the functions
+function runTest() {
+  console.log('Starting test of mapping functions...');
+
+  // Process SeanceDTO[] to Schedule and RattrapageSchedule
+  console.log('\n1. Testing processSeancesToSchedules:');
+  const { schedule, rattrapageSchedule } = processSeancesToSchedules(testSeanceDTOs);
+
+  console.log('Regular Schedule:');
+  console.log(JSON.stringify(schedule, null, 2));
+
+  console.log('\nRattrapage Schedule:');
+  console.log(JSON.stringify(rattrapageSchedule, null, 2));
+
+  // Convert DTOs to Seance objects for use in other mappings
+  const allSeances: Seance[] = testSeanceDTOs.map(dto => {
+    const seance = {
+      name: dto.matiere,
+      id: dto.id ? parseInt(dto.id, 10) : 0,
+      room: dto.salle?.name || '',
+      type: dto.type,
+      professor: dto.enseignant?.name || '',
+      groupe: dto.branches && dto.branches.length > 0 ? dto.branches[0].name : '',
+      biWeekly: dto.frequence?.toLowerCase() === 'bi-hebdomadaire',
+      isRattrapage: dto.type?.toLowerCase().includes('rattrapage'),
+      time: `${dto.heureDebut} - ${dto.heureFin}`,
+      day: dto.jour
+    };
+    return seance;
+  });
+
+
+
+
+
+
+  // Test EnseignantDTO mapping
+  console.log('\n2. Testing mapEnseignantDTOToProf:');
+  const prof1 = mapEnseignantDTOToProf(testEnseignantDTOs[0], allSeances);
+  console.log('Professor 1 (Dr. Smith):');
+  console.log('Name:', prof1.name);
+  console.log('Code:', prof1.codeEnseignant);
+  console.log('Total Hours:', prof1.totalHours);
+  console.log('Scheduled Hours:', prof1.totalScheduledHours);
+  console.log('Current Week Sessions:', prof1.currentWeekSessions?.length);
+  console.log('Schedule:', JSON.stringify(prof1.schedule, null, 2));
+
+  // Test SalleDTO mapping
+  console.log('\n3. Testing mapSalleDTOToSalle:');
+  const salle1 = mapSalleDTOToSalle(testSalleDTOs[0], allSeances);
+  console.log('Room 1 (A101):');
+  console.log('Name:', salle1.name);
+  console.log('Type:', salle1.type);
+  console.log('Capacity:', salle1.capacite);
+  console.log('Schedule:', JSON.stringify(salle1.schedule, null, 2));
+
+  // Test SalleDTO[] to SalleList mapping
+  console.log('\n4. Testing mapSalleDTOsToSalleList:');
+  const salleList = mapSalleDTOsToSalleList(testSalleDTOs, allSeances);
+  console.log('Room IDs:', Object.keys(salleList));
+  console.log('Room B203 details:', JSON.stringify(salleList['B203'], null, 2));
+
+  console.log('\nAll tests completed!');
+}
+
+// Run the test
+runTest();
