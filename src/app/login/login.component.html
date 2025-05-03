@@ -1,35 +1,72 @@
-<body>
-<div class="container">
+<div class="login-container">
+  <div class="login-card">
+    <div class="logo-section">
+      <img src="assets/images/logo.png" alt="Logo" class="logo">
+      <h1 class="app-title">Gestion des Séances</h1>
+    </div>
 
-  <!-- Username Input -->
-  <mat-form-field class="example-full-width">
-    <mat-label>Username</mat-label>
-    <input matInput type="text" placeholder="USERNAME">
-  </mat-form-field>
+    <h2 class="card-title">Connexion</h2>
 
-  <!-- Password Input -->
-  <mat-form-field class="example-full-width">
-    <mat-label>Password</mat-label>
-    <input matInput type="password" placeholder="PASSWORD">
-  </mat-form-field>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="username">Nom d'utilisateur</label>
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          placeholder="Entrez votre nom d'utilisateur"
+          [ngClass]="{'input-error': loginForm.get('username')?.invalid && loginForm.get('username')?.touched}"
+        >
+        <small class="error-text" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+          Nom d'utilisateur requis
+        </small>
+      </div>
 
-  <!-- Role Selection with Autocomplete (Grouped Options) -->
-  <mat-form-field appearance="fill" class="example-full-width">
-    <mat-label>Choose an option</mat-label>
-    <input matInput [formControl]="myControl" [matAutocomplete]="autoGroup">
-    <mat-autocomplete #autoGroup="matAutocomplete">
-      <mat-optgroup *ngFor="let group of stateGroupOptions | async" [label]="group.letter">
-        <mat-option *ngFor="let name of group.names" [value]="name">
-          {{ options }}
-        </mat-option>
-      </mat-optgroup>
-    </mat-autocomplete>
-  </mat-form-field>
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          placeholder="Entrez votre mot de passe"
+          [ngClass]="{'input-error': loginForm.get('password')?.invalid && loginForm.get('password')?.touched}"
+        >
+        <small class="error-text" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          Mot de passe requis (minimum 6 caractères)
+        </small>
+      </div>
 
+      <div class="form-group">
+        <label for="role">Rôle</label>
+        <select
+          id="role"
+          formControlName="role"
+          [ngClass]="{'input-error': loginForm.get('role')?.invalid && loginForm.get('role')?.touched}"
+        >
+          <option value="" disabled>Sélectionnez votre rôle</option>
+          <option *ngFor="let role of roles" [value]="role.id">{{ role.name }}</option>
+        </select>
+        <small class="error-text" *ngIf="loginForm.get('role')?.invalid && loginForm.get('role')?.touched">
+          Veuillez sélectionner un rôle
+        </small>
+      </div>
 
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
 
-  <!-- Login Button -->
-  <button mat-raised-button color="primary" class="login-btn" (click)="navigate()">LOGIN</button>
+      <button
+        type="submit"
+        class="login-button"
+        [disabled]="loginForm.invalid || isLoading"
+      >
+        <span *ngIf="!isLoading">Se connecter</span>
+        <span *ngIf="isLoading" class="spinner"></span>
+      </button>
+    </form>
 
+    <div class="forgot-password">
+      <a href="#">Mot de passe oublié?</a>
+    </div>
+  </div>
 </div>
-</body>
