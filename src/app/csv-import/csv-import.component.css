@@ -1,14 +1,24 @@
+/* Base styles for Angular Material components */
 .mat-stepper-horizontal {
   margin-top: 8px;
 }
 
 .mat-form-field {
   margin-top: 16px;
+  width: 100%; /* Make form fields take full width by default */
 }
 
 .mat-table {
   width: 100%;
   margin-bottom: 16px;
+  overflow-x: auto; /* Enable horizontal scrolling for tables on small screens */
+}
+
+/* Table container to enable responsiveness */
+.mat-table-container {
+  width: 100%;
+  overflow-x: auto; /* Allow horizontal scrolling for tables */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .mat-progress-bar {
@@ -17,7 +27,10 @@
 
 button {
   margin-right: 8px;
+  margin-bottom: 8px; /* Add bottom margin for stacked buttons */
 }
+
+/* Animations */
 .animate-fade-in {
   animation: fadeIn 0.3s ease-in-out;
 }
@@ -45,5 +58,139 @@ button {
   to {
     opacity: 0;
     transform: translateY(-10px);
+  }
+}
+
+/* Button containers for better alignment */
+.button-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  gap: 8px; /* Consistent spacing between buttons */
+  margin-bottom: 16px;
+}
+
+/* Responsive styles for different screen sizes */
+
+/* Small screens (phones) */
+@media screen and (max-width: 599px) {
+  .mat-stepper-horizontal {
+    margin-top: 4px; /* Smaller margin */
+  }
+
+  .mat-form-field {
+    margin-top: 12px; /* Smaller margin */
+    font-size: 14px; /* Smaller font size */
+  }
+
+  .mat-table {
+    font-size: 13px; /* Smaller font for tables on mobile */
+  }
+
+  /* Adjust table cell padding for mobile */
+  .mat-cell, .mat-header-cell {
+    padding: 8px 6px !important;
+  }
+
+  /* Make steppers more compact */
+  ::ng-deep .mat-step-label {
+    font-size: 14px;
+    white-space: normal; /* Allow text wrapping in step labels */
+  }
+
+  /* Stack buttons vertically if needed */
+  .button-container.stack-mobile {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .button-container.stack-mobile button {
+    width: 100%;
+    margin-right: 0;
+  }
+}
+
+/* Medium screens (tablets) */
+@media screen and (min-width: 600px) and (max-width: 959px) {
+  /* Adjust table cell padding for tablets */
+  .mat-cell, .mat-header-cell {
+    padding: 10px 8px !important;
+  }
+
+  /* More space between form fields on tablets */
+  .mat-form-field {
+    margin-bottom: 12px;
+  }
+}
+
+/* Large screens (desktops) */
+@media screen and (min-width: 960px) {
+  /* Enable hover effects on desktop */
+  button:hover {
+    transform: translateY(-1px);
+    transition: transform 0.2s ease;
+  }
+
+  /* Optional: create multi-column layouts for forms on larger screens */
+  .form-row {
+    display: flex;
+    gap: 16px;
+  }
+
+  .form-col {
+    flex: 1;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .mat-stepper-horizontal {
+    margin-top: 2px;
+  }
+
+  .mat-form-field {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+}
+
+/* High-resolution screens */
+@media screen and (min-width: 1200px) {
+  /* Optional adjustments for very large screens */
+  .content-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+/* Handle print layout */
+@media print {
+  button {
+    display: none; /* Hide buttons when printing */
+  }
+
+  .animate-fade-in, .animate-fade-out {
+    animation: none !important; /* Disable animations for print */
+  }
+
+  .mat-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  .mat-cell, .mat-header-cell {
+    padding: 6px !important;
+    border: 1px solid #ddd !important;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) {
+  button {
+    padding: 10px 16px; /* Larger touch targets */
+  }
+
+  /* Increase clickable area */
+  .mat-checkbox, .mat-radio-button {
+    margin: 8px 0;
   }
 }
