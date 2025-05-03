@@ -1,112 +1,116 @@
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-3 sm:p-6">
   <div class="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
     <!-- Header -->
-    <div class="bg-primary/10 dark:bg-primary/5 p-6 border-b border-gray-200 dark:border-gray-700">
-      <div class="flex items-center space-x-4">
-        <div class="p-2 bg-primary/20 rounded-lg">
-          <i-feather name="file-text" class="h-6 w-6 text-primary"></i-feather>
+    <div class="bg-primary/10 dark:bg-primary/5 p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+        <div class="p-2 bg-primary/20 rounded-lg mb-3 sm:mb-0">
+          <i-feather name="file-text" class="h-5 w-5 sm:h-6 sm:w-6 text-primary"></i-feather>
         </div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">CSV Import</h1>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">CSV Import</h1>
+          <p class="mt-1 text-sm sm:text-base text-gray-600 dark:text-gray-400">Import your schedule data from a CSV file</p>
+        </div>
       </div>
-      <p class="mt-2 text-gray-600 dark:text-gray-400">Import your schedule data from a CSV file</p>
     </div>
 
     <!-- Stepper -->
-    <div class="p-6">
-      <mat-stepper #stepper linear>
+    <div class="p-4 sm:p-6">
+      <!-- Consider using a custom/simplified stepper for mobile -->
+      <mat-stepper #stepper linear class="bg-transparent">
         <!-- Step 1: Upload File -->
         <mat-step [stepControl]="uploadForm">
           <ng-template matStepLabel>Upload CSV</ng-template>
-          <form [formGroup]="uploadForm" class="space-y-6">
+          <form [formGroup]="uploadForm" class="space-y-4 sm:space-y-6">
             <!-- File Upload Area -->
-            <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-primary dark:hover:border-primary transition-colors cursor-pointer" (click)="fileInput.click()">
+            <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 sm:p-8 text-center hover:border-primary dark:hover:border-primary transition-colors cursor-pointer" (click)="fileInput.click()">
               <input type="file" (change)="onFileSelected($event)" accept=".csv" #fileInput style="display: none;">
               <div class="flex flex-col items-center">
-                <i-feather name="upload-cloud" class="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4"></i-feather>
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Drop your CSV file here</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">or click to browse files</p>
+                <i-feather name="upload-cloud" class="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 dark:text-gray-500 mb-3 sm:mb-4"></i-feather>
+                <h3 class="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-1 sm:mb-2">Drop your CSV file here</h3>
+                <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">or click to browse files</p>
               </div>
             </div>
 
             <!-- Has Header Row Toggle -->
             <div class="flex items-center space-x-2">
               <mat-checkbox formControlName="hasHeader" [checked]="hasHeaderRow" (change)="toggleHeaderRow($event)">
-                <span class="text-gray-700 dark:text-gray-300">File has header row</span>
+                <span class="text-sm sm:text-base text-gray-700 dark:text-gray-300">File has header row</span>
               </mat-checkbox>
               <i-feather name="info" class="h-4 w-4 text-gray-400 cursor-help" matTooltip="Enable if your CSV file has column headers in the first row"></i-feather>
             </div>
 
             <!-- File Info Card -->
-            <div *ngIf="fileInfo" class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 space-y-4">
-              <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center space-x-2">
-                <i-feather name="file" class="h-5 w-5 text-primary"></i-feather>
+            <div *ngIf="fileInfo" class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4 space-y-3 sm:space-y-4">
+              <h3 class="text-base sm:text-lg font-medium text-gray-900 dark:text-white flex items-center space-x-2">
+                <i-feather name="file" class="h-4 w-4 sm:h-5 sm:w-5 text-primary"></i-feather>
                 <span>File Information</span>
               </h3>
 
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="space-y-2">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div class="space-y-1 sm:space-y-2">
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Name:</span>
-                    <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo.name }}</span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Name:</span>
+                    <span class="text-xs sm:text-sm text-gray-900 dark:text-white truncate max-w-[150px] sm:max-w-none">{{ fileInfo.name }}</span>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Size:</span>
-                    <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo.size }}</span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Size:</span>
+                    <span class="text-xs sm:text-sm text-gray-900 dark:text-white">{{ fileInfo.size }}</span>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Type:</span>
-                    <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo.type }}</span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Type:</span>
+                    <span class="text-xs sm:text-sm text-gray-900 dark:text-white">{{ fileInfo.type }}</span>
                   </div>
                 </div>
-                <div class="space-y-2">
+                <div class="space-y-1 sm:space-y-2">
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Last Modified:</span>
-                    <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo.lastModified }}</span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Last Modified:</span>
+                    <span class="text-xs sm:text-sm text-gray-900 dark:text-white">{{ fileInfo.lastModified }}</span>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Est. Rows:</span>
-                    <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo.rowCount }}</span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Est. Rows:</span>
+                    <span class="text-xs sm:text-sm text-gray-900 dark:text-white">{{ fileInfo.rowCount }}</span>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Columns:</span>
-                    <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo.columnCount }}</span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Columns:</span>
+                    <span class="text-xs sm:text-sm text-gray-900 dark:text-white">{{ fileInfo.columnCount }}</span>
                   </div>
                 </div>
               </div>
 
-              <!-- Sample Data Preview -->
-              <div *ngIf="fileInfo.sampleData && fileInfo.sampleData.length > 0" class="mt-4">
-                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sample Data:</h4>
-                <div class="overflow-x-auto">
-                  <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs">
-                    <thead class="bg-gray-50 dark:bg-gray-800">
-                    <tr>
-                      <th *ngFor="let cell of fileInfo.sampleData[0]; let i = index" class="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                        Column {{ i + 1 }}
-                      </th>
-                    </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    <tr *ngFor="let row of fileInfo.sampleData.slice(0, 3)">
-                      <td *ngFor="let cell of row" class="px-2 py-1 whitespace-nowrap text-xs text-gray-600 dark:text-gray-400">
-                        {{ cell }}
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
+              <!-- Sample Data Preview - Responsive Table -->
+              <div *ngIf="fileInfo.sampleData && fileInfo.sampleData.length > 0" class="mt-3 sm:mt-4">
+                <h4 class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sample Data:</h4>
+                <div class="overflow-x-auto -mx-3 sm:mx-0">
+                  <div class="inline-block min-w-full align-middle px-3 sm:px-0">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs">
+                      <thead class="bg-gray-50 dark:bg-gray-800">
+                      <tr>
+                        <th *ngFor="let cell of fileInfo.sampleData[0]; let i = index" class="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                          Column {{ i + 1 }}
+                        </th>
+                      </tr>
+                      </thead>
+                      <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                      <tr *ngFor="let row of fileInfo.sampleData.slice(0, 3)">
+                        <td *ngFor="let cell of row" class="px-2 py-1 whitespace-nowrap text-xs text-gray-600 dark:text-gray-400">
+                          {{ cell }}
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- Action Buttons -->
-            <!-- Replace this: -->
             <div class="flex justify-end space-x-3">
-              <button mat-button matStepperNext (click)="parseFile()">...</button>
-            </div>
-
-            <!-- With this: -->
-            <div class="button-container justify-end">
-              <button mat-button matStepperNext (click)="parseFile()">...</button>
+              <button mat-button matStepperNext (click)="parseFile()"
+                      [disabled]="!file || isProcessing"
+                      class="px-4 sm:px-6 py-2 flex items-center space-x-1 sm:space-x-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-xs sm:text-sm">
+                <span>Parse File</span>
+                <i-feather name="arrow-right" class="h-3 w-3 sm:h-4 sm:w-4"></i-feather>
+              </button>
             </div>
           </form>
         </mat-step>
@@ -116,121 +120,122 @@
           <ng-template matStepLabel>Preview Data</ng-template>
 
           <!-- Processing Indicator -->
-          <div *ngIf="isProcessing" class="py-8">
+          <div *ngIf="isProcessing" class="py-6 sm:py-8">
             <div class="mb-4">
               <mat-progress-bar mode="determinate" [value]="processingProgress" color="primary"></mat-progress-bar>
             </div>
-            <p class="text-center text-gray-600 dark:text-gray-400">Processing file... {{ processingProgress }}%</p>
+            <p class="text-center text-sm sm:text-base text-gray-600 dark:text-gray-400">Processing file... {{ processingProgress }}%</p>
           </div>
 
           <!-- Validation Errors -->
-          <div *ngIf="validationErrors.length > 0" class="mb-6">
-            <div class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 p-4 rounded-md">
-              <div class="flex items-center space-x-3">
-                <i-feather name="alert-triangle" class="h-5 w-5 text-red-500"></i-feather>
-                <h3 class="text-lg font-medium text-red-800 dark:text-red-200">Validation Issues</h3>
+          <div *ngIf="validationErrors.length > 0" class="mb-4 sm:mb-6">
+            <div class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 p-3 sm:p-4 rounded-md">
+              <div class="flex items-center space-x-2 sm:space-x-3">
+                <i-feather name="alert-triangle" class="h-4 w-4 sm:h-5 sm:w-5 text-red-500"></i-feather>
+                <h3 class="text-base sm:text-lg font-medium text-red-800 dark:text-red-200">Validation Issues</h3>
               </div>
-              <ul class="list-disc ml-8 mt-2">
-                <li *ngFor="let error of validationErrors" class="text-sm text-red-700 dark:text-red-300">
+              <ul class="list-disc ml-6 sm:ml-8 mt-2">
+                <li *ngFor="let error of validationErrors" class="text-xs sm:text-sm text-red-700 dark:text-red-300">
                   {{ error }}
                 </li>
               </ul>
             </div>
           </div>
 
-          <!-- Preview Table -->
-          <div *ngIf="!isProcessing && previewData.data.length > 0" class="mb-8">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
-              <i-feather name="eye" class="h-5 w-5 text-primary"></i-feather>
+          <!-- Preview Table - Responsive -->
+          <div *ngIf="!isProcessing && previewData.data.length > 0" class="mb-6 sm:mb-8">
+            <h3 class="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center space-x-2">
+              <i-feather name="eye" class="h-4 w-4 sm:h-5 sm:w-5 text-primary"></i-feather>
               <span>Data Preview</span>
             </h3>
 
-            <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-800">
-                <tr>
-                  <th *ngFor="let column of displayedColumns" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {{ column }}
-                  </th>
-                </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                <tr *ngFor="let row of previewData.data">
-                  <td *ngFor="let column of displayedColumns" class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                    {{ row[column] }}
-                  </td>
-                </tr>
-                </tbody>
-              </table>
+            <div class="overflow-x-auto -mx-4 sm:mx-0 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div class="inline-block min-w-full align-middle px-4 sm:px-0">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead class="bg-gray-50 dark:bg-gray-800">
+                  <tr>
+                    <th *ngFor="let column of displayedColumns" class="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      {{ column }}
+                    </th>
+                  </tr>
+                  </thead>
+                  <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tr *ngFor="let row of previewData.data">
+                    <td *ngFor="let column of displayedColumns" class="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                      {{ row[column] }}
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-
             <div class="text-right mt-2">
               <span class="text-xs text-gray-500 dark:text-gray-400">Showing first {{ previewData.data.length }} rows of {{ convertedSeances.length }}</span>
             </div>
           </div>
 
           <!-- Extracted Entities Summary -->
-          <div *ngIf="!isProcessing && convertedSeances.length > 0" class="mb-8">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
-              <i-feather name="database" class="h-5 w-5 text-primary"></i-feather>
+          <div *ngIf="!isProcessing && convertedSeances.length > 0" class="mb-6 sm:mb-8">
+            <h3 class="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center space-x-2">
+              <i-feather name="database" class="h-4 w-4 sm:h-5 sm:w-5 text-primary"></i-feather>
               <span>Extracted Entities</span>
             </h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Sessions:</span>
-                  <span class="text-sm font-bold text-primary">{{ convertedSeances.length }}</span>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
+                <div class="flex items-center justify-between mb-1 sm:mb-2">
+                  <span class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Sessions:</span>
+                  <span class="text-xs sm:text-sm font-bold text-primary">{{ convertedSeances.length }}</span>
                 </div>
                 <div class="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                   <div class="h-full bg-primary" style="width: 100%"></div>
                 </div>
               </div>
 
-              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Rooms:</span>
-                  <span class="text-sm font-bold text-primary">{{ salles.length }}</span>
+              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
+                <div class="flex items-center justify-between mb-1 sm:mb-2">
+                  <span class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Rooms:</span>
+                  <span class="text-xs sm:text-sm font-bold text-primary">{{ salles.length }}</span>
                 </div>
                 <div class="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                   <div class="h-full bg-primary" style="width: 100%"></div>
                 </div>
               </div>
 
-              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Teachers:</span>
-                  <span class="text-sm font-bold text-primary">{{ enseignants.length }}</span>
+              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
+                <div class="flex items-center justify-between mb-1 sm:mb-2">
+                  <span class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Teachers:</span>
+                  <span class="text-xs sm:text-sm font-bold text-primary">{{ enseignants.length }}</span>
                 </div>
                 <div class="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                   <div class="h-full bg-primary" style="width: 100%"></div>
                 </div>
               </div>
 
-              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Programs:</span>
-                  <span class="text-sm font-bold text-primary">{{ branches.length }}</span>
+              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
+                <div class="flex items-center justify-between mb-1 sm:mb-2">
+                  <span class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Programs:</span>
+                  <span class="text-xs sm:text-sm font-bold text-primary">{{ branches.length }}</span>
                 </div>
                 <div class="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                   <div class="h-full bg-primary" style="width: 100%"></div>
                 </div>
               </div>
 
-              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">TD Groups:</span>
-                  <span class="text-sm font-bold text-primary">{{ tds.length }}</span>
+              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
+                <div class="flex items-center justify-between mb-1 sm:mb-2">
+                  <span class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">TD Groups:</span>
+                  <span class="text-xs sm:text-sm font-bold text-primary">{{ tds.length }}</span>
                 </div>
                 <div class="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                   <div class="h-full bg-primary" style="width: 100%"></div>
                 </div>
               </div>
 
-              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">TP Groups:</span>
-                  <span class="text-sm font-bold text-primary">{{ tps.length }}</span>
+              <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
+                <div class="flex items-center justify-between mb-1 sm:mb-2">
+                  <span class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">TP Groups:</span>
+                  <span class="text-xs sm:text-sm font-bold text-primary">{{ tps.length }}</span>
                 </div>
                 <div class="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                   <div class="h-full bg-primary" style="width: 100%"></div>
@@ -244,24 +249,24 @@
             <!-- Toggle Mapping Form Button -->
             <button mat-raised-button
                     (click)="toggleMappingForm()"
-                    class="w-full py-3 flex items-center justify-center space-x-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-all">
-              <i-feather [name]="showMappingForm ? 'chevron-up' : 'chevron-down'" class="h-5 w-5"></i-feather>
+                    class="w-full py-2 sm:py-3 flex items-center justify-center space-x-1 sm:space-x-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-all text-xs sm:text-sm">
+              <i-feather [name]="showMappingForm ? 'chevron-up' : 'chevron-down'" class="h-4 w-4 sm:h-5 sm:w-5"></i-feather>
               <span>{{ showMappingForm ? 'Hide Field Mapping' : 'Show Field Mapping' }}</span>
             </button>
 
             <!-- Mapping Form Section -->
             <div *ngIf="showMappingForm" class="animate-fade-in space-y-4">
-              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
-                <i-feather name="map" class="h-5 w-5 text-primary"></i-feather>
+              <h3 class="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center space-x-2">
+                <i-feather name="map" class="h-4 w-4 sm:h-5 sm:w-5 text-primary"></i-feather>
                 <span>Map Fields</span>
               </h3>
 
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3 sm:mb-4">
                 Map each column in your CSV file to the corresponding field in the schedule system
               </p>
 
-              <form [formGroup]="mappingForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <mat-form-field *ngFor="let column of displayedColumns" appearance="outline">
+              <form [formGroup]="mappingForm" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                <mat-form-field *ngFor="let column of displayedColumns" appearance="outline" class="w-full">
                   <mat-label>{{ column }}</mat-label>
                   <mat-select [formControlName]="column">
                     <mat-option value="">Ignore</mat-option>
@@ -280,17 +285,18 @@
           </div>
 
           <!-- Action Buttons -->
-          <div class="flex justify-between mt-6">
-            <button mat-button matStepperPrevious class="px-6 py-2 flex items-center space-x-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
-              <i-feather name="arrow-left" class="h-4 w-4"></i-feather>
+          <div class="flex flex-col sm:flex-row sm:justify-between mt-6 space-y-3 sm:space-y-0 sm:space-x-3">
+            <button mat-button matStepperPrevious
+                    class="order-2 sm:order-1 px-6 py-2 flex items-center justify-center sm:justify-start space-x-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-xs sm:text-sm">
+              <i-feather name="arrow-left" class="h-3 w-3 sm:h-4 sm:w-4"></i-feather>
               <span>Back</span>
             </button>
 
             <button mat-button matStepperNext (click)="mapFields()"
                     [disabled]="isProcessing || convertedSeances.length === 0"
-                    class="px-6 py-2 flex items-center space-x-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                    class="order-1 sm:order-2 px-6 py-2 flex items-center justify-center sm:justify-start space-x-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-xs sm:text-sm">
               <span>Continue</span>
-              <i-feather name="arrow-right" class="h-4 w-4"></i-feather>
+              <i-feather name="arrow-right" class="h-3 w-3 sm:h-4 sm:w-4"></i-feather>
             </button>
           </div>
         </mat-step>
@@ -300,110 +306,110 @@
           <ng-template matStepLabel>Save & Export</ng-template>
 
           <!-- Success Message -->
-          <div class="mb-8">
-            <div class="bg-green-50 dark:bg-green-900/30 border-l-4 border-green-500 p-4 rounded-md">
-              <div class="flex items-center space-x-3">
-                <i-feather name="check-circle" class="h-5 w-5 text-green-500"></i-feather>
-                <h3 class="text-lg font-medium text-green-800 dark:text-green-200">Data Processed Successfully</h3>
+          <div class="mb-6 sm:mb-8">
+            <div class="bg-green-50 dark:bg-green-900/30 border-l-4 border-green-500 p-3 sm:p-4 rounded-md">
+              <div class="flex items-center space-x-2 sm:space-x-3">
+                <i-feather name="check-circle" class="h-4 w-4 sm:h-5 sm:w-5 text-green-500"></i-feather>
+                <h3 class="text-base sm:text-lg font-medium text-green-800 dark:text-green-200">Data Processed Successfully</h3>
               </div>
-              <p class="mt-2 text-sm text-green-700 dark:text-green-300">
+              <p class="mt-2 text-xs sm:text-sm text-green-700 dark:text-green-300">
                 Your schedule data has been processed and is ready to be saved.
               </p>
             </div>
           </div>
 
           <!-- Import Statistics -->
-          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6 mb-8">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center space-x-2 mb-4">
-              <i-feather name="bar-chart-2" class="h-5 w-5 text-primary"></i-feather>
+          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 sm:p-6 mb-6 sm:mb-8">
+            <h3 class="text-base sm:text-lg font-medium text-gray-900 dark:text-white flex items-center space-x-2 mb-3 sm:mb-4">
+              <i-feather name="bar-chart-2" class="h-4 w-4 sm:h-5 sm:w-5 text-primary"></i-feather>
               <span>Import Statistics</span>
             </h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 sm:gap-y-4 gap-x-4 sm:gap-x-8">
               <div class="flex justify-between items-center">
-                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions:</span>
-                <span class="text-sm text-gray-900 dark:text-white">{{ convertedSeances.length }}</span>
+                <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions:</span>
+                <span class="text-xs sm:text-sm text-gray-900 dark:text-white">{{ convertedSeances.length }}</span>
               </div>
 
               <div class="flex justify-between items-center">
-                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Rooms:</span>
-                <span class="text-sm text-gray-900 dark:text-white">{{ salles.length }}</span>
+                <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Rooms:</span>
+                <span class="text-xs sm:text-sm text-gray-900 dark:text-white">{{ salles.length }}</span>
               </div>
 
               <div class="flex justify-between items-center">
-                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Teachers:</span>
-                <span class="text-sm text-gray-900 dark:text-white">{{ enseignants.length }}</span>
+                <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Teachers:</span>
+                <span class="text-xs sm:text-sm text-gray-900 dark:text-white">{{ enseignants.length }}</span>
               </div>
 
               <div class="flex justify-between items-center">
-                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Programs:</span>
-                <span class="text-sm text-gray-900 dark:text-white">{{ branches.length }}</span>
+                <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Programs:</span>
+                <span class="text-xs sm:text-sm text-gray-900 dark:text-white">{{ branches.length }}</span>
               </div>
 
               <div class="flex justify-between items-center">
-                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">File Name:</span>
-                <span class="text-sm text-gray-900 dark:text-white">{{ fileInfo?.name || 'N/A' }}</span>
+                <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">File Name:</span>
+                <span class="text-xs sm:text-sm text-gray-900 dark:text-white truncate max-w-[150px] sm:max-w-none">{{ fileInfo?.name || 'N/A' }}</span>
               </div>
 
               <div class="flex justify-between items-center">
-                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Import Date:</span>
-                <span class="text-sm text-gray-900 dark:text-white">{{ currentDateTime }}</span>
+                <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Import Date:</span>
+                <span class="text-xs sm:text-sm text-gray-900 dark:text-white">{{ currentDateTime }}</span>
               </div>
             </div>
           </div>
 
           <!-- Processing Indicator -->
-          <div *ngIf="isProcessing" class="py-4 mb-6">
-            <div class="mb-4">
+          <div *ngIf="isProcessing" class="py-3 sm:py-4 mb-4 sm:mb-6">
+            <div class="mb-3 sm:mb-4">
               <mat-progress-bar mode="determinate" [value]="processingProgress" color="primary"></mat-progress-bar>
             </div>
-            <p class="text-center text-gray-600 dark:text-gray-400">Processing... {{ processingProgress }}%</p>
+            <p class="text-center text-xs sm:text-sm text-gray-600 dark:text-gray-400">Processing... {{ processingProgress }}%</p>
           </div>
 
           <!-- Action Buttons -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
             <button mat-raised-button color="primary" (click)="saveSchedule()"
                     [disabled]="isProcessing || convertedSeances.length === 0"
-                    class="py-3 flex items-center justify-center space-x-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
-              <i-feather name="save" class="h-5 w-5"></i-feather>
+                    class="py-2 sm:py-3 flex items-center justify-center space-x-1 sm:space-x-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm">
+              <i-feather name="save" class="h-4 w-4 sm:h-5 sm:w-5"></i-feather>
               <span>Save to System</span>
             </button>
 
             <button mat-raised-button color="accent" (click)="downloadJson()"
                     [disabled]="isProcessing || convertedSeances.length === 0"
-                    class="py-3 flex items-center justify-center space-x-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
-              <i-feather name="download" class="h-5 w-5"></i-feather>
+                    class="py-2 sm:py-3 flex items-center justify-center space-x-1 sm:space-x-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm">
+              <i-feather name="download" class="h-4 w-4 sm:h-5 sm:w-5"></i-feather>
               <span>Export as JSON</span>
             </button>
           </div>
 
           <!-- Additional Export Options -->
-          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6">
-            <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3 flex items-center space-x-2">
-              <i-feather name="download-cloud" class="h-4 w-4 text-primary"></i-feather>
+          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+            <h4 class="text-sm sm:text-md font-medium text-gray-900 dark:text-white mb-2 sm:mb-3 flex items-center space-x-2">
+              <i-feather name="download-cloud" class="h-3 w-3 sm:h-4 sm:w-4 text-primary"></i-feather>
               <span>Additional Options</span>
             </h4>
 
-            <div class="flex flex-wrap gap-3">
+            <div class="flex flex-wrap gap-2 sm:gap-3">
               <button mat-stroked-button (click)="reset()"
-                      class="px-4 py-2 flex items-center space-x-2 border border-red-300 dark:border-red-600 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-all">
-                <i-feather name="refresh-cw" class="h-4 w-4"></i-feather>
+                      class="px-3 sm:px-4 py-1.5 sm:py-2 flex items-center space-x-1 sm:space-x-2 border border-red-300 dark:border-red-600 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-all text-xs sm:text-sm">
+                <i-feather name="refresh-cw" class="h-3 w-3 sm:h-4 sm:w-4"></i-feather>
                 <span>Start Over</span>
               </button>
             </div>
           </div>
 
           <!-- Navigation Buttons -->
-          <div class="flex justify-between">
+          <div class="flex flex-col sm:flex-row sm:justify-between space-y-3 sm:space-y-0 sm:space-x-3">
             <button mat-button matStepperPrevious
-                    class="px-6 py-2 flex items-center space-x-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
-              <i-feather name="arrow-left" class="h-4 w-4"></i-feather>
+                    class="order-2 sm:order-1 px-6 py-2 flex items-center justify-center sm:justify-start space-x-1 sm:space-x-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-xs sm:text-sm">
+              <i-feather name="arrow-left" class="h-3 w-3 sm:h-4 sm:w-4"></i-feather>
               <span>Back</span>
             </button>
 
             <button mat-button (click)="reset()"
-                    class="px-6 py-2 flex items-center space-x-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
-              <i-feather name="x" class="h-4 w-4"></i-feather>
+                    class="order-1 sm:order-2 px-6 py-2 flex items-center justify-center sm:justify-start space-x-1 sm:space-x-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-xs sm:text-sm">
+              <i-feather name="x" class="h-3 w-3 sm:h-4 sm:w-4"></i-feather>
               <span>Cancel</span>
             </button>
           </div>
@@ -412,10 +418,10 @@
     </div>
 
     <!-- Error Message Toast -->
-    <div *ngIf="errorMessage" class="fixed top-5 right-5 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50 flex items-center justify-between">
-      <span>{{ errorMessage }}</span>
-      <button class="ml-3 text-white hover:text-white/80" (click)="errorMessage = null">
-        <i-feather name="x" class="h-4 w-4"></i-feather>
+    <div *ngIf="errorMessage" class="fixed top-5 right-5 bg-red-500 text-white p-3 sm:p-4 rounded-lg shadow-lg z-50 flex items-center justify-between max-w-[90vw] sm:max-w-md">
+      <span class="text-xs sm:text-sm pr-2">{{ errorMessage }}</span>
+      <button class="ml-2 sm:ml-3 text-white hover:text-white/80 flex-shrink-0" (click)="errorMessage = null">
+        <i-feather name="x" class="h-3 w-3 sm:h-4 sm:w-4"></i-feather>
       </button>
     </div>
   </div>
