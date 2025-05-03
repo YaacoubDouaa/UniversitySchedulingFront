@@ -1,138 +1,135 @@
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-  <!-- Enhanced Welcome Header -->
-
-    <div class="relative px-8 py-12">
-      <!-- Content -->
-      <div class="relative flex flex-col md:flex-row items-center justify-between">
-        <div class="text-center md:text-left mb-6 md:mb-0">
-          <h1 class="text-3xl md:text-4xl font-bold text-navy-100 mb-2">
-            <span class="typewriter">{{ displayText }}</span>
-            <span class="animate-pulse">|</span>
-          </h1>
-          <p class="text-navy-100 text-lg max-w-2xl">
-            Manage and organize your academic schedule efficiently
-          </p>
-          <!-- Current Date/Time and User Info -->
-          <div class="flex flex-wrap items-center gap-4 mt-4">
-            <div class="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-              <i-feather name="clock" class="h-4 w-4 text-navy-200"></i-feather>
-              <span class="text-sm font-mono text-purple-100">{{currentDateTime}}</span>
-            </div>
-            <div class="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-              <i-feather name="user" class="h-4 w-4 text-navy-200"></i-feather>
-              <span class="text-sm text-purple-100">{{currentUser}}</span>
-            </div>
+  <!-- Enhanced Welcome Header - Improved responsiveness -->
+  <div class="relative px-4 sm:px-8 py-8 sm:py-12">
+    <!-- Content -->
+    <div class="relative flex flex-col md:flex-row items-center justify-between">
+      <div class="text-center md:text-left mb-6 md:mb-0 w-full">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-navy-100 mb-2">
+          <span class="typewriter">{{ displayText }}</span>
+          <span class="animate-pulse">|</span>
+        </h1>
+        <p class="text-navy-100 text-base sm:text-lg max-w-2xl">
+          Manage and organize your academic schedule efficiently
+        </p>
+        <!-- Current Date/Time and User Info - Made responsive -->
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-4 mt-4">
+          <div class="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 sm:px-4 py-1 sm:py-2">
+            <i-feather name="clock" class="h-3 w-3 sm:h-4 sm:w-4 text-navy-200"></i-feather>
+            <span class="text-xs sm:text-sm font-mono text-purple-100 truncate">{{currentDateTime}}</span>
+          </div>
+          <div class="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 sm:px-4 py-1 sm:py-2">
+            <i-feather name="user" class="h-3 w-3 sm:h-4 sm:w-4 text-navy-200"></i-feather>
+            <span class="text-xs sm:text-sm text-purple-100 truncate">{{currentUser}}</span>
           </div>
         </div>
+      </div>
 
-
-
-      <!-- Decorative Elements -->
-      <div class="absolute bottom-0 right-0 transform translate-y-1/2 translate-x-1/4">
+      <!-- Decorative Elements - Hidden on very small screens -->
+      <div class="absolute bottom-0 right-0 transform translate-y-1/2 translate-x-1/4 hidden sm:block">
         <div class="text-purple-300/20">
-          <i-feather name="calendar" class="h-32 w-32"></i-feather>
+          <i-feather name="calendar" class="h-24 sm:h-32 w-24 sm:w-32"></i-feather>
         </div>
       </div>
     </div>
   </div>
-  <!-- Info Carousel -->
-  <div class="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-    <div class="relative" style="height: 200px;">
+
+  <!-- Info Carousel - Improved height handling -->
+  <div class="mb-6 sm:mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+    <div class="relative" style="height: 180px; sm:height: 200px;">
       <!-- Carousel Container -->
       <div class="flex transition-transform duration-500 h-full"
            [style.transform]="'translateX(-' + (currentSlide * 100) + '%)'">
 
         <!-- Actualités Slide -->
-        <div class="w-full flex-shrink-0 flex items-center justify-center p-6">
+        <div class="w-full flex-shrink-0 flex items-center justify-center p-4 sm:p-6">
           <div class="text-center">
             <i-feather
               name="bell"
-              class="h-16 w-16 mb-4 text-purple-500 mx-auto animate-bounce"
+              class="h-12 w-12 sm:h-16 sm:w-16 mb-3 sm:mb-4 text-purple-500 mx-auto animate-bounce"
             ></i-feather>
-            <h3 class="text-xl font-semibold mb-2">Actualités</h3>
-            <p class="text-gray-600 dark:text-gray-400">
+            <h3 class="text-lg sm:text-xl font-semibold mb-1 sm:mb-2">Actualités</h3>
+            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
               {{actualitesCount}} nouvelles notifications
             </p>
           </div>
         </div>
 
         <!-- Conflicts Slide -->
-        <div class="w-full flex-shrink-0 flex items-center justify-center p-6">
+        <div class="w-full flex-shrink-0 flex items-center justify-center p-4 sm:p-6">
           <div class="text-center">
             <i-feather
               name="alert-triangle"
-              class="h-16 w-16 mb-4 text-red-500 mx-auto animate-pulse"
+              class="h-12 w-12 sm:h-16 sm:w-16 mb-3 sm:mb-4 text-red-500 mx-auto animate-pulse"
             ></i-feather>
-            <h3 class="text-xl font-semibold mb-2">Conflicts</h3>
-            <p class="text-gray-600 dark:text-gray-400">
+            <h3 class="text-lg sm:text-xl font-semibold mb-1 sm:mb-2">Conflicts</h3>
+            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
               {{conflicts.length}} conflits détectés
             </p>
           </div>
         </div>
 
         <!-- Rooms Status Slide -->
-        <div class="w-full flex-shrink-0 flex items-center justify-center p-6">
+        <div class="w-full flex-shrink-0 flex items-center justify-center p-4 sm:p-6">
           <div class="text-center">
             <i-feather
               name="home"
-              class="h-16 w-16 mb-4 text-blue-500 mx-auto"
+              class="h-12 w-12 sm:h-16 sm:w-16 mb-3 sm:mb-4 text-blue-500 mx-auto"
             ></i-feather>
-            <h3 class="text-xl font-semibold mb-2">Salles</h3>
-            <p class="text-gray-600 dark:text-gray-400">
+            <h3 class="text-lg sm:text-xl font-semibold mb-1 sm:mb-2">Salles</h3>
+            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
               {{availableRooms}} salles disponibles
             </p>
           </div>
         </div>
 
         <!-- Professors Status Slide -->
-        <div class="w-full flex-shrink-0 flex items-center justify-center p-6">
+        <div class="w-full flex-shrink-0 flex items-center justify-center p-4 sm:p-6">
           <div class="text-center">
             <i-feather
               name="users"
-              class="h-16 w-16 mb-4 text-green-500 mx-auto"
+              class="h-12 w-12 sm:h-16 sm:w-16 mb-3 sm:mb-4 text-green-500 mx-auto"
             ></i-feather>
-            <h3 class="text-xl font-semibold mb-2">Professeurs</h3>
-            <p class="text-gray-600 dark:text-gray-400">
+            <h3 class="text-lg sm:text-xl font-semibold mb-1 sm:mb-2">Professeurs</h3>
+            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
               {{activeProfs}} professeurs actifs
             </p>
           </div>
         </div>
 
         <!-- Rattrapage Status Slide -->
-        <div class="w-full flex-shrink-0 flex items-center justify-center p-6">
+        <div class="w-full flex-shrink-0 flex items-center justify-center p-4 sm:p-6">
           <div class="text-center">
             <i-feather
               name="calendar"
-              class="h-16 w-16 mb-4 text-orange-500 mx-auto"
+              class="h-12 w-12 sm:h-16 sm:w-16 mb-3 sm:mb-4 text-orange-500 mx-auto"
             ></i-feather>
-            <h3 class="text-xl font-semibold mb-2">Rattrapages</h3>
-            <p class="text-gray-600 dark:text-gray-400">
+            <h3 class="text-lg sm:text-xl font-semibold mb-1 sm:mb-2">Rattrapages</h3>
+            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
               {{upcomingRattrapages}} séances prévues
             </p>
           </div>
         </div>
       </div>
 
-      <!-- Navigation Buttons -->
+      <!-- Navigation Buttons - Improved position on mobile -->
       <button
-        class="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
+        class="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 p-1 sm:p-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
         (click)="previousSlide()">
-        <i-feather name="chevron-left" class="h-6 w-6 text-gray-600 dark:text-gray-400"></i-feather>
+        <i-feather name="chevron-left" class="h-4 w-4 sm:h-6 sm:w-6 text-gray-600 dark:text-gray-400"></i-feather>
       </button>
 
       <button
-        class="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
+        class="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 p-1 sm:p-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
         (click)="nextSlide()">
-        <i-feather name="chevron-right" class="h-6 w-6 text-gray-600 dark:text-gray-400"></i-feather>
+        <i-feather name="chevron-right" class="h-4 w-4 sm:h-6 sm:w-6 text-gray-600 dark:text-gray-400"></i-feather>
       </button>
 
-      <!-- Indicators -->
-      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      <!-- Indicators - Made smaller on mobile -->
+      <div class="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-1 sm:space-x-2">
         <button *ngFor="let _ of slides; let i = index"
                 (click)="goToSlide(i)"
-                class="w-2 h-2 rounded-full transition-all duration-300"
+                class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all duration-300"
                 [class.bg-purple-500]="currentSlide === i"
                 [class.bg-gray-300]="currentSlide !== i">
         </button>
@@ -140,93 +137,94 @@
     </div>
   </div>
 
-
-
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <!-- Main content grid - Already responsive but improved -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
     <!-- Schedule Section -->
     <div class="lg:col-span-2">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-        <div class="p-6">
+        <div class="p-4 sm:p-6">
           <!-- Schedule Header -->
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-              <i-feather name="calendar" class="h-5 w-5 text-purple-600 mr-2"></i-feather>
+          <div class="flex flex-wrap items-center justify-between mb-4 sm:mb-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+              <i-feather name="calendar" class="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 mr-2"></i-feather>
               Schedule - {{currentDay}}
             </h2>
           </div>
 
           <!-- Loading State -->
-          <div *ngIf="isLoading" class="flex items-center justify-center p-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          <div *ngIf="isLoading" class="flex items-center justify-center p-4 sm:p-8">
+            <div class="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-purple-600"></div>
           </div>
 
           <!-- Error State -->
-          <div *ngIf="error" class="text-red-500 text-center p-8">
+          <div *ngIf="error" class="text-red-500 text-center p-4 sm:p-8">
             {{error}}
           </div>
 
-          <!-- Schedule Table -->
-          <div *ngIf="!isLoading && !error" class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead class="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-20">
-                  Time
-                </th>
-                <th *ngFor="let niveau of getNiveauxForCurrentDay()"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  {{niveau}}
-                </th>
-              </tr>
-              </thead>
-              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr *ngFor="let time of timeSlots">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700">
-                  {{time}}
-                </td>
-                <td *ngFor="let niveau of getNiveauxForCurrentDay()"
-                    class="px-6 py-4 align-top border-l border-gray-200 dark:border-gray-700">
-                  <div class="space-y-2">
-                    <ng-container *ngIf="schedule[currentDay]?.[niveau]?.[time]">
-                      <div *ngFor="let seance of schedule[currentDay][niveau][time]"
-                           [ngClass]="getSeanceTypeStyle(seance.type)"
-                           class="p-3 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
-                        <div class="flex justify-between items-start mb-1">
-                        <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200">
-                          {{seance.type}}
-                        </span>
-                          <span class="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
-                          {{seance.groupe}}
-                        </span>
+          <!-- Schedule Table - Improved with responsive scrolling -->
+          <div *ngIf="!isLoading && !error" class="overflow-x-auto -mx-4 sm:-mx-6">
+            <div class="min-w-[700px] px-4 sm:px-6">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th class="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-16 sm:w-20">
+                    Time
+                  </th>
+                  <th *ngFor="let niveau of getNiveauxForCurrentDay()"
+                      class="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    {{niveau}}
+                  </th>
+                </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tr *ngFor="let time of timeSlots">
+                  <td class="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700">
+                    {{time}}
+                  </td>
+                  <td *ngFor="let niveau of getNiveauxForCurrentDay()"
+                      class="px-3 sm:px-6 py-2 sm:py-4 align-top border-l border-gray-200 dark:border-gray-700">
+                    <div class="space-y-2">
+                      <ng-container *ngIf="schedule[currentDay]?.[niveau]?.[time]">
+                        <div *ngFor="let seance of schedule[currentDay][niveau][time]"
+                             [ngClass]="getSeanceTypeStyle(seance.type)"
+                             class="p-2 sm:p-3 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
+                          <div class="flex justify-between items-start mb-1">
+                            <span class="text-xs font-medium px-1.5 sm:px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200">
+                              {{seance.type}}
+                            </span>
+                            <span class="text-xs bg-gray-100 dark:bg-gray-700 px-1.5 sm:px-2 py-0.5 rounded-full truncate max-w-[80px] sm:max-w-none">
+                              {{seance.groupe}}
+                            </span>
+                          </div>
+                          <h3 class="text-xs sm:text-sm font-medium mb-1 text-gray-900 dark:text-white truncate">{{seance.name}}</h3>
+                          <div class="flex flex-col space-y-1 text-xs text-gray-500 dark:text-gray-400">
+                            <span class="flex items-center truncate">
+                              <i-feather name="map-pin" class="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 flex-shrink-0"></i-feather>
+                              <span class="truncate">{{seance.room}}</span>
+                            </span>
+                            <span class="flex items-center truncate">
+                              <i-feather name="user" class="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 flex-shrink-0"></i-feather>
+                              <span class="truncate">{{seance.professor}}</span>
+                            </span>
+                          </div>
+                          <div *ngIf="seance.biWeekly"
+                               class="mt-1 text-xs text-purple-600 dark:text-purple-400 italic flex items-center">
+                            <i-feather name="repeat" class="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1"></i-feather>
+                            Bi-weekly
+                          </div>
                         </div>
-                        <h3 class="text-sm font-medium mb-1 text-gray-900 dark:text-white">{{seance.name}}</h3>
-                        <div class="flex flex-col space-y-1 text-xs text-gray-500 dark:text-gray-400">
-                        <span class="flex items-center">
-                          <i-feather name="map-pin" class="h-3 w-3 mr-1"></i-feather>
-                          {{seance.room}}
-                        </span>
-                          <span class="flex items-center">
-                          <i-feather name="user" class="h-3 w-3 mr-1"></i-feather>
-                            {{seance.professor}}
-                        </span>
-                        </div>
-                        <div *ngIf="seance.biWeekly"
-                             class="mt-1 text-xs text-purple-600 dark:text-purple-400 italic flex items-center">
-                          <i-feather name="repeat" class="h-3 w-3 mr-1"></i-feather>
-                          Bi-weekly
-                        </div>
-                      </div>
-                    </ng-container>
-                  </div>
-                </td>
-              </tr>
-              </tbody>
-            </table>
+                      </ng-container>
+                    </div>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <!-- Empty State -->
           <div *ngIf="!isLoading && !error && getNiveauxForCurrentDay().length === 0"
-               class="text-center p-8 text-gray-500 dark:text-gray-400">
+               class="text-center p-4 sm:p-8 text-gray-500 dark:text-gray-400">
             No schedule data available for {{currentDay}}
           </div>
         </div>
@@ -234,40 +232,39 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="space-y-6">
+    <div class="space-y-4 sm:space-y-6">
       <!-- Conflicts -->
-      <!-- Update the Conflicts Section -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border-2 border-red-500/50">
-        <div class="p-6">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+        <div class="p-4 sm:p-6">
+          <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center">
             <i-feather name="alert-triangle"
-                       class="h-5 w-5 text-red-500 mr-2 animate-bounce"></i-feather>
+                       class="h-4 w-4 sm:h-5 sm:w-5 text-red-500 mr-2 animate-bounce"></i-feather>
             <span class="text-red-500">Conflicts</span>
           </h2>
-          <div class="space-y-3">
+          <div class="space-y-2 sm:space-y-3">
             <div *ngFor="let conflict of conflicts"
-                 class="p-4 rounded-lg border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10
+                 class="p-3 sm:p-4 rounded-lg border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10
                   transition-all duration-300 hover:shadow-md">
-              <div class="flex justify-between items-start mb-2">
-          <span class="text-sm font-medium text-red-800 dark:text-red-200">
-            {{ conflict.day }} - {{ conflict.time }}
-          </span>
-                <div class="flex gap-1">
-            <span *ngFor="let type of conflict.conflictTypes"
-                  class="px-2 py-1 text-xs rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200">
-              {{ type }}
-            </span>
+              <div class="flex flex-wrap justify-between items-start mb-2">
+                <span class="text-xs sm:text-sm font-medium text-red-800 dark:text-red-200 mb-1 sm:mb-0">
+                  {{ conflict.day }} - {{ conflict.time }}
+                </span>
+                <div class="flex flex-wrap gap-1">
+                  <span *ngFor="let type of conflict.conflictTypes"
+                        class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200">
+                    {{ type }}
+                  </span>
                 </div>
               </div>
-              <div class="space-y-2 text-sm">
-                <div class="text-red-700 dark:text-red-300">
+              <div class="space-y-2 text-xs sm:text-sm">
+                <div class="text-red-700 dark:text-red-300 truncate">
                   {{ conflict.seance1.name }} ({{ conflict.seance1.professor }})
                 </div>
                 <div class="flex justify-center">
                   <i-feather name="alert-triangle"
-                             class="h-5 w-5 text-red-500 animate-bounce"></i-feather>
+                             class="h-4 w-4 sm:h-5 sm:w-5 text-red-500 animate-bounce"></i-feather>
                 </div>
-                <div class="text-red-700 dark:text-red-300">
+                <div class="text-red-700 dark:text-red-300 truncate">
                   {{ conflict.seance2.name }} ({{ conflict.seance2.professor }})
                 </div>
               </div>
@@ -278,27 +275,27 @@
 
       <!-- Rattrapage Schedule -->
       <div class="bg-white rounded-lg shadow-lg">
-        <div class="px-4 py-5 sm:p-6">
+        <div class="px-3 py-4 sm:p-6">
           <!-- Rotating Icon -->
           <div class="relative p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-all duration-300">
             <i-feather
               name="refresh-cw"
-              class="h-6 w-6 text-primary animate-spin-slow"
+              class="h-5 w-5 sm:h-6 sm:w-6 text-primary animate-spin-slow"
             ></i-feather>
           </div>
-          <h2 class="text-xl font-semibold text-gray-900 mb-4">Sessions de Rattrapage</h2>
-          <div class="space-y-4">
+          <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Sessions de Rattrapage</h2>
+          <div class="space-y-3 sm:space-y-4">
             <div *ngFor="let day of rattrapageSchedule | keyvalue">
-              <h3 class="text-sm font-medium text-gray-700 mb-2">{{ day.key }}</h3>
-              <div class="space-y-2">
-                <div *ngFor="let timeSlot of day.value | keyvalue" class="space-y-2">
+              <h3 class="text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">{{ day.key }}</h3>
+              <div class="space-y-1 sm:space-y-2">
+                <div *ngFor="let timeSlot of day.value | keyvalue" class="space-y-1 sm:space-y-2">
                   <div class="text-xs text-gray-500">{{ timeSlot.key }}</div>
-                  <div *ngFor="let seance of timeSlot.value" class="p-3 bg-blue-50 border border-blue-200 rounded-lg transition duration-150 ease-in-out hover:bg-blue-100">
-                    <div class="text-sm font-medium text-blue-900 mb-1">{{ seance.name }}</div>
-                    <div class="flex justify-between text-xs text-blue-700">
-                      <span>{{ seance.professor }}</span>
-                      <span>{{ seance.room }}</span>
-                      <span>{{ seance.groupe }}</span>
+                  <div *ngFor="let seance of timeSlot.value" class="p-2 sm:p-3 bg-blue-50 border border-blue-200 rounded-lg transition duration-150 ease-in-out hover:bg-blue-100">
+                    <div class="text-xs sm:text-sm font-medium text-blue-900 mb-1 truncate">{{ seance.name }}</div>
+                    <div class="flex flex-wrap justify-between text-xs text-blue-700">
+                      <span class="truncate max-w-[90px] sm:max-w-none pr-1">{{ seance.professor }}</span>
+                      <span class="truncate max-w-[60px] sm:max-w-none pr-1">{{ seance.room }}</span>
+                      <span class="truncate max-w-[50px] sm:max-w-none">{{ seance.groupe }}</span>
                     </div>
                   </div>
                 </div>
