@@ -1,0 +1,235 @@
+<div class="min-h-screen bg-gray-50/50 dark:bg-gray-900/50">
+  <!-- Enhanced Top Navigation Bar with Glassmorphism -->
+  <nav class="sticky top-0 z-50 bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg shadow-lg border-b border-gray-200/80 dark:border-gray-700/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center space-x-6">
+          <!-- Animated Logo and Title -->
+          <div class="flex items-center space-x-3 group">
+            <div class="p-2.5 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-all duration-300 transform group-hover:scale-105">
+              <i-feather
+                name="calendar"
+                class="h-6 w-6 text-primary"
+              ></i-feather>
+            </div>
+            <h1 class="text-xl font-semibold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent"
+                [innerText]="displayText"></h1>
+          </div>
+
+          <!-- Enhanced View Schedule Button with Animation -->
+          <div class="flex items-center">
+            <button (click)="navigateToSchedule()"
+                    class="flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary-dark text-white hover:from-primary-dark hover:to-primary transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+              <i-feather name="eye" class="h-5 w-5"></i-feather>
+              <span class="font-medium">View Schedule</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content with Enhanced Spacing -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Enhanced Controls Section with Glass Effect -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+      <!-- Enhanced Group Selection Card -->
+      <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 p-6 transform hover:scale-[1.02] transition-all duration-300">
+        <div class="flex items-center space-x-3 mb-5">
+          <div class="p-2 bg-primary/10 rounded-lg">
+            <i-feather name="users" class="h-5 w-5 text-primary"></i-feather>
+          </div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Group Selection</h2>
+        </div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>
+            <div class="flex items-center space-x-2">
+              <i-feather name="layers" class="h-4 w-4"></i-feather>
+              <span>Select Group</span>
+            </div>
+          </mat-label>
+          <mat-select [(ngModel)]="selectedGroup" name="group" class="w-full">
+            <mat-option *ngFor="let group of groupOptions" [value]="group">
+              {{ group }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Enhanced View Options Card -->
+      <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 p-6 transform hover:scale-[1.02] transition-all duration-300">
+        <div class="flex items-center space-x-3 mb-5">
+          <div class="p-2 bg-primary/10 rounded-lg">
+            <i-feather name="sliders" class="h-5 w-5 text-primary"></i-feather>
+          </div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">View Options</h2>
+        </div>
+        <div class="flex flex-col space-y-4">
+          <mat-checkbox [(ngModel)]="showTD" class="text-gray-700 dark:text-gray-300">
+            <div class="flex items-center space-x-2">
+              <i-feather name="book-open" class="h-4 w-4"></i-feather>
+              <span>Show TD Sessions</span>
+            </div>
+          </mat-checkbox>
+          <mat-checkbox [(ngModel)]="showTP" class="text-gray-700 dark:text-gray-300">
+            <div class="flex items-center space-x-2">
+              <i-feather name="monitor" class="h-4 w-4"></i-feather>
+              <span>Show TP Sessions</span>
+            </div>
+          </mat-checkbox>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced Schedule Container with Glass Effect -->
+    <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+      <!-- Current Week Header with Enhanced Styling -->
+      <div class="p-5 border-b border-gray-200/80 dark:border-gray-700/80 bg-gray-50/50 dark:bg-gray-800/50">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="p-2.5 bg-primary/10 rounded-xl">
+              <i-feather name="calendar" class="h-5 w-5 text-primary"></i-feather>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Current Week</h2>
+          </div>
+
+          <!-- Enhanced Time and User Info -->
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2 bg-white/80 dark:bg-gray-700/50 rounded-full px-4 py-2 shadow-sm border border-gray-200/50 dark:border-gray-600/50">
+              <i-feather name="clock" class="h-4 w-4 text-primary"></i-feather>
+              <span class="text-sm font-mono text-gray-600 dark:text-gray-300">
+                2025-02-23 00:13:24
+              </span>
+            </div>
+            <div class="flex items-center space-x-2 bg-white/80 dark:bg-gray-700/50 rounded-full px-4 py-2 shadow-sm border border-gray-200/50 dark:border-gray-600/50">
+              <i-feather name="user" class="h-4 w-4 text-primary"></i-feather>
+              <span class="text-sm text-gray-600 dark:text-gray-300">
+                YaacoubDouaa
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Schedule Table with Cell Separations -->
+      <!-- ... previous code remains the same until the schedule table ... -->
+
+      <!-- Enhanced Schedule Table with Darker Separations and Sticky Headers -->
+      <div class="relative overflow-x-auto max-h-[800px]"> <!-- Added max-height to enable scrolling -->
+        <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-600"> <!-- Darker division -->
+          <!-- Sticky Header -->
+          <thead class="bg-[#2b2d42]/95 sticky top-0 z-20"> <!-- Added sticky positioning -->
+          <tr>
+            <!-- Sticky First Column -->
+            <th class="px-6 py-4 text-left border-r border-gray-500 dark:border-gray-500 sticky left-0 z-30 bg-[#2b2d42]/95">
+              <!-- Time Header Content -->
+              <div class="flex items-center space-x-2 text-white">
+                <i-feather name="clock" class="h-5 w-5"></i-feather>
+                <span class="text-lg font-bold uppercase tracking-wider">Time</span>
+              </div>
+            </th>
+            <!-- Time Slots -->
+            <th *ngFor="let time of timeSlots"
+                class="px-6 py-4 text-left border-r border-gray-500 dark:border-gray-500 last:border-r-0 min-w-[200px]">
+              <div class="flex items-center space-x-2 text-white">
+                <i-feather name="clock" class="h-5 w-5"></i-feather>
+                <span class="text-lg font-bold uppercase tracking-wider">{{ time }}</span>
+              </div>
+            </th>
+          </tr>
+          </thead>
+
+          <!-- Table Body -->
+          <tbody class="bg-white/50 dark:bg-gray-800/50 divide-y divide-gray-300 dark:divide-gray-600">
+          <tr *ngFor="let day of days"
+              class="hover:bg-gray-50/80 dark:hover:bg-gray-700/30 transition-colors duration-200">
+            <!-- Sticky Day Column -->
+            <td class="px-6 py-4 whitespace-nowrap border-r border-gray-300 dark:border-gray-600 sticky left-0 bg-white/95 dark:bg-gray-800/95 z-10">
+              <div class="flex items-center space-x-2">
+                <i-feather name="calendar" class="h-5 w-5 text-primary"></i-feather>
+                <span class="text-xl font-semibold text-gray-900 dark:text-white">{{ day }}</span>
+              </div>
+            </td>
+
+            <!-- Time Slots -->
+            <td *ngFor="let time of timeSlots"
+                class="px-6 py-4 whitespace-nowrap border-r border-gray-300 dark:border-gray-600 last:border-r-0">
+              <!-- Session Content -->
+              <ng-container *ngIf="getFilteredSchedule()[day] && getFilteredSchedule()[day][time]">
+                <div *ngFor="let seance of getFilteredSchedule()[day][time]"
+                     class="rounded-xl p-4   hover:shadow-xl hover:-translate-y-2 cursor-pointer group bg-white/90 dark:bg-gray-800/90 border border-gray-300 dark:border-gray-600 min-w-[200px] mb-2 last:mb-0"
+                     >
+                  <!-- ... Session card content remains the same ... -->
+                  <!-- Session Card -->
+
+                  <!-- Session Content -->
+                  <div class="flex flex-col divide-y divide-gray-200 dark:divide-gray-700 space-y-2">
+                    <!-- Header Section -->
+                    <div class="pb-2">
+                      <div class="flex flex-col space-y-2">
+                        <h3 class="font-medium text-gray-900 dark:text-white text-base break-words">{{ seance.name }}</h3>
+                        <span class="px-2 py-0.5 text-xs rounded-full w-fit"
+                              [ngClass]="{'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200': seance.type === 'COURS',
+                        'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200': seance.type === 'TD',
+                        'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200': seance.type === 'TP'}">
+          <i-feather [name]="getCourseIcon(seance.type)" class="h-3 w-3"></i-feather>
+                  <span>{{seance.type}}</span>
+        </span>
+                      </div>
+                    </div>
+
+                    <!-- Details Section -->
+                    <div class="py-2 flex flex-col space-y-2">
+                      <!-- Professor -->
+                      <div class="flex items-start space-x-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div class="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <i-feather name="user" class="h-3 w-3"></i-feather>
+                        </div>
+                        <span class="font-medium break-words">{{ seance.professor }}</span>
+                      </div>
+
+                      <!-- Room -->
+                      <div class="flex items-start space-x-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div class="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <i-feather name="map-pin" class="h-3 w-3"></i-feather>
+                        </div>
+                        <span class="font-medium break-words">{{ seance.room }}</span>
+                      </div>
+
+                      <!-- Group -->
+                      <div class="flex items-start space-x-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div class="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <i-feather name="users" class="h-3 w-3"></i-feather>
+                        </div>
+                        <span class="font-medium break-words">{{ seance.groupe }}</span>
+                      </div>
+
+                      <!-- Frequency -->
+                      <div class="flex items-start space-x-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div class="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <i-feather name="repeat" class="h-3 w-3"></i-feather>
+                        </div>
+                        <span class="font-medium">{{ seance.biWeekly ? "BiWeekly" : "Weekly" }}</span>
+                      </div>
+                    </div>
+
+
+
+                  </div></div> </ng-container>
+
+              <!-- Empty Slot -->
+              <div *ngIf="!getFilteredSchedule()[day][time]"
+                   class="h-36 flex items-center justify-center rounded-xl border-2 border-dashed border-gray-400 dark:border-gray-500 hover:border-primary/60 cursor-pointer group transition-all duration-300"
+                  >
+                <div class="text-center group-hover:scale-110 transition-transform duration-300">
+                  <i-feather name="plus-circle" class="h-6 w-6 text-gray-500 dark:text-gray-400 mx-auto mb-2"></i-feather>
+                  <span class="text-sm text-gray-600 dark:text-gray-400">No Session</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div></div></div>

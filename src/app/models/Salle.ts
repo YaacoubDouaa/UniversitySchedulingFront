@@ -18,11 +18,7 @@ export interface SalleList{
   [id: string]: Salle;
 }
 
-export interface SalleSchedule{
-  [day: string]: {
-    [time: string]:{[groupe:string] : Seance;}
-  };
-}
+
 
 export interface Salle {
   id: number;
@@ -30,4 +26,10 @@ export interface Salle {
   type: string;
   capacite: number;
   schedule: Schedule;
+}
+
+export interface SalleSchedule{
+  [day: string]: {
+    [time: string]:{[groupe:string] : Seance;}
+  };
 }

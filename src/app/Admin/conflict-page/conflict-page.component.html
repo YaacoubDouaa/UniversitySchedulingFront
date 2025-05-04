@@ -1,0 +1,414 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+  <!-- Top Navigation Bar with subtle animation -->
+  <nav class="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center space-x-3 hover:transform hover:scale-105 transition-transform duration-300">
+          <div class="warning-icon-container">
+            <svg class="warning-icon h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white" [innerText]="displayText"></h1>
+
+          </div>
+          <div class="flex items-center space-x-4">
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content with improved spacing and animations -->
+  <div class="container py-8 space-y-8 mx-auto px-4">
+    <!-- Header with enhanced buttons -->
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex items-center gap-3">
+        <button  (click)="toggleFilter()" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ef233c] hover:shadow-lg border border-gray-200 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 h-10 px-4 py-2 transform hover:-translate-y-0.5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="mr-2 h-4 w-4 text-[#ef233c]">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2.586a1 1 0 0 1-.293.707l-6.414 6.414a1 1 0 0 0-.293.707V17l-4 4v-6.586a1 1 0 0 0-.293-.707L3.293 7.293A1 1 0 0 1 3 6.586V4Z">
+            </path>
+          </svg>
+          Filter
+        </button>
+        <button class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ef233c] hover:shadow-lg bg-[#ef233c] text-white hover:bg-[#ef233c]/90 h-10 px-4 py-2 transform hover:-translate-y-0.5">
+          Export Report
+        </button>
+        <!-- First, add this right after your filter button -->
+        <div class="filter-container" [class.active]="isFilterOpen">
+          <!-- Overlay -->
+          <div class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-opacity duration-300"
+               [class.opacity-0]="!isFilterOpen"
+               [class.invisible]="!isFilterOpen"
+               (click)="toggleFilter()">
+          </div>
+
+          <!-- Filter Sidebar -->
+          <div class="fixed right-0 top-0 h-full w-80 bg-white dark:bg-gray-800 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out"
+               [class.translate-x-0]="isFilterOpen"
+               [class.translate-x-full]="!isFilterOpen">
+
+            <!-- Filter Header -->
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                <i-feather name="filter" class="h-5 w-5 mr-2 text-[#ef233c]"></i-feather>
+                Filter Conflicts
+              </h3>
+              <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                      (click)="toggleFilter()">
+                <i-feather name="x" class="h-5 w-5"></i-feather>
+              </button>
+            </div>
+
+            <!-- Filter Content -->
+            <div class="p-4 space-y-6">
+              <!-- Conflict Types -->
+              <div class="space-y-4">
+                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Conflict Types</h4>
+                <div class="space-y-2">
+                  <label class="flex items-center space-x-3 text-sm">
+                    <input type="checkbox"
+                           [(ngModel)]="filters.room"
+                           class="form-checkbox h-4 w-4 text-[#ef233c] rounded border-gray-300 focus:ring-[#ef233c]">
+                    <span class="text-gray-700 dark:text-gray-300">Room Conflicts</span>
+                  </label>
+                  <label class="flex items-center space-x-3 text-sm">
+                    <input type="checkbox"
+                           [(ngModel)]="filters.professor"
+                           class="form-checkbox h-4 w-4 text-[#ef233c] rounded border-gray-300 focus:ring-[#ef233c]">
+                    <span class="text-gray-700 dark:text-gray-300">Professor Conflicts</span>
+                  </label>
+                  <label class="flex items-center space-x-3 text-sm">
+                    <input type="checkbox"
+                           [(ngModel)]="filters.time"
+                           class="form-checkbox h-4 w-4 text-[#ef233c] rounded border-gray-300 focus:ring-[#ef233c]">
+                    <span class="text-gray-700 dark:text-gray-300">Time Conflicts</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Date Range -->
+              <div class="space-y-4">
+                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Date Range</h4>
+                <div class="grid grid-cols-2 gap-4">
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>From</mat-label>
+                    <input matInput [matDatepicker]="fromPicker" [(ngModel)]="filters.dateFrom">
+                    <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #fromPicker></mat-datepicker>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>To</mat-label>
+                    <input matInput [matDatepicker]="toPicker" [(ngModel)]="filters.dateTo">
+                    <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #toPicker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Search -->
+              <div class="space-y-4">
+                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Search</h4>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Search conflicts</mat-label>
+                  <input matInput [(ngModel)]="filters.search" placeholder="Search by professor, room, or group">
+                  <mat-icon matSuffix>search</mat-icon>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Filter Actions -->
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+              <div class="flex space-x-3">
+                <button class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                        (click)="resetFilters()">
+                  Reset
+                </button>
+                <button class="flex-1 px-4 py-2 bg-[#ef233c] text-white rounded-md hover:bg-[#ef233c]/90 transition-colors duration-200"
+                        (click)="applyFilters()">
+                  Apply Filters
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Resolution Guidelines Accordion -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 mb-6">
+      <mat-accordion>
+        <!-- Accordion Item -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <div class="flex items-center space-x-2">
+              <i-feather name="info" class="h-5 w-5 text-[#ef233c]"></i-feather>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Resolution Guidelines</h3>
+            </div>
+          </mat-expansion-panel-header>
+
+          <div class="p-4 space-y-4">
+            <!-- Available Actions -->
+            <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+              <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3 flex items-center">
+                <i-feather name="tool" class="h-4 w-4 text-[#ef233c] mr-2"></i-feather>
+                Available Actions
+              </h4>
+              <div class="grid grid-cols-2 gap-4 text-sm">
+                <div class="flex items-start space-x-2">
+                  <i-feather name="search" class="h-4 w-4 text-[#ef233c] mt-0.5"></i-feather>
+                  <span class="text-gray-600 dark:text-gray-300">View available rooms by selecting day and time</span>
+                </div>
+                <div class="flex items-start space-x-2">
+                  <i-feather name="refresh" class="h-4 w-4 text-[#ef233c] mt-0.5"></i-feather>
+                  <span class="text-gray-600 dark:text-gray-300">Auto-suggest alternative time slots</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Solutions -->
+            <div class="bg-[#ef233c]/5 p-4 rounded-lg border border-[#ef233c]/10">
+              <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3 flex items-center">
+                <i-feather name="zap" class="h-4 w-4 text-[#ef233c] mr-2"></i-feather>
+                Quick Solutions
+              </h4>
+              <div class="grid grid-cols-1 gap-3 text-sm">
+                <div class="flex items-start space-x-2">
+                  <div class="w-6 h-6 rounded-full bg-[#ef233c]/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-xs font-medium text-[#ef233c]">1</span>
+                  </div>
+                  <span class="text-gray-600 dark:text-gray-300">
+                Use the room autocomplete to see only available rooms for the selected time slot
+              </span>
+                </div>
+                <div class="flex items-start space-x-2">
+                  <div class="w-6 h-6 rounded-full bg-[#ef233c]/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-xs font-medium text-[#ef233c]">2</span>
+                  </div>
+                  <span class="text-gray-600 dark:text-gray-300">
+                Change either the room or time slot to automatically update conflict status
+              </span>
+                </div>
+                <div class="flex items-start space-x-2">
+                  <div class="w-6 h-6 rounded-full bg-[#ef233c]/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-xs font-medium text-[#ef233c]">3</span>
+                  </div>
+                  <span class="text-gray-600 dark:text-gray-300">
+                Click "Resolve Conflict" to apply changes and update the schedule
+              </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+    <!-- Conflicts List with enhanced cards -->
+    <div class="grid gap-6">
+      <div *ngFor="let conflict of conflicts; let i = index"
+           class="rounded-xl border bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300"
+           [@fadeOut]="'in'">
+        <div class="p-6">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center">
+              <div class="warning-icon-container">
+                <svg class="warning-icon h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+
+                <span class="text-[#ef233c] mr-2">Conflict #{{i + 1}}</span>
+              </div>
+            </h3>
+            <div class="flex items-center gap-2">
+              <span *ngFor="let type of conflict.conflictTypes"
+                    [ngClass]="{'bg-[#ef233c]/10 text-[#ef233c]': type === 'ROOM',
+                              'bg-yellow-100 text-yellow-800': type === 'PROFESSOR',
+                              'bg-blue-100 text-blue-800': type === 'TIME'}"
+                    class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-transform hover:scale-105">
+ <mat-icon class="mr-3 h-8 w-8 transition-transform group-hover:scale-110"
+           [ngStyle]="{
+                      'font-size': '32px',
+                      'height': '32px',
+                      'width': '32px'
+                  }">
+            {{getConflictIcon(type)}}
+        </mat-icon>                {{type}}
+              </span>
+            </div>
+          </div>
+
+          <div class="mt-6 flex items-center justify-between gap-4">
+            <!-- First Session -->
+            <div class="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-5 hover:shadow-md transition-all duration-300">
+              <h4 class="font-bold text-[#ef233c]">{{conflict.seance1.name}}</h4>
+              <div class="mt-4 space-y-4">
+                <!-- Time and Day Fields -->
+                <div class="grid grid-cols-2 gap-4">
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label class="text-gray-600 dark:text-gray-300">Day</mat-label>
+                    <input matInput
+                           [(ngModel)]="conflict.day"
+                           (ngModelChange)="onTimeOrDayChange(conflict, i)"
+                           placeholder="Select day">
+                    <mat-error>Day is required</mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label class="text-gray-600 dark:text-gray-300">Time</mat-label>
+                    <input matInput
+                           [(ngModel)]="conflict.time"
+                           (ngModelChange)="onTimeOrDayChange(conflict, i)"
+                           placeholder="Select time">
+                    <mat-error>Time is required</mat-error>
+                  </mat-form-field>
+                </div>
+
+                <!-- Professor Field -->
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label class="text-gray-600 dark:text-gray-300">Professor</mat-label>
+                  <input matInput
+                         [(ngModel)]="conflict.seance1.professor"
+                         (ngModelChange)="onSeanceAttributeChange()"
+                         placeholder="Enter professor name">
+                  <mat-error>Professor name is required</mat-error>
+                </mat-form-field>
+
+                <!-- Room Field -->
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label class="text-gray-600 dark:text-gray-300">Room</mat-label>
+                  <input matInput
+                         [formControl]="roomControl1"
+                         [matAutocomplete]="auto1"
+                         [(ngModel)]="conflict.seance1.room"
+                         (ngModelChange)="onSeanceAttributeChange()"
+                         placeholder="Select room">
+                  <mat-autocomplete #auto1="matAutocomplete">
+                    <mat-option *ngFor="let room of availableRooms[i]" [value]="room">
+                      {{room}}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <mat-error>Room is required</mat-error>
+                </mat-form-field>
+
+                <!-- Group Field -->
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label class="text-gray-600 dark:text-gray-300">Group</mat-label>
+                  <input matInput
+                         [(ngModel)]="conflict.seance1.groupe"
+                         placeholder="Enter group">
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- VS Badge -->
+            <!-- VS Badge -->
+            <div class="flex flex-col items-center justify-center relative">
+              <div class="relative">
+                <!-- Glowing background effect -->
+                <div class="absolute inset-0 bg-[#ef233c]/20 rounded-full blur-md animate-pulse"></div>
+
+                <!-- Main circle -->
+                <div class="relative bg-[#ef233c] rounded-full w-16 h-16 flex items-center justify-center shadow-lg border-2 border-white dark:border-gray-700">
+                  <!-- Using Feather icons for VS representation -->
+                  <div class="flex items-center space-x-1">
+                    <i-feather name="arrow-left" class="h-4 w-4 text-white"></i-feather>
+                    <i-feather name="arrow-right" class="h-4 w-4 text-white"></i-feather>
+                  </div>
+                </div>
+
+                <!-- Additional decorative elements -->
+                <div class="absolute -inset-2 bg-[#ef233c]/10 rounded-full blur animate-pulse"></div>
+              </div>
+
+              <!-- Bottom icon -->
+            </div>
+            <!-- Second Session -->
+            <div class="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-5 hover:shadow-md transition-all duration-300">
+              <h4 class="font-bold text-[#ef233c]">{{conflict.seance2.name}}</h4>
+              <div class="mt-4 space-y-4">
+                <!-- Time and Day Fields -->
+                <div class="grid grid-cols-2 gap-4">
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label class="text-gray-600 dark:text-gray-300">Day</mat-label>
+                    <input matInput
+                           [(ngModel)]="conflict.day"
+                           (ngModelChange)="onTimeOrDayChange(conflict, i)"
+                           placeholder="Select day">
+                    <mat-error>Day is required</mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label class="text-gray-600 dark:text-gray-300">Time</mat-label>
+                    <input matInput
+                           [(ngModel)]="conflict.time"
+                           (ngModelChange)="onTimeOrDayChange(conflict, i)"
+                           placeholder="Select time">
+                    <mat-error>Time is required</mat-error>
+                  </mat-form-field>
+                </div>
+
+                <!-- Professor Field -->
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label class="text-gray-600 dark:text-gray-300">Professor</mat-label>
+                  <input matInput
+                         [(ngModel)]="conflict.seance2.professor"
+                         (ngModelChange)="onSeanceAttributeChange()"
+                         placeholder="Enter professor name">
+                  <mat-error>Professor name is required</mat-error>
+                </mat-form-field>
+
+                <!-- Room Field -->
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label class="text-gray-600 dark:text-gray-300">Room</mat-label>
+                  <input matInput
+                         [formControl]="roomControl2"
+                         [matAutocomplete]="auto2"
+                         [(ngModel)]="conflict.seance2.room"
+                         (ngModelChange)="onSeanceAttributeChange()"
+                         placeholder="Select room">
+                  <mat-autocomplete #auto2="matAutocomplete">
+                    <mat-option *ngFor="let room of availableRooms[i]" [value]="room">
+                      {{room}}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <mat-error>Room is required</mat-error>
+                </mat-form-field>
+
+                <!-- Group Field -->
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label class="text-gray-600 dark:text-gray-300">Group</mat-label>
+                  <input matInput
+                         [(ngModel)]="conflict.seance2.groupe"
+                         placeholder="Enter group">
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 flex justify-end">
+            <button (click)="resolveConflict(i)"
+                    class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ef233c] hover:shadow-lg bg-[#ef233c] text-white hover:bg-[#ef233c]/90 h-10 px-6 py-2 transform hover:-translate-y-0.5">
+              Resolve Conflict
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Empty State -->
+      <div *ngIf="conflicts.length === 0"
+           class="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 p-12 text-center hover:border-[#ef233c] transition-all duration-300">
+        <div class="rounded-full bg-[#ef233c]/10 p-4">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-8 w-8 text-[#ef233c]">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h3 class="mt-4 text-xl font-bold text-gray-900 dark:text-white">No Conflicts</h3>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">All scheduling conflicts have been resolved.</p>
+      </div>
+    </div>
+  </div>
+</div>

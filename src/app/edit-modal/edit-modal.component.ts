@@ -2,8 +2,8 @@ import {ChangeDetectorRef, Component, Input} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {map, Observable, startWith} from 'rxjs';
 import {Router} from '@angular/router';
-import {ScheduleService} from '../schedule-service.service';
-import {RattrapageService} from '../rattrapage.service';
+import {ScheduleService} from '../Services/ScheduleService/schedule-service.service';
+import {RattrapageService} from '../Services/PropositionDeRattrapageService/rattrapage.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 /**
  * Interface for seance deletion

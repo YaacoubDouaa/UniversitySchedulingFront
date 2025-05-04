@@ -7,6 +7,7 @@ export interface Schedule {
     };
   };
 }
+
 export interface RattrapageSchedule {
   [day: string]: {[time: string]: Seance[]};
 }
