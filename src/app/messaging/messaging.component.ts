@@ -3,7 +3,7 @@ import {Component, OnInit} from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {Subscription} from 'rxjs';
-import {MessagingService} from '../messaging.service';
+import {MessagingService} from '../Services/MessagingService/messaging.service';
 import {User} from '../models/Users';
 export interface Signal {
   id: number;

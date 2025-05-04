@@ -1,0 +1,373 @@
+/* Container styles */
+.conflicts-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 15px;
+  width: 100%; /* Ensure full width on smaller screens */
+}
+
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 10px;
+  width: 100%; /* Ensure full width */
+}
+
+/* Header info */
+.user-info {
+  font-size: 0.9em;
+  margin-bottom: 15px;
+  color: #666;
+}
+
+/* Accordion and panel styles */
+::ng-deep .mat-expansion-panel {
+  margin-bottom: 8px !important;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+::ng-deep .mat-expansion-panel-header {
+  padding: 0 12px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+}
+
+::ng-deep .mat-expansion-panel-body {
+  padding: 8px !important;
+}
+
+/* Conflict details styles */
+.conflict-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.conflict-types {
+  margin-bottom: 8px;
+}
+
+.conflict-types h3 {
+  margin-bottom: 4px;
+  font-size: 0.9em;
+}
+
+mat-chip {
+  font-size: 0.85em;
+  height: 20px !important;
+  padding: 2px 8px !important;
+}
+
+mat-divider {
+  margin: 8px 0;
+}
+
+/* Seance details styles */
+.seance-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap; /* Added for better flow on different screens */
+}
+
+mat-card {
+  flex: 1;
+  max-width: 48%;
+  min-width: 200px; /* Prevent cards from becoming too narrow */
+}
+
+::ng-deep .mat-card {
+  padding: 8px !important;
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+::ng-deep .mat-expansion-panel-header:hover {
+  background: transparent !important;
+}
+
+::ng-deep .mat-card-header {
+  margin-bottom: 4px !important;
+}
+
+::ng-deep .mat-card-title {
+  font-size: 0.9em !important;
+  margin-bottom: 4px !important;
+  word-break: break-word; /* Prevent text overflow */
+}
+
+::ng-deep .mat-card-subtitle {
+  font-size: 0.85em !important;
+  margin-bottom: 4px !important;
+  line-height: 1.2 !important;
+  word-break: break-word; /* Prevent text overflow */
+}
+
+/* Form field styles */
+::ng-deep .mat-form-field {
+  width: 100%;
+  font-size: 0.85em;
+}
+
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: 0;
+  padding-bottom: 4px !important;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+  padding: 0.3em 0 !important;
+  border-top: 0.5em solid transparent !important;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper {
+  margin: 0;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  top: 0.7em !important;
+}
+
+.vs-icon {
+  font-size: 27px;
+  color: #f44336;
+  align-self: center;
+}
+
+/* Animation styles */
+@keyframes warningPulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.warning-icon {
+  height: 48px;
+  width: 48px;
+  animation: warningPulse 2s infinite ease-in-out;
+  color: #ef233c;
+  filter: drop-shadow(0 0 12px rgba(239, 35, 60, 0.4));
+}
+
+.warning-icon-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.warning-icon-container::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(239, 35, 60, 0.25) 0%, rgba(239, 35, 60, 0) 70%);
+  z-index: -1;
+}
+
+/* Enhanced hover effects */
+.group:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.group:hover .mat-icon {
+  animation: iconPulse 1s infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* Custom styles for each type */
+[class*="bg-[#ef233c]"] {
+  box-shadow: 0 4px 12px rgba(239, 35, 60, 0.2);
+}
+
+.bg-yellow-100 {
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+}
+
+.bg-blue-100 {
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+/* IMPROVED RESPONSIVE STYLES */
+/* Extra small devices (phones, 320px and up) */
+@media (max-width: 320px) {
+  .conflicts-container {
+    padding: 8px;
+  }
+
+  .warning-icon {
+    height: 36px;
+    width: 36px;
+  }
+
+  ::ng-deep .mat-card-title {
+    font-size: 0.85em !important;
+  }
+
+  ::ng-deep .mat-card-subtitle {
+    font-size: 0.75em !important;
+  }
+}
+
+/* Small devices (phones, 600px and down) */
+@media (max-width: 600px) {
+  .conflicts-container {
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  .seance-details {
+    flex-direction: column;
+  }
+
+  mat-card {
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .vs-icon {
+    transform: rotate(90deg);
+    margin: 6px 0;
+  }
+
+  ::ng-deep .mat-expansion-panel-header {
+    height: 44px !important;  /* Slightly bigger for touch */
+  }
+
+  mat-chip {
+    margin: 2px;  /* Give chips some breathing room */
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 601px) and (max-width: 768px) {
+  .conflicts-container {
+    max-width: 90%;
+    padding: 12px;
+  }
+
+  mat-card {
+    min-width: 180px;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 769px) and (max-width: 992px) {
+  .conflicts-container {
+    max-width: 80%;
+  }
+
+  /* Maintain two-column layout but adjust widths */
+  mat-card {
+    min-width: 220px;
+  }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 993px) {
+  .conflicts-container {
+    max-width: 700px; /* Slightly wider on very large screens */
+  }
+
+  .warning-icon {
+    height: 52px;
+    width: 52px;
+  }
+
+  ::ng-deep .mat-card-title {
+    font-size: 1em !important;
+  }
+}
+
+/* Handling orientation changes for better display on tablets/phones in landscape */
+@media (max-height: 500px) and (orientation: landscape) {
+  .page-container {
+    padding: 5px;
+  }
+
+  .conflicts-container {
+    max-width: 90%;
+  }
+
+  .warning-icon {
+    height: 36px;
+    width: 36px;
+  }
+}
+
+/* Accessibility improvements for touch devices */
+@media (hover: none) {
+  ::ng-deep .mat-expansion-panel-header {
+    min-height: 48px !important; /* Better touch targets */
+  }
+
+  .group {
+    padding: 8px !important; /* More touch padding */
+  }
+
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+    padding: 0.5em 0 !important; /* Larger input touch area */
+  }
+}
+
+/* Adjust font size responsively */
+@media (max-width: 640px) {
+  .text-lg {
+    font-size: 1rem;
+  }
+
+  .mat-icon {
+    font-size: 22px !important;
+    height: 22px !important;
+    width: 22px !important;
+  }
+
+  .px-6 {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .mat-chip-list-wrapper {
+    justify-content: center; /* Center chips on small screens */
+  }
+}
+
+/* Print styles for better printing */
+@media print {
+  .conflicts-container {
+    max-width: 100%;
+  }
+
+  .warning-icon {
+    animation: none !important;
+  }
+
+  ::ng-deep .mat-expansion-panel {
+    page-break-inside: avoid;
+  }
+}

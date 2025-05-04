@@ -4,10 +4,10 @@ import { FormControl } from '@angular/forms';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Subscription } from 'rxjs';
 import { PropositionDeRattrapage } from '../models/Notifications';
-import { RattrapageService } from '../rattrapage.service';
-import { NotificationService } from '../notifications.service';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
-import { PropositionsDeRattrapageService } from '../propositions-de-rattrapage.service';
+import { RattrapageService } from '../Services/PropositionDeRattrapageService/rattrapage.service';
+import { NotificationService } from '../Admin/NotificationService/notifications.service';
+import { ConfirmationDialogComponent } from '../Admin/confirmation-dialog/confirmation-dialog.component';
+import { PropositionsDeRattrapageService } from '../Services/PropositionDeRattrapageService/propositions-de-rattrapage.service';
 
 interface StatusIcon {
   icon: string;
