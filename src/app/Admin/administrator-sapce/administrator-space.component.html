@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
   <!-- Message Notification -->
+=======
+<div class="min-h-screen bg-gray-100">
+  <app-sidebar [isOpen]="isSidebarOpen" ></app-sidebar>
+  <!-- Floating Message Notification -->
+>>>>>>> 21dcef4a9219d9d305a82ce6f581ed47d2dc80e8
   <div *ngIf="showMessageNotification"
        [@slideInOut]
        (click)="navigateToMessages()"
@@ -10,8 +16,13 @@
       <div class="flex items-center space-x-2">
         <div class="w-2 h-2 bg-purple-600 rounded-full animate-pulse"></div>
         <span class="text-sm font-medium text-purple-700 dark:text-purple-300">
+<<<<<<< HEAD
           Nouveau Message
         </span>
+=======
+        Nouveau Message
+      </span>
+>>>>>>> 21dcef4a9219d9d305a82ce6f581ed47d2dc80e8
       </div>
       <button (click)="dismissNotification($event)"
               class="text-gray-400 hover:text-gray-500 focus:outline-none">
@@ -24,9 +35,15 @@
       <div class="flex items-start space-x-3">
         <!-- Sender Avatar -->
         <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+<<<<<<< HEAD
           <span class="text-purple-600 dark:text-purple-300 font-medium">
             {{latestMessage.sender[0]}}
           </span>
+=======
+        <span class="text-purple-600 dark:text-purple-300 font-medium">
+          {{latestMessage.sender[0]}}
+        </span>
+>>>>>>> 21dcef4a9219d9d305a82ce6f581ed47d2dc80e8
         </div>
 
         <!-- Message Details -->
@@ -46,15 +63,22 @@
 
     <!-- Action Footer -->
     <div class="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 rounded-b-lg border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
+<<<<<<< HEAD
       <span class="text-xs text-gray-500 dark:text-gray-400">
         {{unreadMessages}} message{{unreadMessages > 1 ? 's' : ''}} non lu{{unreadMessages > 1 ? 's' : ''}}
       </span>
+=======
+    <span class="text-xs text-gray-500 dark:text-gray-400">
+      {{unreadMessages}} message{{unreadMessages > 1 ? 's' : ''}} non lu{{unreadMessages > 1 ? 's' : ''}}
+    </span>
+>>>>>>> 21dcef4a9219d9d305a82ce6f581ed47d2dc80e8
       <div class="flex items-center text-purple-600 dark:text-purple-400 text-sm font-medium">
         <span>Voir tous</span>
         <i-feather name="chevron-right" class="h-4 w-4 ml-1"></i-feather>
       </div>
     </div>
   </div>
+<<<<<<< HEAD
   <!-- Sidebar -->
   <aside [class.w-64]="isOpen"
          [class.w-20]="!isOpen"
@@ -192,3 +216,9 @@
     </div>
   </div>
 </div>
+=======
+  <div [class.pl-64]="isSidebarOpen" [class.pl-20]="!isSidebarOpen" class="transition-all duration-300 ease-in-out">
+    <app-nav-bar (toggleSidebar)="toggleSidebar()"></app-nav-bar>
+    <router-outlet></router-outlet>
+  </div></div>
+>>>>>>> 21dcef4a9219d9d305a82ce6f581ed47d2dc80e8
