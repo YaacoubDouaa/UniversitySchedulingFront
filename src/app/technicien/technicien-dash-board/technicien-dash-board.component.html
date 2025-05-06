@@ -1,5 +1,69 @@
-<!-- Room Carousel Section -->
-<div class="relative overflow-hidden">
+
+
+<!-- Filter Controls -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex flex-wrap gap-4">
+      <!-- Search -->
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <i-feather name="search" class="h-4 w-4 text-gray-400"></i-feather>
+        </div>
+        <input type="text"
+               class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary/50"
+               placeholder="Search rooms..."
+               [(ngModel)]="searchQuery"
+               (input)="filterRooms()">
+      </div>
+
+      <!-- Type Filter -->
+      <div>
+        <select class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                [(ngModel)]="filterType"
+                (change)="filterRooms()">
+          <option value="">All Types</option>
+          <option value="COURS">Lecture Hall</option>
+          <option value="TD">Tutorial Room</option>
+          <option value="TP">Lab</option>
+          <option value="SEMINAIRE">Seminar</option>
+        </select>
+      </div>
+
+      <!-- Availability Filter -->
+      <div>
+        <select class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                [(ngModel)]="filterAvailability"
+                (change)="filterRooms()">
+          <option value="">All Status</option>
+          <option value="available">Available Now</option>
+          <option value="occupied">Occupied</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- View Controls -->
+    <div class="flex items-center space-x-2">
+      <button class="px-3 py-2 rounded-md transition-colors"
+              [ngClass]="viewMode === 'carousel' ? 'bg-primary/10 text-primary' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'"
+              (click)="setViewMode('carousel')">
+        <i-feather name="credit-card" class="h-5 w-5"></i-feather>
+      </button>
+      <button class="px-3 py-2 rounded-md transition-colors"
+              [ngClass]="viewMode === 'grid' ? 'bg-primary/10 text-primary' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'"
+              (click)="setViewMode('grid')">
+        <i-feather name="grid" class="h-5 w-5"></i-feather>
+      </button>
+      <button class="px-3 py-2 rounded-md transition-colors"
+              [ngClass]="viewMode === 'list' ? 'bg-primary/10 text-primary' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'"
+              (click)="setViewMode('list')">
+        <i-feather name="list" class="h-5 w-5"></i-feather>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Room Carousel View -->
+<div *ngIf="viewMode === 'carousel'" class="relative overflow-hidden rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
   <!-- Carousel Container -->
   <div class="relative w-full"
        (touchstart)="handleTouchStart($event)"
@@ -8,17 +72,17 @@
 
     <!-- Navigation Buttons -->
     <button
-      class="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
+      class="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
       (click)="previousSlide()"
-      [class.opacity-50]="isAnimating"
+      [class.opacity-50]="isAnimating || currentSlide === 0"
       [disabled]="isAnimating">
       <i-feather name="chevron-left" class="h-6 w-6 text-gray-600 dark:text-gray-400"></i-feather>
     </button>
 
     <button
-      class="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
+      class="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
       (click)="nextSlide()"
-      [class.opacity-50]="isAnimating"
+      [class.opacity-50]="isAnimating || currentSlide === filteredRooms.length - 1"
       [disabled]="isAnimating">
       <i-feather name="chevron-right" class="h-6 w-6 text-gray-600 dark:text-gray-400"></i-feather>
     </button>
@@ -26,54 +90,103 @@
     <!-- Slides -->
     <div class="flex transition-transform duration-500 ease-in-out"
          [style.transform]="getSlideTransform()">
-      <ng-container *ngFor="let room of sallesList; let i = index">
+      <ng-container *ngFor="let room of filteredRooms; let i = index">
         <div class="w-full flex-shrink-0 p-6">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Room Details -->
-            <div class="space-y-6">
-              <div class="flex items-center space-x-3">
-                <div class="p-3 bg-primary/10 rounded-lg">
-                  <i-feather name="monitor" class="h-6 w-6 text-primary"></i-feather>
+            <!-- Room Details Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-md h-full">
+              <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-3">
+                  <div class="p-3 bg-primary/10 rounded-lg">
+                    <i-feather [name]="getRoomIcon(room.type)" class="h-6 w-6 text-primary"></i-feather>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{room.name}}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{getRoomTypeName(room.type)}}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{room.name}}</h3>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">{{room.type}}</p>
+                <div class="flex items-center space-x-3">
+                  <span class="px-3 py-1 rounded-full text-xs font-medium"
+                        [ngClass]="isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ?
+                                 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200' :
+                                 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200'">
+                    {{isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ? 'Occupied' : 'Available'}}
+                  </span>
                 </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-4">
-                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                  <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Capacity</p>
-                  <p class="text-lg font-bold text-gray-900 dark:text-white">{{room.capacite}}</p>
+              <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-gray-50 dark:bg-gray-700/30 rounded-xl p-4 flex flex-col items-center justify-center text-center">
+                  <i-feather name="users" class="h-5 w-5 text-gray-500 dark:text-gray-400 mb-2"></i-feather>
+                  <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Capacity</p>
+                  <p class="text-lg font-bold text-gray-900 dark:text-white">{{room.capacite}} seats</p>
                 </div>
-                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                  <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Status</p>
-                  <div class="flex items-center space-x-2">
-                    <span class="h-3 w-3 rounded-full"
-                          [ngClass]="isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ?
-                                   'bg-red-500' : 'bg-green-500'"></span>
-                    <span class="font-medium"
-                          [ngClass]="isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ?
-                                   'text-red-500' : 'text-green-500'">
-                      {{isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ? 'Occupied' : 'Available'}}
-                    </span>
-                  </div>
+                <div class="bg-gray-50 dark:bg-gray-700/30 rounded-xl p-4 flex flex-col items-center justify-center text-center">
+                  <i-feather name="activity" class="h-5 w-5 text-gray-500 dark:text-gray-400 mb-2"></i-feather>
+                  <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Usage Rate</p>
+                  <p class="text-lg font-bold text-gray-900 dark:text-white">{{getRoomUsageRate(room)}}%</p>
                 </div>
+              </div>
+
+              <!-- Action buttons -->
+              <div class="flex flex-wrap gap-2 mt-6">
+                <button class="flex items-center space-x-1 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors">
+                  <i-feather name="calendar" class="h-4 w-4"></i-feather>
+                  <span>View Schedule</span>
+                </button>
+                <button class="flex items-center space-x-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
+                  <i-feather name="edit" class="h-4 w-4"></i-feather>
+                  <span>Edit Details</span>
+                </button>
+                <button class="flex items-center space-x-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
+                  <i-feather name="tool" class="h-4 w-4"></i-feather>
+                  <span>Report Issue</span>
+                </button>
               </div>
             </div>
 
-            <!-- Today's Schedule -->
-            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6">
-              <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Today's Schedule</h4>
-              <div class="space-y-3">
-                <div *ngFor="let timeSlot of timeSlots"
-                     class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg"
-                     [ngClass]="getOccupancyColor(room, getCurrentDay(), timeSlot)">
-                  <span class="text-sm font-medium">{{timeSlot}}</span>
-                  <span class="text-sm">
-                    {{getRoomScheduleStatus(room, getCurrentDay(), timeSlot)}}
-                  </span>
+            <!-- Today's Schedule Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+              <div class="bg-gray-50 dark:bg-gray-700 p-4 border-b border-gray-200 dark:border-gray-600">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-lg font-bold text-gray-900 dark:text-white">Today's Schedule</h4>
+                  <div class="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs font-medium">
+                    {{getCurrentDay()}}
+                  </div>
                 </div>
+              </div>
+
+              <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                <div *ngFor="let timeSlot of timeSlots"
+                     class="flex items-center justify-between p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/30"
+                     [ngClass]="{'bg-green-50 dark:bg-green-900/10': !isTimeSlotOccupied(room, getCurrentDay(), timeSlot),
+                                'bg-amber-50 dark:bg-amber-900/10': isTimeSlotCurrentlyActive(timeSlot) && !isTimeSlotOccupied(room, getCurrentDay(), timeSlot)}">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-2 h-10 rounded-full"
+                         [ngClass]="isTimeSlotOccupied(room, getCurrentDay(), timeSlot) ?
+                                  'bg-red-500' : 'bg-green-500'"></div>
+                    <div>
+                      <p class="font-medium text-gray-900 dark:text-white">{{timeSlot}}</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{getRoomScheduleStatus(room, getCurrentDay(), timeSlot)}}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button *ngIf="!isTimeSlotOccupied(room, getCurrentDay(), timeSlot)"
+                          class="px-3 py-1 text-xs bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                    Book Now
+                  </button>
+                </div>
+              </div>
+
+              <div *ngIf="getOccupiedTimeSlots(room, getCurrentDay()).length === 0"
+                   class="p-8 text-center">
+                <div class="inline-flex items-center justify-center p-4 bg-green-100 dark:bg-green-900/20 rounded-full mb-4">
+                  <i-feather name="check-circle" class="h-8 w-8 text-green-600 dark:text-green-400"></i-feather>
+                </div>
+                <h5 class="text-lg font-medium text-gray-900 dark:text-white mb-1">Fully Available Today</h5>
+                <p class="text-gray-500 dark:text-gray-400">This room is available for all time slots today.</p>
               </div>
             </div>
           </div>
@@ -82,13 +195,125 @@
     </div>
 
     <!-- Carousel Indicators -->
-    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-      <button *ngFor="let i of getIndicators()"
-              class="w-2 h-2 rounded-full transition-all duration-300"
+    <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
+      <button *ngFor="let room of filteredRooms; let i = index"
+              class="w-2.5 h-2.5 rounded-full transition-all duration-300"
               [class.bg-primary]="currentSlide === i"
+              [class.w-6]="currentSlide === i"
               [class.bg-gray-300]="currentSlide !== i"
-              (click)="currentSlide = i">
+              (click)="goToSlide(i)">
       </button>
     </div>
+  </div>
+</div>
+
+<!-- Grid View -->
+<div *ngIf="viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  <div *ngFor="let room of filteredRooms"
+       class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-md">
+    <div class="p-5 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center space-x-3">
+          <div class="p-2 rounded-lg"
+               [ngClass]="isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ?
+                        'bg-red-100 dark:bg-red-900/30' :
+                        'bg-green-100 dark:bg-green-900/30'">
+            <i-feather [name]="isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ? 'lock' : 'unlock'"
+                       class="h-4 w-4"
+                       [ngClass]="isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ?
+                               'text-red-500 dark:text-red-400' :
+                               'text-green-500 dark:text-green-400'"></i-feather>
+          </div>
+          <div>
+            <h3 class="font-bold text-gray-900 dark:text-white">{{room.name}}</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400">{{getRoomTypeName(room.type)}}</p>
+          </div>
+        </div>
+        <span class="px-3 py-1 rounded-full text-xs font-medium"
+              [ngClass]="isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ?
+                       'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200' :
+                       'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200'">
+          {{isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ? 'Occupied' : 'Available'}}
+        </span>
+      </div>
+
+      <div class="flex space-x-4 mb-4">
+        <div class="flex-1 text-center p-2 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
+          <p class="text-xs text-gray-500 dark:text-gray-400">Capacity</p>
+          <p class="font-medium">{{room.capacite}}</p>
+        </div>
+        <div class="flex-1 text-center p-2 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
+          <p class="text-xs text-gray-500 dark:text-gray-400">Usage</p>
+          <p class="font-medium">{{getRoomUsageRate(room)}}%</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-3 bg-gray-50 dark:bg-gray-700/30 flex justify-between">
+      <button class="flex items-center space-x-1 px-3 py-1 text-xs bg-white dark:bg-gray-800 text-primary rounded hover:bg-primary/10 transition-colors">
+        <i-feather name="calendar" class="h-3 w-3"></i-feather>
+        <span>Schedule</span>
+      </button>
+      <button class="flex items-center space-x-1 px-3 py-1 text-xs bg-primary text-white rounded hover:bg-primary-dark transition-colors">
+        <i-feather name="clock" class="h-3 w-3"></i-feather>
+        <span>Book Now</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- List View -->
+<div *ngIf="viewMode === 'list'" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <thead class="bg-gray-50 dark:bg-gray-700">
+      <tr>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Room</th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Capacity</th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Current/Next Session</th>
+        <th scope="col" class="relative px-6 py-3">
+          <span class="sr-only">Actions</span>
+        </th>
+      </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+      <tr *ngFor="let room of filteredRooms"
+          class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+        <td class="px-6 py-4 whitespace-nowrap">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <i-feather [name]="getRoomIcon(room.type)" class="h-5 w-5 text-primary"></i-feather>
+            </div>
+            <div class="ml-4">
+              <div class="text-sm font-medium text-gray-900 dark:text-white">{{room.name}}</div>
+            </div>
+          </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <div class="text-sm text-gray-500 dark:text-gray-400">{{getRoomTypeName(room.type)}}</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <div class="text-sm text-gray-900 dark:text-white">{{room.capacite}} seats</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  [ngClass]="isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ?
+                            'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200' :
+                            'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200'">
+              {{isRoomOccupied(room, getCurrentDay(), getCurrentTimeSlot()) ? 'Occupied' : 'Available'}}
+            </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm">
+          <div class="text-gray-900 dark:text-white">{{getNextSessionInfo(room)}}</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+          <a href="#" class="text-primary hover:text-primary-dark mr-3">Schedule</a>
+          <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">Details</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 </div>

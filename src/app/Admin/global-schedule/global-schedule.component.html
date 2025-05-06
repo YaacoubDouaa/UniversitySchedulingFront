@@ -51,19 +51,19 @@
         </ng-container>
       </tr>
       </thead>
-
       <tbody class="bg-white dark:bg-gray-800">
       <!-- Rows (Rooms) -->
       <tr *ngFor="let room of allRooms; let isLast = last"
           class="border-b border-gray-200 dark:border-gray-700"
           [ngClass]="{'border-b-2': isLast}">
-        <!-- Room Column (Sticky) -->
-        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white sticky left-0 bg-white dark:bg-gray-800 z-20 border-r-2 border-gray-200 dark:border-gray-700 shadow-md">
+        <!-- Room Column -->
+        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white sticky left-0 bg-white dark:bg-gray-800 z-10 border-r-2 border-gray-200 dark:border-gray-700">
           <div class="flex items-center space-x-2">
             <i-feather name="map-pin" class="h-4 w-4 text-gray-400"></i-feather>
             <span>{{room}}</span>
           </div>
         </td>
+
 
         <!-- Session Cells -->
         <ng-container *ngFor="let day of days; let dayIndex = index">

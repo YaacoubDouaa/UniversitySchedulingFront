@@ -40,12 +40,49 @@ export class ProfessorSpaceComponent implements OnInit {
     // atch your ProfRoutingModule
     { route: 'dashboard', label: 'Dashboard', icon: 'grid' },
     { route: 'schedule', label: 'My Schedule', icon: 'calendar' },
-    { route: 'rattrapage', label: 'Make-up Sessions', icon: 'clock' },
+    { route: 'propose-rattrapage', label: 'Make-up Sessions', icon: 'clock' },
     { route: 'messages', label: 'Messages', icon: 'message-circle' },
     { route: 'notifications', label: 'Notifications', icon: 'bell' }
   ];
- showMessageNotification: boolean=true;
+  notifications: any[] = [
+    {
+      type: 'schedule_update',
+      title: 'Schedule Update',
+      message: 'Your Tuesday schedule has been updated',
+      time: '5 minutes ago'
+    },
+    {
+      type: 'rattrapage',
+      title: 'New Rattrapage Session',
+      message: 'Mathematics session added for next week',
+      time: '1 hour ago'
+    }
+  ];
 
+  // Stats
+  stats = {
+    totalCourses: 6,
+    upcomingExams: 3,
+    attendance: '85%',
+    rattrapages: 2
+  };
+
+  // Schedule Updates
+  scheduleUpdates = [
+    {
+      date: '2025-02-27',
+      changes: [
+        { type: 'added', course: 'Mathematics', time: '10:15-11:45' },
+        { type: 'cancelled', course: 'Physics Lab', time: '13:00-14:30' }
+      ]
+    }
+  ];
+
+  showMessageNotification: boolean=true;
+  protected showNotification=false;
+  toggleNotification() {
+    this.showNotification = !this.showNotification;
+  }
   constructor(
     private router: Router,
     private professorService: ProfessorsService,private authService: AuthService
@@ -90,5 +127,26 @@ export class ProfessorSpaceComponent implements OnInit {
   dismissNotification(event: Event): void {
     event.stopPropagation();
     this.showMessageNotification = false;
+  }
+
+  getNotificationIcon(type: string): string {
+    const icons: { [key: string]: string } = {
+      schedule_update: 'calendar',
+      rattrapage: 'clock',
+      exam: 'book-open',
+      default: 'bell'
+    };
+    return icons[type] || icons['default'];
+  }
+
+
+  getNotificationColor(type: string): string {
+    const colors: { [key: string]: string } = {
+      schedule_update: 'blue',
+      rattrapage: 'purple',
+      exam: 'green',
+      default: 'gray'
+    };
+    return colors[type] || colors['default'];
   }
 }

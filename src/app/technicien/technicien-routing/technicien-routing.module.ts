@@ -21,7 +21,7 @@ const routes: Routes = [
     component: TechnicienSpaceComponent,
     children: [
       // Default route redirects to dashboard
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: '', redirectTo: 'techspace', pathMatch: 'full' },
 
       // Main technician routes
       { path: 'techdashboard', component: TechnicienDashBoardComponent },

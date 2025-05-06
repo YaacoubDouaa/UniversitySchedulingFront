@@ -113,9 +113,9 @@ const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['TECHNICIAN'] },
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: TechnicienDashBoardComponent },
-      { path: 'schedule', component: TechnicienGlobalScheduleComponent },
+      { path: '', redirectTo: 'techdashboard', pathMatch: 'full' },
+      { path: 'techdashboard', component: TechnicienDashBoardComponent },
+      { path: 'global', component: GlobalScheduleComponent },
       { path: 'rooms', component: RoomsComponent },
       { path: 'messages', component: MessagingComponent },
       { path: 'notifications', component: NotificationsComponent }
