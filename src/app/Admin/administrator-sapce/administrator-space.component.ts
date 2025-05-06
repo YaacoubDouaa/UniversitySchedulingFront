@@ -1,7 +1,10 @@
-import {Component, NgIterable, OnInit} from '@angular/core';
-import {animate, style, transition, trigger} from '@angular/animations';
-import {Router} from '@angular/router';
-import {AuthService} from '../../auth-service.service';
+// Current Date and Time (UTC): 2025-05-06 11:03:25
+// Current User's Login: YaacoubDouaa
+
+import { Component, OnInit } from '@angular/core';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { Router } from '@angular/router';
+import { AuthService } from '../../auth-service.service';
 
 @Component({
   selector: 'app-administrator-sapce',
@@ -20,12 +23,17 @@ import {AuthService} from '../../auth-service.service';
     ])
   ]
 })
-export class AdministratorSpaceComponent  implements OnInit {
+export class AdministratorSpaceComponent implements OnInit {
   title = 'UniversitySchedulingFront';
-  isSidebarOpen = true;
-  currentDate: string = '2025-02-23 23:24:03';
-  currentUser: string = 'YaacoubDouaa';
-  currentUserId:number=1;
+  // Fix naming consistency - use isOpen throughout the component
+  isOpen = true;
+  isSidebarOpen = true; // This is redundant but keeping for compatibility
+
+  currentDateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  currentDate = this.currentDateTime;
+  currentUser = 'YaacoubDouaa';
+  currentUserId = 1;
+
   unreadMessages = 3;
   showMessageNotification = false;
   latestMessage = {
@@ -34,8 +42,9 @@ export class AdministratorSpaceComponent  implements OnInit {
     time: '2 min ago'
   };
 
-
   isMobileMenuOpen = false;
+
+  // Keep relative route paths for child routes
   navItems = [
     { route: 'dashboard', label: 'Dashboard', icon: 'grid' },
     { route: 'schedule', label: 'Group Schedule', icon: 'calendar' },
@@ -48,8 +57,7 @@ export class AdministratorSpaceComponent  implements OnInit {
     { route: 'import', label: 'Import Csv', icon: 'file-plus' }
   ];
 
-
-  constructor(private router: Router,private authService: AuthService) {
+  constructor(private router: Router, private authService: AuthService) {
     this.updateDateTime();
   }
 
@@ -65,11 +73,13 @@ export class AdministratorSpaceComponent  implements OnInit {
 
   private updateDateTime(): void {
     const now = new Date();
-    this.currentDate = now.toISOString().slice(0, 19).replace('T', ' ');
+    this.currentDateTime = now.toISOString().slice(0, 19).replace('T', ' ');
+    this.currentDate = this.currentDateTime;
   }
 
   toggleSidebar(): void {
-    this.isSidebarOpen = !this.isSidebarOpen;
+    this.isOpen = !this.isOpen;
+    this.isSidebarOpen = this.isOpen; // Keep them in sync
   }
 
   navigateToMessages(event?: Event): void {
@@ -77,7 +87,9 @@ export class AdministratorSpaceComponent  implements OnInit {
       event.preventDefault();
     }
     this.showMessageNotification = false;
-    this.router.navigate(['/messages'])
+
+    // Use relative navigation to the 'messages' child route
+    this.router.navigate(['messages'], { relativeTo: this.router.routerState.root.firstChild })
       .catch(error => console.error('Navigation error:', error));
   }
 
@@ -85,23 +97,22 @@ export class AdministratorSpaceComponent  implements OnInit {
     event.stopPropagation();
     this.showMessageNotification = false;
   }
-  // logout() {
-  //   this.authService.logout('admin');
-  // }
-  isOpen: any;
-  currentDateTime: string='2025-05-04 19:44:06';
-
-
-
-
 
   logout(): void {
-    this.router.navigate(['/adminSpace']);
+    // Call the auth service logout method
+    this.authService.logout();
+    // Navigate to login page
+    this.router.navigate(['/login']);
   }
-  toggleMobileMenu() {
 
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
-
-
+  // Add this method to your component
+  navigateToRoute(route: string): void {
+    console.log(`Navigating to: ${route}`);
+    this.router.navigate([route], { relativeTo: this.router.routerState.root.firstChild })
+      .then(() => console.log('Navigation success'))
+      .catch(error => console.error('Navigation error:', error));
+  }
 }
-

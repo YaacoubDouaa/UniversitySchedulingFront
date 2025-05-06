@@ -1,109 +1,22 @@
-/* Global Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
+/* Optional additional styles for deep customization */
+::ng-deep {
+  .mat-form-field-wrapper {
+    padding-bottom: 0.75em;
+  }
+
+  .mat-card {
+    @apply bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100;
+  }
+
+  .dark .mat-form-field-appearance-outline .mat-form-field-outline {
+    @apply text-gray-600;
+  }
+
+  .dark .mat-input-element {
+    @apply text-white;
+  }
+
+  .dark .mat-form-field-label {
+    @apply text-gray-400;
+  }
 }
-
-/* Background Image */
-body {
-  background: url('https://i.postimg.cc/02CcpQx6/i-want-a-simple-degrad-background-in-this-color-tone-CAE9-FF-all-blue-tone-more-homogunous-i-want-it.jpg') no-repeat center center/cover;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Container Styles */
-/* Container Styles */
-.container {
-  width: 70%;  /* Make it occupy 80% of the screen width */
-  max-width: 600px;  /* Set a max width for better appearance */
-  height: 45vh; /* Make it occupy 80% of the viewport height */
-  padding: 40px; /* Increase padding for more spacing */
-  background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  backdrop-filter: blur(10px); /* Blurred background effect */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-/*.container::before {*/
-/*  content: "";*/
-/*  background: url('') no-repeat center center;*/
-/*  background-size: contain; !* Keep image proportions *!*/
-/*  width: 120px; !* Adjust size *!*/
-/*  height: 120px;*/
-/*  position: absolute;*/
-/*  top: -60px; !* Move it above the container *!*/
-/*  left: 50%;*/
-/*  transform: translateX(-50%);*/
-/*}*/
-
-.input-group {
-  position: relative;
-  margin: 20px 0;
-}
-
-.input-group input {
-  width: 100%;
-  padding: 10px 40px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  outline: none;
-}
-
-.input-group i {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #555;
-}
-
-/* Button Styling */
-/* Button Styling */
-.login-btn {
-  width: 100%;
-  padding: 10px;
-  background: transparent;
-  color: #014F86 !important; /* Default text color */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: 0.3s;
-}
-
-.login-btn:hover {
-  background: #a9d6e5;
-  color: white !important; /* Text color on hover */
-}
-
-.example-form {
-  min-width: 150px;
-  max-width: 500px;
-  width: 100%;
-  margin-top: 16px;
-  background-color: #014F86; /* Default background color */
-  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
-}
-
-.example-form:hover {
-  background-color: #014F86; /* Hover background color */
-}
-
-.example-full-width {
-  width: 100%;
-  color: #014F86; /* Default text color */
-  transition: color 0.3s ease; /* Smooth transition for hover effect */
-}
-
-.example-full-width:hover {
-  color: #014F86; /* Hover text color */
-}
-
-

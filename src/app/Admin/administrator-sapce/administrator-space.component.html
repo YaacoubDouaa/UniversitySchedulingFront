@@ -1,84 +1,8 @@
-<<<<<<< HEAD
+<!-- Current Date and Time (UTC): 2025-05-06 10:52:53 -->
+<!-- Current User's Login: YaacoubDouaa -->
+
 <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-  <!-- Message Notification -->
-=======
-<div class="min-h-screen bg-gray-100">
-  <app-sidebar [isOpen]="isSidebarOpen" ></app-sidebar>
-  <!-- Floating Message Notification -->
->>>>>>> 21dcef4a9219d9d305a82ce6f581ed47d2dc80e8
-  <div *ngIf="showMessageNotification"
-       [@slideInOut]
-       (click)="navigateToMessages()"
-       class="fixed bottom-4 right-4 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-purple-200 dark:border-purple-800 cursor-pointer transform hover:scale-102 transition-all duration-300 z-50">
-
-    <!-- Header -->
-    <div class="px-4 py-3 bg-purple-50 dark:bg-purple-900/20 rounded-t-lg border-b border-purple-100 dark:border-purple-800 flex items-center justify-between">
-      <div class="flex items-center space-x-2">
-        <div class="w-2 h-2 bg-purple-600 rounded-full animate-pulse"></div>
-        <span class="text-sm font-medium text-purple-700 dark:text-purple-300">
-<<<<<<< HEAD
-          Nouveau Message
-        </span>
-=======
-        Nouveau Message
-      </span>
->>>>>>> 21dcef4a9219d9d305a82ce6f581ed47d2dc80e8
-      </div>
-      <button (click)="dismissNotification($event)"
-              class="text-gray-400 hover:text-gray-500 focus:outline-none">
-        <i-feather name="x" class="h-4 w-4"></i-feather>
-      </button>
-    </div>
-
-    <!-- Message Content -->
-    <div class="p-4">
-      <div class="flex items-start space-x-3">
-        <!-- Sender Avatar -->
-        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-<<<<<<< HEAD
-          <span class="text-purple-600 dark:text-purple-300 font-medium">
-            {{latestMessage.sender[0]}}
-          </span>
-=======
-        <span class="text-purple-600 dark:text-purple-300 font-medium">
-          {{latestMessage.sender[0]}}
-        </span>
->>>>>>> 21dcef4a9219d9d305a82ce6f581ed47d2dc80e8
-        </div>
-
-        <!-- Message Details -->
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-gray-900 dark:text-white">
-            {{latestMessage.sender}}
-          </p>
-          <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-            {{latestMessage.content}}
-          </p>
-          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
-            {{latestMessage.time}}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Action Footer -->
-    <div class="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 rounded-b-lg border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
-<<<<<<< HEAD
-      <span class="text-xs text-gray-500 dark:text-gray-400">
-        {{unreadMessages}} message{{unreadMessages > 1 ? 's' : ''}} non lu{{unreadMessages > 1 ? 's' : ''}}
-      </span>
-=======
-    <span class="text-xs text-gray-500 dark:text-gray-400">
-      {{unreadMessages}} message{{unreadMessages > 1 ? 's' : ''}} non lu{{unreadMessages > 1 ? 's' : ''}}
-    </span>
->>>>>>> 21dcef4a9219d9d305a82ce6f581ed47d2dc80e8
-      <div class="flex items-center text-purple-600 dark:text-purple-400 text-sm font-medium">
-        <span>Voir tous</span>
-        <i-feather name="chevron-right" class="h-4 w-4 ml-1"></i-feather>
-      </div>
-    </div>
-  </div>
-<<<<<<< HEAD
+  <!-- Sidebar Component -->
   <!-- Sidebar -->
   <aside [class.w-64]="isOpen"
          [class.w-20]="!isOpen"
@@ -90,14 +14,14 @@
           <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
             <span class="text-white font-bold">{{currentUser[0]}}</span>
           </div>
-          <span class="ml-2 text-white font-semibold truncate">Professor</span>
+          <span class="ml-2 text-white font-semibold truncate">{{currentUser}}</span>
         </div>
         <button (click)="toggleSidebar()"
                 class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
           <i-feather [name]="isOpen ? 'chevron-left' : 'chevron-right'" class="h-5 w-5"></i-feather>
         </button>
       </div>
-      <app-nav-bar (toggleSidebar)="toggleSidebar()"></app-nav-bar>
+
       <!-- Navigation -->
       <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
         <a *ngFor="let item of navItems"
@@ -131,7 +55,7 @@
             </div>
             <div class="min-w-0">
               <p class="text-sm font-medium text-white truncate">{{currentUser}}</p>
-              <p class="text-xs text-gray-400">Professor</p>
+              <p class="text-xs text-gray-400">{{currentUser}}</p>
             </div>
           </div>
         </div>
@@ -147,78 +71,79 @@
     </div>
   </aside>
 
-  <!-- Mobile Toggle -->
-  <div class="sm:hidden fixed top-4 left-4 z-50">
-    <button (click)="toggleMobileMenu()"
-            class="p-2 rounded-md text-gray-400 hover:text-gray-200 hover:bg-gray-700 focus:outline-none">
-      <i-feather [name]="isMobileMenuOpen ? 'x' : 'menu'" class="h-6 w-6"></i-feather>
-    </button>
-  </div>
+  <!-- Floating Message Notification -->
+  <div *ngIf="showMessageNotification"
+       [@slideInOut]
+       (click)="navigateToMessages()"
+       class="fixed bottom-4 right-4 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-purple-200 dark:border-purple-800 cursor-pointer transform hover:scale-102 transition-all duration-300 z-50">
 
-  <!-- Mobile Menu -->
-  <div *ngIf="isMobileMenuOpen"
-       class="sm:hidden fixed inset-0 z-40">
-    <!-- Overlay -->
-    <div class="fixed inset-0 bg-black bg-opacity-50"
-         (click)="toggleMobileMenu()"></div>
+    <!-- Header -->
+    <div class="px-4 py-3 bg-purple-50 dark:bg-purple-900/20 rounded-t-lg border-b border-purple-100 dark:border-purple-800 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="w-2 h-2 bg-purple-600 rounded-full animate-pulse"></div>
+        <span class="text-sm font-medium text-purple-700 dark:text-purple-300">
+          Nouveau Message
+        </span>
+      </div>
+      <button (click)="dismissNotification($event)"
+              class="text-gray-400 hover:text-gray-500 focus:outline-none">
+        <i-feather name="x" class="h-4 w-4"></i-feather>
+      </button>
+    </div>
 
-    <!-- Mobile Sidebar -->
-    <div class="fixed inset-y-0 left-0 w-64 bg-gray-800">
-      <div class="h-full flex flex-col">
-        <!-- Mobile Header -->
-        <div class="h-16 flex items-center justify-between px-4 bg-gray-900">
-          <div class="flex items-center space-x-3">
-            <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
-              <span class="text-white font-bold">{{currentUser[0]}}</span>
-            </div>
-            <span class="text-white font-semibold">Professor</span>
-          </div>
-          <button (click)="toggleMobileMenu()"
-                  class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
-            <i-feather name="x" class="h-5 w-5"></i-feather>
-          </button>
+    <!-- Message Content -->
+    <div class="p-4">
+      <div class="flex items-start space-x-3">
+        <!-- Sender Avatar -->
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+          <span class="text-purple-600 dark:text-purple-300 font-medium">
+            {{latestMessage.sender[0]}}
+          </span>
         </div>
 
-        <!-- Mobile Navigation -->
-        <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-          <a *ngFor="let item of navItems"
-             [routerLink]="item.route"
-             routerLinkActive="bg-gray-900 text-white"
-             (click)="toggleMobileMenu()"
-             class="flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200">
-            <i-feather [name]="item.icon" class="h-5 w-5"></i-feather>
-            <span class="ml-3">{{item.label}}</span>
-          </a>
-        </nav>
-
-        <!-- Mobile Bottom Section -->
-        <div class="border-t border-gray-700 p-4">
-          <div class="text-gray-400 text-sm mb-4">
-            <i-feather name="clock" class="h-4 w-4 inline-block mr-2"></i-feather>
-            <span>{{currentDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</span>
-          </div>
-          <button (click)="logout()"
-                  class="w-full flex items-center px-2 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-gray-700 rounded-md transition-colors">
-            <i-feather name="log-out" class="h-5 w-5"></i-feather>
-            <span class="ml-3">Logout</span>
-          </button>
+        <!-- Message Details -->
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-900 dark:text-white">
+            {{latestMessage.sender}}
+          </p>
+          <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+            {{latestMessage.content}}
+          </p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            {{latestMessage.time}}
+          </p>
         </div>
+      </div>
+    </div>
+
+    <!-- Action Footer -->
+    <div class="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 rounded-b-lg border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
+      <span class="text-xs text-gray-500 dark:text-gray-400">
+        {{unreadMessages}} message{{unreadMessages > 1 ? 's' : ''}} non lu{{unreadMessages > 1 ? 's' : ''}}
+      </span>
+      <div class="flex items-center text-purple-600 dark:text-purple-400 text-sm font-medium">
+        <span>Voir tous</span>
+        <i-feather name="chevron-right" class="h-4 w-4 ml-1"></i-feather>
       </div>
     </div>
   </div>
 
   <!-- Main Content -->
-  <div [class.sm:ml-64]="isOpen"
-       [class.sm:ml-20]="!isOpen"
-       class="transition-all duration-300">
-    <div class="p-6">
+  <div class="transition-all duration-300 ease-in-out"
+       [ngClass]="{
+         'sm:ml-64': isSidebarOpen,
+         'sm:ml-20': !isSidebarOpen
+       }">
+    <!-- Navbar -->
+    <app-nav-bar
+      (toggleSidebar)="toggleSidebar()"
+     >
+    </app-nav-bar>
+
+    <!-- Content Area with Router Outlet -->
+    <main class="p-6">
+      <!-- This is where child routes will be rendered -->
       <router-outlet></router-outlet>
-    </div>
+    </main>
   </div>
 </div>
-=======
-  <div [class.pl-64]="isSidebarOpen" [class.pl-20]="!isSidebarOpen" class="transition-all duration-300 ease-in-out">
-    <app-nav-bar (toggleSidebar)="toggleSidebar()"></app-nav-bar>
-    <router-outlet></router-outlet>
-  </div></div>
->>>>>>> 21dcef4a9219d9d305a82ce6f581ed47d2dc80e8

@@ -1,102 +1,99 @@
+// Current Date and Time (UTC): 2025-05-06 10:18:54
+// Current User's Login: YaacoubDouaa
+
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule, Routes } from '@angular/router';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component';
 
-// Import Angular Material components
+// Import Auth Module correctly
+
+// Import Angular Material modules (not individual components)
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
-import {MatAutocomplete, MatAutocompleteTrigger, MatOptgroup, MatOption} from '@angular/material/autocomplete';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { ScheduleComponent } from './Admin/schedule/schedule.component';
-import { SidenavComponent } from './sidenav/sidenav.component';
-import {MatToolbar, MatToolbarModule} from '@angular/material/toolbar';
-import {MatIcon, MatIconModule} from '@angular/material/icon';
-import {MatDrawer, MatDrawerContainer, MatSidenavModule} from '@angular/material/sidenav';
-import {RouterModule} from '@angular/router';
-import { ConflictListComponent } from './conflict-list/conflict-list.component';
-import {
-  MatAccordion, MatExpansionModule,
-  MatExpansionPanel,
-  MatExpansionPanelDescription,
-  MatExpansionPanelHeader,
-  MatExpansionPanelTitle
-} from '@angular/material/expansion';
-import { HttpClientModule } from '@angular/common/http';
-import { ConflictPageComponent } from './Admin/conflict-page/conflict-page.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatListModule } from '@angular/material/list';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialogModule } from '@angular/material/dialog';
 
+// Component imports
+import { SidenavComponent } from './sidenav/sidenav.component';
+import { ConflictListComponent } from './conflict-list/conflict-list.component';
+import { ConflictPageComponent } from './Admin/conflict-page/conflict-page.component';
 import { RoomsComponent } from './Room/rooms/rooms.component';
-import {ViewScheduleComponent} from './Student/view-schedule/view-schedule.component';
-import {MatCheckbox} from '@angular/material/checkbox';
-import {MatSelect} from '@angular/material/select';
-import {ScheduleService} from './Services/ScheduleService/schedule-service.service';
-import {RoomScheduleComponent} from './Room/room-schedule/room-schedule.component';
+import { ViewScheduleComponent } from './Student/view-schedule/view-schedule.component';
+import { ScheduleComponent } from './Admin/schedule/schedule.component';
 import { ViewRoomsComponent } from './Student/view-rooms/view-rooms.component';
 import { ProfessorsComponent } from './Prof/professors/professors.component';
+import { RoomScheduleComponent } from './Room/room-schedule/room-schedule.component';
 import { GlobalScheduleComponent } from './Admin/global-schedule/global-schedule.component';
-import {MatTab, MatTabGroup} from '@angular/material/tabs';
-import {MatDivider, MatDividerModule} from '@angular/material/divider';
-import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
-import {MatBadge} from '@angular/material/badge';
 import { PropositionRattrapageComponent } from './proposition-rattrapage/proposition-rattrapage.component';
 import { DashboardComponent } from './Admin/dashboard/dashboard.component';
-import {MatList, MatListItem, MatListModule} from '@angular/material/list';
-import {MatLine, MatNativeDateModule} from '@angular/material/core';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {
-  MatCell, MatCellDef,
-  MatColumnDef,
-  MatHeaderCell,
-  MatHeaderCellDef,
-  MatHeaderRow, MatHeaderRowDef,
-  MatRow, MatRowDef,
-  MatTable
-} from '@angular/material/table';
-import { ConfirmationDialogComponent } from './Admin/confirmation-dialog/confirmation-dialog.component';
-import {MatTooltip} from '@angular/material/tooltip';
 import { ProfessorSpaceComponent } from './Prof/professor-space/professor-space.component';
 import { ProfessorDashboardComponent } from './Prof/professor-dashboard/professor-dashboard.component';
 import { ProposeRattrapageComponent } from './Prof/propose-rattrapage/propose-rattrapage.component';
-import {
-  MatDatepicker,
-  MatDatepickerInput,
-  MatDatepickerModule,
-  MatDatepickerToggle
-} from '@angular/material/datepicker';
-import {MatGridList, MatGridListModule, MatGridTile} from '@angular/material/grid-list';
-import {MatChip, MatChipListbox, MatChipsModule} from '@angular/material/chips';
-import {ConflictService} from './Services/ConflictService/conflict.service';
- import { CsvImportComponent } from './Admin/csv-import/csv-import.component';
-import {MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious} from '@angular/material/stepper';
-import {MatProgressBar} from '@angular/material/progress-bar';
-import {SidebarComponent} from './side-bar/side-bar.component';
-
-import {FeatherModule} from 'angular-feather';
-import {allIcons} from 'angular-feather/icons';
-import {Calendar, Clock, User} from 'lucide-angular';
+import { CsvImportComponent } from './Admin/csv-import/csv-import.component';
 import { MessagingComponent } from './messaging/messaging.component';
 import { AdministratorSpaceComponent } from './Admin/administrator-sapce/administrator-space.component';
-import {NotificationsComponent} from './notifications/notifications.component';
-import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import { NotificationsComponent } from './notifications/notifications.component';
 import { ProfEditScheduleComponent } from './Prof/prof-edit-schedule/prof-edit-schedule.component';
-import {StudentScheduleComponent} from './Student/student-schedule/student-schedule.component';
+import { StudentScheduleComponent } from './Student/student-schedule/student-schedule.component';
 import { EditModalComponent } from './edit-modal/edit-modal.component';
 import { StudentDashBoardComponent } from './Student/student-dash-board/student-dash-board.component';
 import { TechnicienGlobalScheduleComponent } from './technicien/technicien-global-schedule/technicien-global-schedule.component';
 import { TechnicienDashBoardComponent } from './technicien/technicien-dash-board/technicien-dash-board.component';
 import { TechnicienSpaceComponent } from './technicien/technicien-space/technicien-space.component';
-import {ProfScheduleComponent} from './Prof/prof-schedule/prof-schedule.component';
-import {NavbarComponent} from './nav-bar/nav-bar.component';
+import { ProfScheduleComponent } from './Prof/prof-schedule/prof-schedule.component';
+import { NavbarComponent } from './nav-bar/nav-bar.component';
+import { SidebarComponent } from './side-bar/side-bar.component';
+import { ConfirmationDialogComponent } from './Admin/confirmation-dialog/confirmation-dialog.component';
+
+// Services
+import { ScheduleService } from './Services/ScheduleService/schedule-service.service';
+import { ConflictService } from './Services/ConflictService/conflict.service';
+
+// Feather icons
+import { FeatherModule } from 'angular-feather';
+import { allIcons } from 'angular-feather/icons';
+
+// Animation
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import {AuthModule} from './auth-module/auth-module.module';
+
+// Define routes
+const routes: Routes = [
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: 'dashboard', component: DashboardComponent }
+];
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
     SidenavComponent,
     ConflictListComponent,
     ConflictPageComponent,
@@ -113,7 +110,6 @@ import {NavbarComponent} from './nav-bar/nav-bar.component';
     ProfessorDashboardComponent,
     ProposeRattrapageComponent,
     CsvImportComponent,
-    DashboardComponent,
     MessagingComponent,
     AdministratorSpaceComponent,
     NotificationsComponent,
@@ -121,123 +117,69 @@ import {NavbarComponent} from './nav-bar/nav-bar.component';
     StudentScheduleComponent,
     EditModalComponent,
     StudentDashBoardComponent,
-    ProfEditScheduleComponent,
     TechnicienGlobalScheduleComponent,
     TechnicienDashBoardComponent,
     TechnicienSpaceComponent,
     ProfScheduleComponent
   ],
   imports: [
-    BrowserAnimationsModule,
+    // Angular Core Modules
     BrowserModule,
-    AppRoutingModule,
-    MatButtonModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatCardModule,
-    MatAutocomplete,
-    ReactiveFormsModule,
-    MatAutocompleteTrigger,
-    MatOption,
-    MatOptgroup,
+    BrowserAnimationsModule,
+    HttpClientModule,
     FormsModule,
-    MatToolbar,
-    MatIcon,
-    MatDrawer,
-    MatDrawerContainer,
-    MatListModule,
-    MatCardModule,
+    ReactiveFormsModule,
+
+    // Auth Module - import this to get LoginComponent
+    AuthModule,
+
+    // IMPORTANT: Import RouterModule EXPLICITLY to fix router-outlet
+    RouterModule.forRoot(routes),
+
+    // Routing Module
+    AppRoutingModule,
+
+    // Material Modules - properly imported as modules
     MatButtonModule,
-    MatGridListModule,
-    MatExpansionModule,
-    MatFormFieldModule,
     MatInputModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    // RouterModule.forRoot([
-    //   {
-    //     path: '',
-    //     component: ScheduleComponent,
-    //     children: [
-    //       {
-    //         path: '',
-    //         component: SidenavComponent
-    //       }
-    //       // Add more routes here
-    //     ]
-    //   }
-    // ]),
-    MatSidenavModule,
-    MatButtonModule,
+    MatFormFieldModule,
+    MatCardModule,
+    MatAutocompleteModule,
     MatToolbarModule,
     MatIconModule,
-    MatExpansionPanelDescription,
-    MatExpansionPanelTitle,
-    MatExpansionPanelHeader,
-    MatExpansionPanel,
-    MatAccordion,
-    MatCheckbox,
-    MatSelect,
-    MatTabGroup,
-    MatTab,
-    MatDivider,
-    MatMenu,
-    MatBadge,
-    MatMenuTrigger,
-    MatMenuItem,
-    MatListItem,
-    MatList,
-    MatLine,
-    MatTable,
-    ConfirmationDialogComponent,
-    MatHeaderRow,
-    MatRow,
-    MatColumnDef,
-    MatHeaderCell,
-    MatCell,
-    MatTooltip,
-    MatHeaderCellDef,
-    MatCellDef,
-    MatHeaderRowDef,
-    MatRowDef,
-    MatDatepicker,
-    MatDatepickerToggle,
-    MatDatepickerInput,
-    MatGridTile,
-    MatGridList,
-    MatChip,
-    MatCardModule,
-    MatChipsModule,
-    MatIconModule,
+    MatSidenavModule,
+    MatExpansionModule,
+    MatCheckboxModule,
+    MatSelectModule,
+    MatTabsModule,
     MatDividerModule,
-    HttpClientModule,
-    MatChipListbox,
-    MatStepper,
-    MatStep,
-    MatProgressBar,
-    MatStepperPrevious,
-    MatStepLabel,
-    MatStepperNext,
-    NavbarComponent,
+    MatMenuModule,
+    MatBadgeModule,
+    MatListModule,
+    MatTableModule,
+    MatTooltipModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatGridListModule,
+    MatChipsModule,
+    MatStepperModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatDialogModule,
 
-    RouterModule.forRoot([
-      {path: '', component: DashboardComponent}
-    ]),
+    // Feather Icons
     FeatherModule.pick(allIcons),
 
+    // Standalone Components
     SidebarComponent,
-
-    MatProgressSpinner,
-
-
-
+    ConfirmationDialogComponent,
+    NavbarComponent
   ],
-
   providers: [
-    provideAnimationsAsync(),ConflictService
+    ScheduleService,
+    ConflictService,
+    provideAnimationsAsync()
   ],
-
   bootstrap: [AppComponent]
-
 })
 export class AppModule { }

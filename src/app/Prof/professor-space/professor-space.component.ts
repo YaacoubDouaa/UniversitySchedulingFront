@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {ProfessorsService} from '../../Services/ProfessorSevice/professors.service';
 import {animate, style, transition, trigger} from '@angular/animations';
+import {AuthService} from '../../auth-service.service';
 
 
 @Component({
@@ -33,17 +34,21 @@ export class ProfessorSpaceComponent implements OnInit {
     content: 'Bonjour, je voudrais discuter de l\'emploi du temps...',
     time: '2 min ago'
   };
+  // Update navigation items to match your route configuration
   navItems = [
-    { route: 'profdashboard', label: 'Dashboard', icon: 'home' },
-    { route: 'profschedule', label: 'My Schedule', icon: 'calendar' },
-    { route: 'propose-rattrapage', label: 'Make-up Sessions', icon: 'clock' },
-    { route: 'messages', label: 'Messages', icon: 'message-circle' }
+    // Use relative paths that m
+    // atch your ProfRoutingModule
+    { route: 'dashboard', label: 'Dashboard', icon: 'grid' },
+    { route: 'schedule', label: 'My Schedule', icon: 'calendar' },
+    { route: 'rattrapage', label: 'Make-up Sessions', icon: 'clock' },
+    { route: 'messages', label: 'Messages', icon: 'message-circle' },
+    { route: 'notifications', label: 'Notifications', icon: 'bell' }
   ];
  showMessageNotification: boolean=true;
 
   constructor(
     private router: Router,
-    private professorService: ProfessorsService
+    private professorService: ProfessorsService,private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -66,8 +71,10 @@ export class ProfessorSpaceComponent implements OnInit {
   toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
-
   logout(): void {
+    // Call the auth service logout method
+    this.authService.logout();
+    // Navigate to login page
     this.router.navigate(['/login']);
   }
 

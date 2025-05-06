@@ -11,7 +11,8 @@ const routes: Routes = [
     component: StudentDashBoardComponent,
     children: [
       { path: '', redirectTo: 'schedule', pathMatch: 'full' },
-      { path: 'schedule', component: StudentScheduleComponent },
+      { path: 'view', component: StudentScheduleComponent },
+      { path: 'notifications', component: NotificationsComponent },
       { path: 'notifications', component: NotificationsComponent }
     ]
   }

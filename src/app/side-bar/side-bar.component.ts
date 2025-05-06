@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {FeatherModule} from 'angular-feather';
-import {NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
+import {NgClass, NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
 
 interface NavItem {
   icon: string;
@@ -18,6 +18,7 @@ interface NavItem {
     FeatherModule,
     NgIf,
     NgForOf,
+    NgClass,
   ],
   templateUrl: './side-bar.component.html'
 })
@@ -45,6 +46,6 @@ export class SidebarComponent {
   }
 
   @Input()  logout(): void {
-    this.router.navigate(['/professor']);
+    this.router.navigate(['/login']);
   }
 }

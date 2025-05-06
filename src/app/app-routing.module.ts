@@ -1,66 +1,133 @@
+// Current Date and Time (UTC): 2025-05-05 22:16:50
+// Current User's Login: YaacoubDouaa
+
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {LoginComponent} from './login/login.component';
-import {AuthGuard} from './Core/Guards/authGuard';
-import {RoleGuard} from './Core/Guards/roleGuard';
 
+// Components - Main
+import { LoginComponent } from './login/login.component';
 
-// Current Date and Time (UTC): 2025-05-04 19:44:06
-// Author: YaacoubDouaa
+// Components - Admin
+import { AdministratorSpaceComponent } from './Admin/administrator-sapce/administrator-space.component';
+import { DashboardComponent } from './Admin/dashboard/dashboard.component';
+import { ScheduleComponent } from './Admin/schedule/schedule.component';
+import { ConflictPageComponent } from './Admin/conflict-page/conflict-page.component';
+import { GlobalScheduleComponent } from './Admin/global-schedule/global-schedule.component';
+import { CsvImportComponent } from './Admin/csv-import/csv-import.component';
 
-// @ts-ignore
-// @ts-ignore
-/**
- * Main application routes
- */
+// Components - Professor
+import { ProfessorSpaceComponent } from './Prof/professor-space/professor-space.component';
+import { ProfessorDashboardComponent } from './Prof/professor-dashboard/professor-dashboard.component';
+import { ProposeRattrapageComponent } from './Prof/propose-rattrapage/propose-rattrapage.component';
+import { ProfEditScheduleComponent } from './Prof/prof-edit-schedule/prof-edit-schedule.component';
+import { ProfScheduleComponent } from './Prof/prof-schedule/prof-schedule.component';
+
+// Components - Student
+import { StudentDashBoardComponent } from './Student/student-dash-board/student-dash-board.component';
+import { StudentScheduleComponent } from './Student/student-schedule/student-schedule.component';
+import { ViewScheduleComponent } from './Student/view-schedule/view-schedule.component';
+import { ViewRoomsComponent } from './Student/view-rooms/view-rooms.component';
+
+// Components - Technician
+import { TechnicienSpaceComponent } from './technicien/technicien-space/technicien-space.component';
+import { TechnicienDashBoardComponent } from './technicien/technicien-dash-board/technicien-dash-board.component';
+import { TechnicienGlobalScheduleComponent } from './technicien/technicien-global-schedule/technicien-global-schedule.component';
+
+// Shared Components
+import { MessagingComponent } from './messaging/messaging.component';
+import { NotificationsComponent } from './notifications/notifications.component';
+import { RoomsComponent } from './Room/rooms/rooms.component';
+
+// Guards
+import { AuthGuard } from './Core/Guards/authGuard';
+import { RoleGuard } from './Core/Guards/roleGuard';
+import {ProfessorsComponent} from './Prof/professors/professors.component';
+
 const routes: Routes = [
   // Public routes
-  { path: '', component: LoginComponent },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
 
-
-  // Student space
-  {
-    path: 'student',
-    canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['STUDENT'] },
-    loadChildren: () => {
-      return import('./Student/student.module').then(m => m.StudentModule);
-    }
-  },
-
-  // Administrator space
+  // Admin routes
   {
     path: 'admin',
+    component: AdministratorSpaceComponent,
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['ADMIN'] },
-    loadChildren: () => import('./Admin/admin.module').then(m => m.AdminModule)
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'schedule', component: ScheduleComponent },
+      { path: 'conflicts', component: ConflictPageComponent },
+      { path: 'global', component: GlobalScheduleComponent },
+      { path: 'import', component: CsvImportComponent },
+      { path: 'rooms', component: RoomsComponent },
+      { path: 'profs', component:ProfessorsComponent },
+      { path: 'messages', component: MessagingComponent },
+      { path: 'notifications', component: NotificationsComponent }
+    ]
   },
 
-  // Professor space
+  // Professor routes
   {
     path: 'professor',
+    component: ProfessorSpaceComponent,
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['PROFESSOR'] },
-    loadChildren: () => import('./Professor/professor.module').then(m => m.ProfessorModule)
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: ProfessorDashboardComponent },
+      { path: 'schedule', component: ProfScheduleComponent },
+      { path: 'edit-schedule', component: ProfEditScheduleComponent },
+      { path: 'propose-rattrapage', component: ProposeRattrapageComponent },
+      { path: 'messages', component: MessagingComponent },
+      { path: 'notifications', component: NotificationsComponent }
+    ]
   },
 
-  // Technician space
+  // Student routes
+  {
+    path: 'student',
+    component: StudentDashBoardComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['STUDENT'] },
+    children: [
+      { path: '', redirectTo: 'schedule', pathMatch: 'full' },
+      { path: 'schedule', component: StudentScheduleComponent },
+      { path: 'view-schedule', component: ViewScheduleComponent },
+      { path: 'rooms', component: ViewRoomsComponent },
+      { path: 'messages', component: MessagingComponent },
+      { path: 'notifications', component: NotificationsComponent }
+    ]
+  },
+
+  // Technician routes
   {
     path: 'technician',
+    component: TechnicienSpaceComponent,
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['TECHNICIAN'] },
-    loadChildren: () => import('./Technician/technician.module').then(m => m.TechnicianModule)
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: TechnicienDashBoardComponent },
+      { path: 'schedule', component: TechnicienGlobalScheduleComponent },
+      { path: 'rooms', component: RoomsComponent },
+      { path: 'messages', component: MessagingComponent },
+      { path: 'notifications', component: NotificationsComponent }
+    ]
   },
 
   // Wildcard route for 404
+  { path: '**', redirectTo: 'login' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {
-    scrollPositionRestoration: 'enabled',
-    initialNavigation: 'enabledBlocking'
-  })],
+  imports: [
+    RouterModule.forRoot(routes, {
+      scrollPositionRestoration: 'enabled',
+      initialNavigation: 'enabledBlocking'
+    })
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
