@@ -48,7 +48,6 @@ import { ConflictPageComponent } from './Admin/conflict-page/conflict-page.compo
 import { RoomsComponent } from './Room/rooms/rooms.component';
 import { ViewScheduleComponent } from './Student/view-schedule/view-schedule.component';
 import { ScheduleComponent } from './Admin/schedule/schedule.component';
-import { ViewRoomsComponent } from './Student/view-rooms/view-rooms.component';
 import { ProfessorsComponent } from './Prof/professors/professors.component';
 import { RoomScheduleComponent } from './Room/room-schedule/room-schedule.component';
 import { GlobalScheduleComponent } from './Admin/global-schedule/global-schedule.component';
@@ -84,6 +83,7 @@ import { allIcons } from 'angular-feather/icons';
 // Animation
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {AuthModule} from './auth-module/auth-module.module';
+import { StudentSpaceComponent } from './Student/student-space/student-space.component';
 
 // Define routes
 const routes: Routes = [
@@ -100,7 +100,6 @@ const routes: Routes = [
     RoomsComponent,
     ViewScheduleComponent,
     ScheduleComponent,
-    ViewRoomsComponent,
     ProfessorsComponent,
     RoomScheduleComponent,
     GlobalScheduleComponent,
@@ -120,7 +119,8 @@ const routes: Routes = [
     TechnicienGlobalScheduleComponent,
     TechnicienDashBoardComponent,
     TechnicienSpaceComponent,
-    ProfScheduleComponent
+    ProfScheduleComponent,
+    StudentSpaceComponent
   ],
   imports: [
     // Angular Core Modules

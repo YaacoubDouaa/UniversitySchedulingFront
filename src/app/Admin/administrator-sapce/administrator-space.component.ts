@@ -47,7 +47,8 @@ export class AdministratorSpaceComponent implements OnInit {
   // Keep relative route paths for child routes
   navItems = [
     { route: 'dashboard', label: 'Dashboard', icon: 'grid' },
-    { route: 'schedule', label: 'Group Schedule', icon: 'calendar' },
+    { route: 'view', label: 'View Group Schedule', icon: 'calendar' },
+    { route: 'schedule', label: ' Edit Group Schedule', icon: 'calendar' },
     { route: 'global', label: 'Global schedule', icon: 'book' },
     { route: 'conflicts', label: 'Conflicts', icon: 'alert-triangle' },
     { route: 'rattrapage', label: 'Rattrapage', icon: 'refresh-cw' },
@@ -56,6 +57,7 @@ export class AdministratorSpaceComponent implements OnInit {
     { route: 'messages', label: 'Messages', icon: 'message-circle' },
     { route: 'import', label: 'Import Csv', icon: 'file-plus' }
   ];
+  private showNotification =false;
 
   constructor(private router: Router, private authService: AuthService) {
     this.updateDateTime();
@@ -104,7 +106,48 @@ export class AdministratorSpaceComponent implements OnInit {
     // Navigate to login page
     this.router.navigate(['/login']);
   }
-
+  getNotificationIcon(type: string): string {
+    const icons: { [key: string]: string } = {
+      schedule_update: 'calendar',
+      rattrapage: 'clock',
+      exam: 'book-open',
+      default: 'bell'
+    };
+    return icons[type] || icons['default'];
+  }
+  notifications: any[] = [
+    {
+      type: 'schedule_update',
+      title: 'Schedule Update',
+      message: 'Your Tuesday schedule has been updated',
+      time: '5 minutes ago'
+    },
+    {
+      type: 'rattrapage',
+      title: 'New Rattrapage Session',
+      message: 'Mathematics session added for next week',
+      time: '1 hour ago'
+    }
+  ];
+  toggleNotification() {
+    this.showNotification = !this.showNotification;
+  }
+  // Stats
+  stats = {
+    totalCourses: 6,
+    upcomingExams: 3,
+    attendance: '85%',
+    rattrapages: 2
+  };
+  getNotificationColor(type: string): string {
+    const colors: { [key: string]: string } = {
+      schedule_update: 'blue',
+      rattrapage: 'purple',
+      exam: 'green',
+      default: 'gray'
+    };
+    return colors[type] || colors['default'];
+  }
   toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }

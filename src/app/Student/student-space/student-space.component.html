@@ -1,0 +1,290 @@
+<!-- Current Date and Time (UTC): 2025-05-06 12:30:15 -->
+<!-- Current User's Login: YaacoubDouaa -->
+
+<div class="min-h-screen bg-gradient-to-b from-[#f8f9fa] to-[#e9ecef] dark:from-[#2b2d42] dark:to-[#2b2d42]">
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-[#2b2d42] to-[#8d99ae] shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+          <div class="p-2 bg-white/10 rounded-lg">
+            <i-feather name="user" class="h-6 w-6 text-white"></i-feather>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-white">Student Dashboard</h1>
+            <p class="text-sm text-gray-200">Welcome back, {{currentUser}}</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2 bg-white/10 rounded-full px-4 py-2">
+            <i-feather name="clock" class="h-4 w-4 text-gray-200"></i-feather>
+            <span class="text-sm text-gray-200">{{currentDateTime}}</span>
+          </div>
+          <button
+            (click)="toggleNotification()"
+            class="relative p-2 bg-white/10 rounded-full hover:bg-white/20 transition-all duration-300">
+            <i-feather name="bell" class="h-5 w-5 text-white"></i-feather>
+            <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+              {{notifications.length}}
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- Sidebar -->
+  <aside [class.w-64]="isOpen"
+         [class.w-20]="!isOpen"
+         class="fixed left-0 top-0 bottom-0 z-40 transition-width duration-300 ease-in-out bg-gray-800">
+    <div class="h-full flex flex-col">
+      <!-- Sidebar Header -->
+      <div class="h-16 flex items-center justify-between px-4 bg-gray-900">
+        <div class="flex items-center" *ngIf="isOpen">
+          <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+            <span class="text-white font-bold">{{currentUser[0]}}</span>
+          </div>
+          <span class="ml-2 text-white font-semibold truncate">{{currentUser}}</span>
+        </div>
+        <button (click)="toggleSidebar()"
+                class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
+          <i-feather [name]="isOpen ? 'chevron-left' : 'chevron-right'" class="h-5 w-5"></i-feather>
+        </button>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+        <a *ngFor="let item of navItems"
+           [routerLink]="item.route"
+           routerLinkActive="bg-gray-900 text-white"
+           [class.justify-center]="!isOpen"
+           class="flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200 group">
+          <i-feather [name]="item.icon" class="h-5 w-5"></i-feather>
+          <span *ngIf="isOpen" class="ml-3">{{item.label}}</span>
+          <!-- Tooltip -->
+          <div *ngIf="!isOpen"
+               class="absolute left-20 bg-gray-900 text-white px-2 py-1 rounded text-sm whitespace-nowrap scale-0 group-hover:scale-100 transition-transform origin-left z-50">
+            {{item.label}}
+          </div>
+        </a>
+      </nav>
+
+      <!-- Bottom Section -->
+      <div class="border-t border-gray-700">
+        <!-- DateTime -->
+        <div class="px-4 py-2 text-gray-400 text-sm" [class.text-center]="!isOpen">
+          <i-feather name="clock" class="h-4 w-4 inline-block" [class.mr-2]="isOpen"></i-feather>
+          <span *ngIf="isOpen">{{currentDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+        </div>
+
+        <!-- User Profile -->
+        <div class="p-4" *ngIf="isOpen">
+          <div class="flex items-center space-x-3">
+            <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+              <span class="text-white font-bold text-sm">{{currentUser[0]}}</span>
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-white truncate">{{currentUser}}</p>
+              <p class="text-xs text-gray-400">{{currentUser}}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logout Button -->
+        <button (click)="logout()"
+                [class.justify-center]="!isOpen"
+                class="w-full flex items-center px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-gray-700 transition-colors">
+          <i-feather name="log-out" class="h-5 w-5"></i-feather>
+          <span *ngIf="isOpen" class="ml-3">Logout</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+  <!-- Router Outlet for Child Routes -->
+  <router-outlet></router-outlet>
+
+  <!-- Notification Flyout -->
+  <div *ngIf="showNotification"
+       @slideInOut
+       class="fixed right-0 top-0 h-full w-80 bg-white dark:bg-[#2b2d42] shadow-lg transform transition-transform duration-300 ease-in-out z-50">
+    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      <h3 class="text-lg font-semibold text-[#2b2d42] dark:text-white">Notifications</h3>
+      <button (click)="toggleNotification()"
+              class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+        <i-feather name="x" class="h-5 w-5 text-gray-500 dark:text-gray-400"></i-feather>
+      </button>
+    </div>
+    <div class="p-4 space-y-4">
+      <div *ngFor="let notification of notifications"
+           class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+        <div class="flex items-start space-x-3">
+          <div [class]="'p-2 rounded-full bg-' + getNotificationColor(notification.type) + '-100 dark:bg-' + getNotificationColor(notification.type) + '-900/30'">
+            <i-feather
+              [name]="getNotificationIcon(notification.type)"
+              [class]="'h-5 w-5 text-' + getNotificationColor(notification.type) + '-500'">
+            </i-feather>
+          </div>
+          <div class="flex-1">
+            <h4 class="text-sm font-medium text-[#2b2d42] dark:text-white">
+              {{notification.title}}
+            </h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              {{notification.message}}
+            </p>
+            <span class="text-xs text-gray-500 dark:text-gray-500">
+              {{notification.time}}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white dark:bg-[#2b2d42] rounded-lg shadow-lg p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Total Courses</p>
+            <p class="text-2xl font-bold text-[#2b2d42] dark:text-white">{{stats.totalCourses}}</p>
+          </div>
+          <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+            <i-feather name="book" class="h-6 w-6 text-blue-600 dark:text-blue-400"></i-feather>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Exams Card -->
+      <div class="bg-white dark:bg-[#2b2d42] rounded-lg shadow-lg p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Upcoming Exams</p>
+            <p class="text-2xl font-bold text-[#2b2d42] dark:text-white">{{stats.upcomingExams}}</p>
+          </div>
+          <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
+            <i-feather name="book-open" class="h-6 w-6 text-green-600 dark:text-green-400"></i-feather>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attendance Card -->
+      <div class="bg-white dark:bg-[#2b2d42] rounded-lg shadow-lg p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Attendance</p>
+            <p class="text-2xl font-bold text-[#2b2d42] dark:text-white">{{stats.attendance}}</p>
+          </div>
+          <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-full">
+            <i-feather name="check-square" class="h-6 w-6 text-yellow-600 dark:text-yellow-400"></i-feather>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rattrapages Card -->
+      <div class="bg-white dark:bg-[#2b2d42] rounded-lg shadow-lg p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Rattrapages</p>
+            <p class="text-2xl font-bold text-[#2b2d42] dark:text-white">{{stats.rattrapages}}</p>
+          </div>
+          <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+            <i-feather name="refresh-cw" class="h-6 w-6 text-purple-600 dark:text-purple-400"></i-feather>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carousel -->
+    <div class="mb-8 bg-white dark:bg-[#2b2d42] rounded-lg shadow-lg overflow-hidden">
+      <div class="relative" style="height: 200px;">
+        <div class="flex transition-transform duration-500 h-full"
+             [style.transform]="'translateX(-' + (currentSlide * 100) + '%)'">
+          <div *ngFor="let item of carouselItems"
+               class="w-full flex-shrink-0 flex items-center justify-center p-6">
+            <div class="text-center">
+              <i-feather
+                [name]="item.icon"
+                [class]="'h-16 w-16 mb-4 mx-auto text-' + item.color + '-500'">
+              </i-feather>
+              <h3 class="text-xl font-semibold mb-2 text-[#2b2d42] dark:text-white">
+                {{item.title}}
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400">
+                {{item.count}} items
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Carousel Navigation -->
+        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          <button *ngFor="let item of carouselItems; let i = index"
+                  (click)="currentSlide = i"
+                  [class.bg-[#2b2d42]]="currentSlide === i"
+                  [class.bg-gray-300]="currentSlide !== i"
+                  class="w-2 h-2 rounded-full transition-all duration-300">
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Schedule Updates -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2">
+        <div class="bg-white dark:bg-[#2b2d42] rounded-lg shadow-lg p-6">
+          <h2 class="text-xl font-semibold mb-4 text-[#2b2d42] dark:text-white flex items-center">
+            <i-feather name="calendar" class="h-5 w-5 mr-2 text-[#8d99ae]"></i-feather>
+            Recent Schedule Updates
+          </h2>
+          <div class="space-y-4">
+            <div *ngFor="let update of scheduleUpdates"
+                 class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+              <div class="text-sm font-medium text-[#2b2d42] dark:text-white mb-2">
+                {{update.date}}
+              </div>
+              <div class="space-y-2">
+                <div *ngFor="let change of update.changes"
+                     class="flex items-center space-x-2">
+                  <i-feather
+                    [name]="change.type === 'added' ? 'plus-circle' : 'minus-circle'"
+                    [class]="'h-4 w-4 ' + (change.type === 'added' ? 'text-green-500' : 'text-red-500')">
+                  </i-feather>
+                  <span class="text-gray-600 dark:text-gray-400">
+                    {{change.course}} - {{change.time}}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="lg:col-span-1">
+        <div class="bg-white dark:bg-[#2b2d42] rounded-lg shadow-lg p-6">
+          <h2 class="text-xl font-semibold mb-4 text-[#2b2d42] dark:text-white flex items-center">
+            <i-feather name="zap" class="h-5 w-5 mr-2 text-[#8d99ae]"></i-feather>
+            Quick Actions
+          </h2>
+          <div class="space-y-4">
+            <button (click)="navigateToSchedule()"
+                    class="w-full py-3 flex items-center justify-center space-x-2 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-lg transition-colors">
+              <i-feather name="calendar" class="h-5 w-5"></i-feather>
+              <span>View Schedule</span>
+            </button>
+            <button (click)="navigateToRattrapages()"
+                    class="w-full py-3 flex items-center justify-center space-x-2 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-lg transition-colors">
+              <i-feather name="refresh-cw" class="h-5 w-5"></i-feather>
+              <span>View Rattrapages</span>
+            </button>
+            <button (click)="navigateToExams()"
+                    class="w-full py-3 flex items-center justify-center space-x-2 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/40 text-green-600 dark:text-green-400 rounded-lg transition-colors">
+              <i-feather name="book-open" class="h-5 w-5"></i-feather>
+              <span>View Exams</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

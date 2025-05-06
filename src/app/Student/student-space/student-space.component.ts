@@ -1,0 +1,165 @@
+// Current Date and Time (UTC): 2025-05-06 12:30:15
+// Current User's Login: YaacoubDouaa
+
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { trigger, transition, style, animate } from '@angular/animations';
+import {AuthService} from '../../auth-service.service';
+
+@Component({
+  selector: 'app-student-space',
+  templateUrl: './student-space.component.html',
+  styleUrls: ['./student-space.component.css'],
+  standalone:false,
+  animations: [
+    trigger('slideInOut', [
+      transition(':enter', [
+        style({ transform: 'translateX(100%)' }),
+        animate('300ms ease-in-out', style({ transform: 'translateX(0)' }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in-out', style({ transform: 'translateX(100%)' }))
+      ])
+    ])
+  ]
+})
+export class StudentSpaceComponent implements OnInit {
+  currentDateTime = '2025-02-26 21:33:08';
+  currentUser = 'YaacoubDouaa';
+
+  isOpen=false;
+  // Carousel
+  currentSlide = 0;
+  notifications: any[] = [
+    {
+      type: 'schedule_update',
+      title: 'Schedule Update',
+      message: 'Your Tuesday schedule has been updated',
+      time: '5 minutes ago'
+    },
+    {
+      type: 'rattrapage',
+      title: 'New Rattrapage Session',
+      message: 'Mathematics session added for next week',
+      time: '1 hour ago'
+    }
+  ];
+
+  // Stats
+  stats = {
+    totalCourses: 6,
+    upcomingExams: 3,
+    attendance: '85%',
+    rattrapages: 2
+  };
+  navItems = [
+    { route: 'studentdash', label: 'Dashboard', icon: 'grid' },
+    { route: 'studentschedule', label: '  Group Schedule', icon: 'calendar' },
+  ];
+  // Schedule Updates
+  scheduleUpdates = [
+    {
+      date: '2025-02-27',
+      changes: [
+        { type: 'added', course: 'Mathematics', time: '10:15-11:45' },
+        { type: 'cancelled', course: 'Physics Lab', time: '13:00-14:30' }
+      ]
+    }
+  ];
+
+  // Carousel Items
+  carouselItems = [
+    {
+      title: 'Actualités',
+      icon: 'bell',
+      count: 5,
+      color: 'blue'
+    },
+    {
+      title: 'Rattrapages',
+      icon: 'calendar',
+      count: 2,
+      color: 'purple'
+    },
+    {
+      title: 'Examens',
+      icon: 'book-open',
+      count: 3,
+      color: 'green'
+    }
+  ];
+
+  showNotification = false;
+  private isSidebarOpen=false;
+
+  constructor(private router: Router,private authService:AuthService) {
+    this.startTimeUpdate();
+  }
+
+  ngOnInit() {
+    this.startCarousel();
+  }
+
+  private startTimeUpdate() {
+    setInterval(() => {
+      const now = new Date();
+      this.currentDateTime = this.formatDateTime(now);
+    }, 1000);
+  }
+
+  private formatDateTime(date: Date): string {
+    return date.toISOString().replace('T', ' ').substring(0, 19);
+  }
+
+  private startCarousel() {
+    setInterval(() => {
+      this.currentSlide = (this.currentSlide + 1) % this.carouselItems.length;
+    }, 5000);
+  }
+
+  toggleNotification() {
+    this.showNotification = !this.showNotification;
+  }
+
+  getNotificationIcon(type: string): string {
+    const icons: { [key: string]: string } = {
+      schedule_update: 'calendar',
+      rattrapage: 'clock',
+      exam: 'book-open',
+      default: 'bell'
+    };
+    return icons[type] || icons['default'];
+  }
+  toggleSidebar(): void {
+    this.isOpen = !this.isOpen;
+    this.isSidebarOpen = this.isOpen; // Keep them in sync
+  }
+
+  getNotificationColor(type: string): string {
+    const colors: { [key: string]: string } = {
+      schedule_update: 'blue',
+      rattrapage: 'purple',
+      exam: 'green',
+      default: 'gray'
+    };
+    return colors[type] || colors['default'];
+  }
+
+  // Add navigation methods
+  navigateToSchedule(): void {
+    this.router.navigate(['/student/schedule']);
+  }
+
+  navigateToRattrapages(): void {
+    this.router.navigate(['/student/rattrapages']);
+  }
+  logout(): void {
+    // Call the auth service logout method
+    this.authService.logout();
+    // Navigate to login page
+    this.router.navigate(['/login']);
+  }
+  navigateToExams(): void {
+    this.router.navigate(['/student/exams']);
+  }
+}

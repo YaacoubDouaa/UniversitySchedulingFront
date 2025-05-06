@@ -1,34 +1,4 @@
-<div class="min-h-screen bg-gradient-to-b from-[#f8f9fa] to-[#e9ecef] dark:from-[#2b2d42] dark:to-[#2b2d42]">
-  <!-- Header -->
-  <header class="bg-gradient-to-r from-[#2b2d42] to-[#8d99ae] shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-4">
-          <div class="p-2 bg-white/10 rounded-lg">
-            <i-feather name="user" class="h-6 w-6 text-white"></i-feather>
-          </div>
-          <div>
-            <h1 class="text-2xl font-bold text-white">Student Dashboard</h1>
-            <p class="text-sm text-gray-200">Welcome back, {{currentUser}}</p>
-          </div>
-        </div>
-        <div class="flex items-center space-x-4">
-          <div class="flex items-center space-x-2 bg-white/10 rounded-full px-4 py-2">
-            <i-feather name="clock" class="h-4 w-4 text-gray-200"></i-feather>
-            <span class="text-sm text-gray-200">{{currentDateTime}}</span>
-          </div>
-          <button
-            (click)="toggleNotification()"
-            class="relative p-2 bg-white/10 rounded-full hover:bg-white/20 transition-all duration-300">
-            <i-feather name="bell" class="h-5 w-5 text-white"></i-feather>
-            <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-              {{notifications.length}}
-            </span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </header>
+
 
   <!-- Main Content -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -113,41 +83,3 @@
       </div>
     </div>
   </main>
-
-  <!-- Notification Flyout -->
-  <div *ngIf="showNotification"
-       @slideInOut
-       class="fixed right-0 top-0 h-full w-80 bg-white dark:bg-[#2b2d42] shadow-lg transform transition-transform duration-300 ease-in-out">
-    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-      <h3 class="text-lg font-semibold text-[#2b2d42] dark:text-white">Notifications</h3>
-      <button (click)="toggleNotification()"
-              class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-        <i-feather name="x" class="h-5 w-5 text-gray-500 dark:text-gray-400"></i-feather>
-      </button>
-    </div>
-    <div class="p-4 space-y-4">
-      <div *ngFor="let notification of notifications"
-           class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-        <div class="flex items-start space-x-3">
-          <div [class]="'p-2 rounded-full bg-' + getNotificationColor(notification.type) + '-100 dark:bg-' + getNotificationColor(notification.type) + '-900/30'">
-            <i-feather
-              [name]="getNotificationIcon(notification.type)"
-              [class]="'h-5 w-5 text-' + getNotificationColor(notification.type) + '-500'">
-            </i-feather>
-          </div>
-          <div class="flex-1">
-            <h4 class="text-sm font-medium text-[#2b2d42] dark:text-white">
-              {{notification.title}}
-            </h4>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              {{notification.message}}
-            </p>
-            <span class="text-xs text-gray-500 dark:text-gray-500">
-              {{notification.time}}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>

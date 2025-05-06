@@ -24,8 +24,8 @@ const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 
       // Main technician routes
-      { path: 'dashboard', component: TechnicienDashBoardComponent },
-      { path: 'schedule', component: TechnicienGlobalScheduleComponent },
+      { path: 'techdashboard', component: TechnicienDashBoardComponent },
+      { path: 'techglobalschedule', component: TechnicienGlobalScheduleComponent },
       { path: 'rooms', component: RoomsComponent },
 
       // Communication routes

@@ -1,33 +1,4 @@
 <div class="min-h-screen bg-gray-50/50 dark:bg-gray-900/50">
-  <!-- Enhanced Top Navigation Bar with Glassmorphism -->
-  <nav class="sticky top-0 z-50 bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg shadow-lg border-b border-gray-200/80 dark:border-gray-700/80">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        <div class="flex items-center space-x-6">
-          <!-- Animated Logo and Title -->
-          <div class="flex items-center space-x-3 group">
-            <div class="p-2.5 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-all duration-300 transform group-hover:scale-105">
-              <i-feather
-                name="calendar"
-                class="h-6 w-6 text-primary"
-              ></i-feather>
-            </div>
-            <h1 class="text-xl font-semibold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent"
-                [innerText]="displayText"></h1>
-          </div>
-
-          <!-- Enhanced View Schedule Button with Animation -->
-          <div class="flex items-center">
-            <button (click)="navigateToSchedule()"
-                    class="flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary-dark text-white hover:from-primary-dark hover:to-primary transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-              <i-feather name="eye" class="h-5 w-5"></i-feather>
-              <span class="font-medium">View Schedule</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </nav>
 
   <!-- Main Content with Enhanced Spacing -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

@@ -26,7 +26,6 @@ import { ProfScheduleComponent } from './Prof/prof-schedule/prof-schedule.compon
 import { StudentDashBoardComponent } from './Student/student-dash-board/student-dash-board.component';
 import { StudentScheduleComponent } from './Student/student-schedule/student-schedule.component';
 import { ViewScheduleComponent } from './Student/view-schedule/view-schedule.component';
-import { ViewRoomsComponent } from './Student/view-rooms/view-rooms.component';
 
 // Components - Technician
 import { TechnicienSpaceComponent } from './technicien/technicien-space/technicien-space.component';
@@ -42,6 +41,8 @@ import { RoomsComponent } from './Room/rooms/rooms.component';
 import { AuthGuard } from './Core/Guards/authGuard';
 import { RoleGuard } from './Core/Guards/roleGuard';
 import {ProfessorsComponent} from './Prof/professors/professors.component';
+import {PropositionRattrapageComponent} from './proposition-rattrapage/proposition-rattrapage.component';
+import {StudentSpaceComponent} from './Student/student-space/student-space.component';
 
 const routes: Routes = [
   // Public routes
@@ -58,13 +59,15 @@ const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'schedule', component: ScheduleComponent },
+      { path: 'rattrapage', component:PropositionRattrapageComponent },
       { path: 'conflicts', component: ConflictPageComponent },
       { path: 'global', component: GlobalScheduleComponent },
       { path: 'import', component: CsvImportComponent },
       { path: 'rooms', component: RoomsComponent },
       { path: 'profs', component:ProfessorsComponent },
       { path: 'messages', component: MessagingComponent },
-      { path: 'notifications', component: NotificationsComponent }
+      { path: 'notifications', component: NotificationsComponent },
+      { path: 'view', component: ViewScheduleComponent }
     ]
   },
 
@@ -88,14 +91,14 @@ const routes: Routes = [
   // Student routes
   {
     path: 'student',
-    component: StudentDashBoardComponent,
+    component: StudentSpaceComponent,
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['STUDENT'] },
     children: [
-      { path: '', redirectTo: 'schedule', pathMatch: 'full' },
-      { path: 'schedule', component: StudentScheduleComponent },
+      { path: '', redirectTo: 'studentdash', pathMatch: 'full' },
+      { path: 'studentschedule', component: StudentScheduleComponent },
       { path: 'view-schedule', component: ViewScheduleComponent },
-      { path: 'rooms', component: ViewRoomsComponent },
+
       { path: 'messages', component: MessagingComponent },
       { path: 'notifications', component: NotificationsComponent }
     ]
