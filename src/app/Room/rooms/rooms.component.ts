@@ -140,13 +140,14 @@ changeSalle(name:string): void {
   /**
    * Handle room selection
    */
-  onSelectSalle(selectedSalle:string,salleSchedule: Schedule): void {
+  onSelectSalle(selectedSalle:string, salleSchedule: Schedule): void {
     this.salleScheduleService.changeSchedule(salleSchedule);
     this.changeSalle(selectedSalle);
     this.salleSchedule = salleSchedule;
-    this.router.navigate(['/room-schedule']);
-  }
 
+    // Fix: Use the complete path with parent route
+    this.router.navigate(['/admin/room-schedule']);
+  }
   /**
    * Get color coding for room availability
    */
