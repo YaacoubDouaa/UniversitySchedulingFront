@@ -7,6 +7,7 @@ import { RattrapageService } from '../../Services/PropositionDeRattrapageService
 import {animate, style, transition, trigger} from '@angular/animations';
 import {interval, Subject, takeUntil} from 'rxjs';
 import {ProfessorsService} from '../../Services/ProfessorSevice/professors.service';
+import {demoSchedule} from '../../initialData/initialData';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,7 +30,7 @@ export class DashboardComponent implements OnInit {
   displayText = '';
   fullText = 'Welcome to Schedule Manager';
   isSidebarOpen = true;
-  schedule: Schedule = {};
+  schedule: Schedule = demoSchedule;
   conflicts: SeanceConflict[] = [];
   rattrapageSchedule: RattrapageSchedule = {};
   selectedNiveau: string = 'ALL';
@@ -67,7 +68,7 @@ export class DashboardComponent implements OnInit {
     }, 100);
   }
   private getCurrentDay(): string {
-    const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const days = ['DIMANCHE', 'LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
     return days[new Date().getDay()];
   }
 

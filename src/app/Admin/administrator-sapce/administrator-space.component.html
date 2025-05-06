@@ -1,12 +1,11 @@
-<!-- Current Date and Time (UTC): 2025-05-06 10:52:53 -->
+<!-- Current Date and Time (UTC): 2025-05-06 14:46:12 -->
 <!-- Current User's Login: YaacoubDouaa -->
 
-<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-  <!-- Sidebar Component -->
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
   <!-- Sidebar -->
   <aside [class.w-64]="isOpen"
          [class.w-20]="!isOpen"
-         class="fixed left-0 top-0 bottom-0 z-40 transition-width duration-300 ease-in-out bg-gray-800">
+         class="fixed left-0 top-0 bottom-0 z-40 transition-all duration-300 ease-in-out bg-gray-800">
     <div class="h-full flex flex-col">
       <!-- Sidebar Header -->
       <div class="h-16 flex items-center justify-between px-4 bg-gray-900">
@@ -14,7 +13,7 @@
           <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
             <span class="text-white font-bold">{{currentUser[0]}}</span>
           </div>
-          <span class="ml-2 text-white font-semibold truncate">{{currentUser}}</span>
+          <span class="ml-2 text-white font-semibold truncate">Administrator</span>
         </div>
         <button (click)="toggleSidebar()"
                 class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
@@ -25,7 +24,7 @@
       <!-- Navigation -->
       <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
         <a *ngFor="let item of navItems"
-           [routerLink]="item.route"
+           [routerLink]="[item.route]"
            routerLinkActive="bg-gray-900 text-white"
            [class.justify-center]="!isOpen"
            class="flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200 group">
@@ -40,7 +39,7 @@
       </nav>
 
       <!-- Bottom Section -->
-      <div class="border-t border-gray-700">
+      <div class="border-t border-gray-700 mt-auto">
         <!-- DateTime -->
         <div class="px-4 py-2 text-gray-400 text-sm" [class.text-center]="!isOpen">
           <i-feather name="clock" class="h-4 w-4 inline-block" [class.mr-2]="isOpen"></i-feather>
@@ -55,7 +54,7 @@
             </div>
             <div class="min-w-0">
               <p class="text-sm font-medium text-white truncate">{{currentUser}}</p>
-              <p class="text-xs text-gray-400">{{currentUser}}</p>
+              <p class="text-xs text-gray-400">Admin</p>
             </div>
           </div>
         </div>
@@ -70,6 +69,51 @@
       </div>
     </div>
   </aside>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 transition-all duration-300 ease-in-out"
+       [ngClass]="{
+         'ml-64': isOpen,
+         'ml-20': !isOpen
+       }">
+
+    <!-- Top Header/Navbar -->
+    <header class="sticky top-0 z-30 bg-gradient-to-r from-[#2b2d42] to-[#8d99ae] shadow-lg">
+      <div class="max-w-full px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-4">
+            <div class="p-2 bg-white/10 rounded-lg">
+              <i-feather name="user" class="h-6 w-6 text-white"></i-feather>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold text-white">Admin Dashboard</h1>
+              <p class="text-sm text-gray-200">Welcome back, {{currentUser}}</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2 bg-white/10 rounded-full px-4 py-2">
+              <i-feather name="clock" class="h-4 w-4 text-gray-200"></i-feather>
+              <span class="text-sm text-gray-200">{{currentDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+            </div>
+            <button
+              (click)="toggleNotification()"
+              class="relative p-2 bg-white/10 rounded-full hover:bg-white/20 transition-all duration-300">
+              <i-feather name="bell" class="h-5 w-5 text-white"></i-feather>
+
+              {{notifications.length}}
+
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Area with Router Outlet -->
+    <main class="p-6">
+      <!-- This is where child routes will be rendered -->
+      <router-outlet></router-outlet>
+    </main>
+  </div>
 
   <!-- Floating Message Notification -->
   <div *ngIf="showMessageNotification"
@@ -126,24 +170,5 @@
         <i-feather name="chevron-right" class="h-4 w-4 ml-1"></i-feather>
       </div>
     </div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="transition-all duration-300 ease-in-out"
-       [ngClass]="{
-         'sm:ml-64': isSidebarOpen,
-         'sm:ml-20': !isSidebarOpen
-       }">
-    <!-- Navbar -->
-    <app-nav-bar
-      (toggleSidebar)="toggleSidebar()"
-     >
-    </app-nav-bar>
-
-    <!-- Content Area with Router Outlet -->
-    <main class="p-6">
-      <!-- This is where child routes will be rendered -->
-      <router-outlet></router-outlet>
-    </main>
   </div>
 </div>

@@ -12,6 +12,7 @@ import { ProfessorsComponent } from '../../Prof/professors/professors.component'
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { ViewScheduleComponent } from '../view-schedule/view-schedule.component';
 import { GlobalScheduleComponent } from '../global-schedule/global-schedule.component';
+import {RoomScheduleComponent} from '../../Room/room-schedule/room-schedule.component';
 
 // Current Date and Time (UTC): 2025-05-05 19:24:53
 // Author: YaacoubDouaa
@@ -33,6 +34,8 @@ const routes: Routes = [
       { path: 'profs', component: ProfessorsComponent },
       { path: 'view', component: ViewScheduleComponent },
       { path: 'global', component: GlobalScheduleComponent },
+      { path: 'room-schedule', component:RoomScheduleComponent }
+
     ]
   }
 ];

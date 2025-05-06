@@ -43,6 +43,7 @@ import { RoleGuard } from './Core/Guards/roleGuard';
 import {ProfessorsComponent} from './Prof/professors/professors.component';
 import {PropositionRattrapageComponent} from './proposition-rattrapage/proposition-rattrapage.component';
 import {StudentSpaceComponent} from './Student/student-space/student-space.component';
+import {RoomScheduleComponent} from './Room/room-schedule/room-schedule.component';
 
 const routes: Routes = [
   // Public routes
@@ -65,6 +66,7 @@ const routes: Routes = [
       { path: 'import', component: CsvImportComponent },
       { path: 'rooms', component: RoomsComponent },
       { path: 'profs', component:ProfessorsComponent },
+      { path: 'room-schedule', component:RoomScheduleComponent },
       { path: 'messages', component: MessagingComponent },
       { path: 'notifications', component: NotificationsComponent },
       { path: 'view', component: ViewScheduleComponent }

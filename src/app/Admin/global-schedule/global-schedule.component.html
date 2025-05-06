@@ -1,4 +1,7 @@
-<div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 max-w-full overflow-x-auto">
+<!-- Current Date and Time (UTC): 2025-05-06 15:07:45 -->
+<!-- Current User's Login: YaacoubDouaa -->
+
+<div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 max-w-full">
   <!-- Header -->
   <div class="mb-6 flex justify-between items-center">
     <div class="flex items-center space-x-4">
@@ -15,33 +18,34 @@
       <span>{{currentDate}}</span>
     </div>
   </div>
-  <!-- Schedule Table -->
-  <div class="overflow-x-auto">
-    <table class="min-w-full border-collapse border-2 border-gray-200 dark:border-gray-600">
-      <thead>
+
+  <!-- Schedule Table with Enhanced Sticky Headers -->
+  <div class="overflow-auto max-h-[70vh]">
+    <table class="min-w-full border-collapse border-2 border-gray-200 dark:border-gray-600 relative">
+      <thead class="sticky top-0 z-30">
       <!-- Main Header (Days) -->
       <tr>
-        <th class="px-4 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider sticky left-0 z-20 border-2 border-gray-200 dark:border-gray-600">
+        <th class="px-4 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider sticky left-0 z-40 border-2 border-gray-200 dark:border-gray-600 shadow-md">
           Salles
         </th>
         <th *ngFor="let day of days; let isLast = last" [attr.colspan]="timeSlots.length"
-            class="px-4 py-3 bg-gray-50 dark:bg-gray-700 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-2 border-gray-200 dark:border-gray-600"
+            class="px-4 py-3 bg-gray-50 dark:bg-gray-700 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-2 border-gray-200 dark:border-gray-600 shadow-md"
             [ngClass]="{'border-r-4': !isLast}">
           {{day}}
         </th>
       </tr>
       <!-- Sub Header (Time Slots) -->
       <tr>
-        <th class="px-4 py-2 bg-gray-50 dark:bg-gray-700 text-left text-xs font-medium text-gray-500 dark:text-gray-300 tracking-wider sticky left-0 z-20 border-2 border-gray-200 dark:border-gray-600">
+        <th class="px-4 py-2 bg-gray-50 dark:bg-gray-700 text-left text-xs font-medium text-gray-500 dark:text-gray-300 tracking-wider sticky left-0 z-40 border-2 border-gray-200 dark:border-gray-600 shadow-md">
           <!-- Empty cell for rooms column -->
         </th>
         <ng-container *ngFor="let day of days; let dayIndex = index">
           <th *ngFor="let timeSlot of timeSlots; let isLast = last"
-              class="px-2 py-2 bg-gray-100 dark:bg-gray-600 text-center text-xs font-medium text-gray-500 dark:text-gray-300 tracking-wider border border-gray-200 dark:border-gray-600 min-w-[120px]"
+              class="px-2 py-2 bg-gray-100 dark:bg-gray-600 text-center text-xs font-medium text-gray-500 dark:text-gray-300 tracking-wider border border-gray-200 dark:border-gray-600 min-w-[120px] shadow-sm"
               [ngClass]="{
-                'border-r-4': isLast && dayIndex !== days.length - 1,
-                'border-b-2': true
-              }">
+                  'border-r-4': isLast && dayIndex !== days.length - 1,
+                  'border-b-2': true
+                }">
             {{timeSlot}}
           </th>
         </ng-container>
@@ -53,8 +57,8 @@
       <tr *ngFor="let room of allRooms; let isLast = last"
           class="border-b border-gray-200 dark:border-gray-700"
           [ngClass]="{'border-b-2': isLast}">
-        <!-- Room Column -->
-        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white sticky left-0 bg-white dark:bg-gray-800 z-10 border-r-2 border-gray-200 dark:border-gray-700">
+        <!-- Room Column (Sticky) -->
+        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white sticky left-0 bg-white dark:bg-gray-800 z-20 border-r-2 border-gray-200 dark:border-gray-700 shadow-md">
           <div class="flex items-center space-x-2">
             <i-feather name="map-pin" class="h-4 w-4 text-gray-400"></i-feather>
             <span>{{room}}</span>
@@ -66,12 +70,12 @@
           <td *ngFor="let timeSlot of timeSlots; let isLastSlot = last"
               class="border border-gray-200 dark:border-gray-700 p-2 relative min-h-[80px] align-top group hover:bg-gray-50 dark:hover:bg-gray-700/50"
               [ngClass]="{
-                'border-r-4': isLastSlot && dayIndex !== days.length - 1
-              }">
+                  'border-r-4': isLastSlot && dayIndex !== days.length - 1
+                }">
             <!-- Add Button -->
             <button *ngIf="getSessionsForRoom(room, day, timeSlot).length === 0"
                     class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-full bg-green-500 hover:bg-green-600 text-white"
-                    (click)="openAddModal(day, timeSlot,room)">
+                    (click)="openAddModal(day, timeSlot, room)">
               <i-feather name="plus" class="h-3 w-3"></i-feather>
             </button>
 
@@ -79,28 +83,28 @@
             <ng-container *ngFor="let session of getSessionsForRoom(room, day, timeSlot)">
               <div class="mb-1 p-2 rounded-lg text-xs group/session hover:shadow-md transition-all relative"
                    [ngClass]="{
-         'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200': session.type === 'COURS' && !session.isRattrapage,
-         'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200': session.type === 'TD' && !session.isRattrapage,
-         'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200': session.type === 'TP' && !session.isRattrapage,
-         'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 border border-amber-400': session.isRattrapage
-       }">
+                       'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200': session.type === 'COURS' && !session.isRattrapage,
+                       'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200': session.type === 'TD' && !session.isRattrapage,
+                       'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200': session.type === 'TP' && !session.isRattrapage,
+                       'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 border border-amber-400': session.isRattrapage
+                     }">
 
                 <!-- Header with Type Badge and potentially Rattrapage Badge -->
                 <div class="flex justify-between items-center mb-1">
                   <!-- Type Badge -->
                   <span class="px-2 py-0.5 text-xs rounded-full w-fit"
                         [ngClass]="{'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200': session.type === 'COURS',
-              'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200': session.type === 'TD',
-              'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200': session.type === 'TP'}">
-        <i-feather [name]="getCourseIcon(session.type)" class="h-3 w-3"></i-feather>
-        <span>{{session.type}}</span>
-      </span>
+                        'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200': session.type === 'TD',
+                        'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200': session.type === 'TP'}">
+                      <i-feather [name]="getCourseIcon(session.type)" class="h-3 w-3"></i-feather>
+                      <span>{{session.type}}</span>
+                    </span>
 
                   <!-- Rattrapage Badge -->
                   <span *ngIf="session.isRattrapage"
                         class="px-1.5 py-0.5 text-2xs rounded-full bg-amber-200 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
-        Makeup
-      </span>
+                      Makeup
+                    </span>
                 </div>
 
                 <!-- Main Session Details -->
@@ -125,7 +129,7 @@
                   <!-- Add Biweekly Session Button - Only shows for biweekly sessions -->
                   <button *ngIf="session.biWeekly"
                           class="p-1 hover:bg-green-200 dark:hover:bg-green-800 rounded-full bg-white/80 dark:bg-gray-700/80 shadow-sm"
-                          (click)="openAddModal(day,timeSlot,room)"
+                          (click)="openAddModal(day, timeSlot, room)"
                           title="Add alternate biweekly session">
                     <i-feather name="plus-circle" class="h-3 w-3 text-green-600 dark:text-green-400"></i-feather>
                   </button>
@@ -143,11 +147,14 @@
                   </button>
                 </div>
               </div>
-            </ng-container></td></ng-container>
+            </ng-container>
+          </td>
+        </ng-container>
       </tr>
       </tbody>
     </table>
   </div>
+
   <!-- Legend -->
   <div class="mt-6 flex flex-wrap gap-4">
     <div *ngFor="let type of ['COURS', 'TD', 'TP']" class="flex items-center">
@@ -162,7 +169,8 @@
       </span>
     </div>
   </div>
-  <!-- Add some CSS styles to your component's CSS file -->
+
+  <!-- Add Session Modal -->
   <div *ngIf="showModal"
        class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
        (click)="closeModal()">
@@ -226,8 +234,6 @@
         </div>
 
         <div class="grid grid-cols-2 gap-3">
-
-
           <!-- Type Selection -->
           <mat-form-field appearance="outline">
             <mat-label>
@@ -291,6 +297,7 @@
       </form>
     </div>
   </div>
+
   <!-- Enhanced Delete Confirmation Modal -->
   <div *ngIf="showDeleteModal"
        class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
@@ -312,7 +319,7 @@
             <span>Cancel</span>
           </button>
           <button mat-raised-button color="warn"
-                  class="flex items-center space-x-2 px-6 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300"
+                  class="flex items-center space-x-2 px-6 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300 text-white"
                   (click)="confirmDelete()">
             <i-feather name="trash-2" class="h-4 w-4"></i-feather>
             <span>Delete</span>
